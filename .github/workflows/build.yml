@@ -1,0 +1,135 @@
+name: Build
+
+on:
+  push:
+    branches: [ "**" ]
+    tags: [ "v*" ]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  core-tests-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build and run core tests
+        run: |
+          cmake -S . -B build-tests -DVRLP_BUILD_PLUGIN=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-tests
+          ctest --test-dir build-tests --output-on-failure
+
+  plugin-windows:
+    runs-on: windows-latest
+    env:
+      VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/vcpkg_binary_cache,readwrite"
+      VCPKG_DOWNLOADS: ${{ github.workspace }}/vcpkg_downloads
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Setup MSVC
+        uses: TheMrMilchmann/setup-msvc-dev@v4.0.0
+        with:
+          arch: x64
+
+      - name: Prepare vcpkg cache dirs
+        shell: bash
+        run: mkdir -p vcpkg_binary_cache vcpkg_downloads
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/vcpkg_binary_cache
+            ${{ github.workspace }}/vcpkg_downloads
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}-v1
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgGitCommitId: ee12231b20c95013c6638d845d04c91559a1d1ff
+          runVcpkgInstall: false
+
+      # CommonLibSSE-NG is ~500 files and takes ~25 min to compile; it only changes with the
+      # submodule commit, so the build tree is cached and reused. Its sources get a fixed old
+      # timestamp (the cache keeps the object files' times), so Ninja sees them as up to date
+      # while every file of this mod is newer than its cached object and gets rebuilt.
+      - name: Pin CommonLib timestamps
+        id: commonlib
+        shell: bash
+        run: |
+          echo "sha=$(git -C extern/CommonLibVR rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          find extern/CommonLibVR -path '*/.git' -prune -o -type f -print0 | xargs -0 touch -d '2000-01-01T00:00:00Z'
+
+      - name: Cache build tree
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: build-${{ runner.os }}-${{ env.ImageVersion }}-${{ steps.commonlib.outputs.sha }}-${{ hashFiles('vcpkg.json') }}-v1
+          # vcpkg.json also carries the mod's version: a new version must still reuse the tree
+          restore-keys: build-${{ runner.os }}-${{ env.ImageVersion }}-${{ steps.commonlib.outputs.sha }}-
+
+      - name: Configure
+        shell: pwsh
+        run: >
+          cmake -S . -B build -G Ninja
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+          -DVCPKG_TARGET_TRIPLET=x64-windows-static-md
+          -DVRLP_BUILD_PLUGIN=ON
+
+      - name: Build
+        run: cmake --build build --target VRLockpicking vrlp_tests
+
+      - name: Core tests (Windows)
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Inspect DLL exports
+        shell: pwsh
+        run: dumpbin /exports build/VRLockpicking.dll
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $name = if ($env:GITHUB_REF_TYPE -eq 'tag') { "VRLockpicking-$env:GITHUB_REF_NAME" } else { "VRLockpicking-${{ github.run_number }}" }
+          python tools/package.py build/VRLockpicking.dll "out/$name.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VRLockpicking-${{ github.run_number }}
+          path: out/*.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VRLockpicking-${{ github.run_number }}-pdb
+          path: build/VRLockpicking.pdb
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [ core-tests-linux, plugin-windows ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: VRLockpicking-${{ github.run_number }}
+          path: out
+      - name: Release notes (this version's CHANGELOG section)
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="## $version" '$0 == v { on = 1; next } /^## / { on = 0 } on' CHANGELOG.md > notes.md
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: out/*.zip
+          body_path: notes.md

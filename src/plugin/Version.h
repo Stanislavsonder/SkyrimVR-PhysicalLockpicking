@@ -1,0 +1,5 @@
+#pragma once
+
+#define VRLP_VERSION_MAJOR 1
+#define VRLP_VERSION_MINOR 0
+#define VRLP_VERSION_PATCH 0

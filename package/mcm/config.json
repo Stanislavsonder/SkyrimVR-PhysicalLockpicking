@@ -1,0 +1,541 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Exit-9B/MCM-Helper/main/docs/config.schema.json",
+  "modName": "VRLockpicking",
+  "displayName": "VR Lockpicking",
+  "cursorFillMode": "topToBottom",
+  "content": [
+    {
+      "text": "Physical lockpicking with your hands.",
+      "type": "text"
+    },
+    {
+      "text": "Settings apply the next time you pick a lock.",
+      "type": "text"
+    }
+  ],
+  "pages": [
+    {
+      "pageDisplayName": "General",
+      "cursorFillMode": "topToBottom",
+      "content": [
+        {
+          "text": "General",
+          "type": "header"
+        },
+        {
+          "id": "bEnabled:General",
+          "text": "Enable immersive lockpicking",
+          "type": "toggle",
+          "help": "Replaces the vanilla lockpicking with the mod's.",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bAlternativeMode:Controls",
+          "text": "Alternative mode",
+          "type": "toggle",
+          "help": "Off (default): like the vanilla minigame - you steer the pick's handle through the air around the keyhole. On: you search by turning your wrist, like turning a key, and the tension wrench twists from any start.",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bLeftHandedPick:General",
+          "text": "Pick in left hand",
+          "type": "toggle",
+          "help": "Mirrors the tools in your hands: the lockpick in the left, the tension wrench in the right.",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bFullPause:General",
+          "text": "Pause on lockpicking",
+          "type": "toggle",
+          "help": "Pauses the game while you pick a lock.",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bActivateContainerAfterUnlock:General",
+          "text": "Open container after unlocking",
+          "type": "toggle",
+          "help": "Opens a container automatically once its lock is picked.",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "text": "Difficulty",
+          "type": "header",
+          "position": 1
+        },
+        {
+          "id": "fSweetSpotMult:Difficulty",
+          "text": "Sweet spot size",
+          "type": "slider",
+          "help": "How wide the spot is where the lock turns all the way (x the vanilla size for your skill and perks). Smaller = harder to find.",
+          "valueOptions": {
+            "min": 0.25,
+            "max": 4.0,
+            "step": 0.05,
+            "formatString": "{2}x",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fBreakTimeMult:Difficulty",
+          "text": "Pick strength",
+          "type": "slider",
+          "help": "How long a pick lasts while you force a lock that won't turn (x the vanilla time). Smaller = picks break sooner.",
+          "valueOptions": {
+            "min": 0.25,
+            "max": 4.0,
+            "step": 0.05,
+            "formatString": "{2}x",
+            "sourceType": "ModSettingFloat"
+          }
+        }
+      ]
+    },
+    {
+      "pageDisplayName": "Vibration",
+      "cursorFillMode": "topToBottom",
+      "content": [
+        {
+          "text": "Vibration",
+          "type": "header"
+        },
+        {
+          "id": "fStrength:Haptics",
+          "text": "Overall strength",
+          "type": "slider",
+          "help": "Scales all vibration.",
+          "valueOptions": {
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.05,
+            "formatString": "{2}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "type": "empty"
+        },
+        {
+          "text": "Far from the sweet spot",
+          "type": "header"
+        },
+        {
+          "id": "fPulseSlowInterval:Haptics",
+          "text": "Pulse every (s)",
+          "type": "slider",
+          "help": "Seconds between searching pulses while the pick is far from the sweet spot.",
+          "valueOptions": {
+            "min": 0.1,
+            "max": 1.5,
+            "step": 0.05,
+            "formatString": "{2}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fPulseFarStrength:Haptics",
+          "text": "Strength",
+          "type": "slider",
+          "help": "Strength of those pulses.",
+          "valueOptions": {
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.05,
+            "formatString": "{2}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "type": "empty"
+        },
+        {
+          "text": "Near the sweet spot",
+          "type": "header"
+        },
+        {
+          "id": "fPulseNearDegrees:Haptics",
+          "text": "Near within (deg)",
+          "type": "slider",
+          "help": "How close to the sweet spot's edge counts as near. From far to near the pulses change in one step; from near to the sweet spot they change smoothly.",
+          "valueOptions": {
+            "min": 1.0,
+            "max": 30.0,
+            "step": 1.0,
+            "formatString": "{0}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fPulseNearInterval:Haptics",
+          "text": "Pulse every (s)",
+          "type": "slider",
+          "help": "Seconds between pulses at the outer edge of the near zone.",
+          "valueOptions": {
+            "min": 0.1,
+            "max": 1.5,
+            "step": 0.05,
+            "formatString": "{2}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fPulseNearStrength:Haptics",
+          "text": "Strength",
+          "type": "slider",
+          "help": "Strength at the outer edge of the near zone.",
+          "valueOptions": {
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.05,
+            "formatString": "{2}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "text": "In the sweet spot",
+          "type": "header",
+          "position": 7
+        },
+        {
+          "id": "fPulseSweetInterval:Haptics",
+          "text": "Pulse every (s)",
+          "type": "slider",
+          "help": "Seconds between pulses in the sweet spot (and at its edge).",
+          "valueOptions": {
+            "min": 0.05,
+            "max": 1.5,
+            "step": 0.05,
+            "formatString": "{2}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fPulseSweetStrength:Haptics",
+          "text": "Strength",
+          "type": "slider",
+          "help": "Strength in the sweet spot.",
+          "valueOptions": {
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.05,
+            "formatString": "{2}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "type": "empty"
+        },
+        {
+          "text": "Pick about to break",
+          "type": "header"
+        },
+        {
+          "id": "fStrainInterval:Haptics",
+          "text": "Pulse every (s)",
+          "type": "slider",
+          "help": "While you force a lock that won't turn: a steady rattle that replaces every other pulse.",
+          "valueOptions": {
+            "min": 0.02,
+            "max": 0.5,
+            "step": 0.01,
+            "formatString": "{2}",
+            "sourceType": "ModSettingFloat"
+          }
+        },
+        {
+          "id": "fStrainStrength:Haptics",
+          "text": "Strength",
+          "type": "slider",
+          "help": "Strength of that rattle.",
+          "valueOptions": {
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.05,
+            "formatString": "{2}",
+            "sourceType": "ModSettingFloat"
+          }
+        }
+      ]
+    },
+    {
+      "pageDisplayName": "Debug",
+      "cursorFillMode": "topToBottom",
+      "content": [
+        {
+          "text": "Debug",
+          "type": "header"
+        },
+        {
+          "id": "bDebugLogging:General",
+          "text": "Debug log",
+          "type": "toggle",
+          "help": "Writes details to Documents/My Games/Skyrim VR/SKSE/VRLockpicking.log.",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bDebugView:Visuals",
+          "text": "Debug view",
+          "type": "toggle",
+          "help": "Shows the lock and tools as coloured blocks with gauges (and numbers every few seconds) to check how lockpicking reads your hands.",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bShowTargets:Visuals",
+          "text": "Show keyhole target",
+          "type": "toggle",
+          "help": "Draws the see-through green target where the tools go in, the tool tip cubes and the gauges over the lock.",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "bShowMeshes:Visuals",
+          "text": "Show lock and picks",
+          "type": "toggle",
+          "help": "Off: play with vibration and sound only.",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "id": "iAssistRing:Visuals",
+          "text": "Assist ring",
+          "type": "stepper",
+          "help": "A ring of dots on the lock face along the pick's range, with a cyan dot where your pick is. 'With sweet spot' also marks the sweet spot on Novice and Apprentice locks. Off = by feel only.",
+          "valueOptions": {
+            "options": [
+              "Off",
+              "Pick angle",
+              "With sweet spot"
+            ],
+            "sourceType": "ModSettingInt"
+          }
+        },
+        {
+          "id": "bCrimeCheck:General",
+          "text": "Crime detection",
+          "type": "toggle",
+          "help": "Being seen picking an owned lock is a crime, like vanilla.",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "type": "empty"
+        },
+        {
+          "text": "Model markup",
+          "type": "header"
+        },
+        {
+          "id": "bMarkupMode:Visuals",
+          "text": "Model markup tool",
+          "type": "toggle",
+          "help": "While lockpicking: 1) put the pick's tip on the keyhole's centre, then its top, with the left trigger - the lock model moves to fit; 2) and 3) line up the pick and the tension wrench in your hands: hold the left trigger to keep the model still while you move your hand. A / X goes to the next part. Saved per model.",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
+          "text": "Reset model markup",
+          "type": "text",
+          "help": "Forgets every lock keyhole and tool grip you saved with the model markup tool: the built-in alignments and the automatic fit are used again.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "ResetMarkup"
+          }
+        },
+        {
+          "type": "empty"
+        },
+        {
+          "text": "Test locks",
+          "type": "header"
+        },
+        {
+          "text": "Spawn test locks",
+          "type": "text",
+          "help": "Places locked chests and doors around you: one per chest / door model of your game and mods, with Novice to Master locks (and some that need a key), plus a Novice door straight ahead that has a key, to try the Wax Key perk. Close the menu to see them. The list is in the log.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "SpawnTestLocks"
+          }
+        },
+        {
+          "text": "Remove test locks",
+          "type": "text",
+          "help": "Removes the chests and doors placed by Spawn test locks.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "RemoveTestLocks"
+          }
+        },
+        {
+          "text": "Test setup",
+          "type": "header",
+          "position": 1
+        },
+        {
+          "text": "Give 50 lockpicks",
+          "type": "text",
+          "help": "Adds 50 lockpicks.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugGiveLockpicks"
+          }
+        },
+        {
+          "text": "Skeleton Key on / off",
+          "type": "text",
+          "help": "Gives you the Skeleton Key, or takes it away if you have it.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugToggleSkeletonKey"
+          }
+        },
+        {
+          "type": "empty"
+        },
+        {
+          "text": "Perks",
+          "type": "header"
+        },
+        {
+          "text": "Add sweet spot perks",
+          "type": "text",
+          "help": "Adds every perk that widens the sweet spot (vanilla: Novice to Master Locks).",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugAddLockPerks"
+          }
+        },
+        {
+          "text": "Add Locksmith",
+          "type": "text",
+          "help": "Adds the perk that starts the pick close to the sweet spot.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugAddLocksmith"
+          }
+        },
+        {
+          "text": "Add Unbreakable",
+          "type": "text",
+          "help": "Adds the perk that makes lockpicks unbreakable.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugAddUnbreakable"
+          }
+        },
+        {
+          "text": "Add Wax Key",
+          "type": "text",
+          "help": "Adds the perk that gives you a copy of a lock's key.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugAddWaxKey"
+          }
+        },
+        {
+          "text": "Add Quick Hands",
+          "type": "text",
+          "help": "Adds the perk that keeps you from being caught picking locks.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugAddQuickHands"
+          }
+        },
+        {
+          "text": "Remove lockpicking perks",
+          "type": "text",
+          "help": "Removes all the perks above.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugRemovePerks"
+          }
+        },
+        {
+          "type": "empty"
+        },
+        {
+          "text": "Lockpicking skill",
+          "type": "header"
+        },
+        {
+          "text": "Lockpicking 10",
+          "type": "text",
+          "help": "Sets your Lockpicking skill to 10.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugSkill10"
+          }
+        },
+        {
+          "text": "Lockpicking 25",
+          "type": "text",
+          "help": "Sets your Lockpicking skill to 25.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugSkill25"
+          }
+        },
+        {
+          "text": "Lockpicking 50",
+          "type": "text",
+          "help": "Sets your Lockpicking skill to 50.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugSkill50"
+          }
+        },
+        {
+          "text": "Lockpicking 75",
+          "type": "text",
+          "help": "Sets your Lockpicking skill to 75.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugSkill75"
+          }
+        },
+        {
+          "text": "Lockpicking 100",
+          "type": "text",
+          "help": "Sets your Lockpicking skill to 100.",
+          "action": {
+            "type": "CallGlobalFunction",
+            "script": "VRLockpicking_MCM",
+            "function": "DebugSkill100"
+          }
+        }
+      ]
+    }
+  ]
+}

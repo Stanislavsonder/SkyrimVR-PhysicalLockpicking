@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fomod>
+	<Name>VR Physical Lockpicking</Name>
+	<Author>Stanislavsonder</Author>
+	<Version MachineVersion="1.0.0">1.0.0</Version>
+	<Description>Replaces the Skyrim VR lockpicking menu with lockpicking by hand: a lockpick and a tension wrench in your hands, a lock in front of you, the sweet spot found by feel through controller vibration. Vanilla rules (lock levels, skill, perks, the Skeleton Key, breaking picks, XP, crime) are kept. Requires SKSEVR and VR Address Library; the settings menu needs SkyUI VR and MCM Helper.</Description>
+	<Groups>
+		<element>Gameplay</element>
+		<element>VR</element>
+	</Groups>
+	<Website>https://github.com/Stanislavsonder/SkyrimVR-PhysicalLockpicking</Website>
+</fomod>

@@ -371,7 +371,8 @@ TEST(InsertedToolsHoldWithShakyHands)
 	Config c = TestCfg();
 	c.insertRadius = 3.0f;
 	c.holdRadius = 8.0f;
-	c.holdDepth = 5.0f;
+	c.holdBack = 5.0f;
+	c.holdDepth = 6.0f;
 	const LockFrame f = MakeLockFrame(Hmd(), c);
 	LockSession     s(SimpleParams(0, 10), f, c, f.Basis(), f.Basis());
 	const Vec3      spot = f.PickPoint(c);
@@ -397,7 +398,8 @@ TEST(InsertedToolsHoldWithShakyHands)
 	CHECK(d.holdRadius >= 9.0f);
 	// sideways it holds further than back out: pulling straight back takes it out
 	const Config e;
-	CHECK(e.holdRadius > e.holdDepth + e.insertRadius);
+	CHECK(e.holdRadius > e.holdBack + e.insertRadius);
+	CHECK(e.holdDepth > e.holdBack);
 }
 
 TEST(UnbreakableNeverBreaks)

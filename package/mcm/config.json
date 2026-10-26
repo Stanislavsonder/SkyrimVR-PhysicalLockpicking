@@ -35,7 +35,7 @@
           "id": "bAlternativeMode:Controls",
           "text": "Alternative mode",
           "type": "toggle",
-          "help": "Off (default): like the vanilla minigame - you steer the pick's handle through the air around the keyhole. On: you search by turning your wrist, like turning a key, and the tension wrench twists from any start.",
+          "help": "On (default): you search by turning your wrist, like turning a key, and the tension wrench twists from any start. Off: like the vanilla minigame - you steer the pick's handle through the air around the keyhole.",
           "valueOptions": {
             "sourceType": "ModSettingBool"
           }

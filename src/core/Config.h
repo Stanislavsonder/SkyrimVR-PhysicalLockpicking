@@ -31,15 +31,17 @@ namespace vrlp
 		float toolLength{ 15.0f };           // pick / wrench length from the fist to the tip
 		float insertRadius{ 3.0f };          // a pick tip goes in when it comes this close to its spot...
 		float wrenchInsertRadius{ 3.0f };    // ...a wrench tip this close...
-		float holdRadius{ 7.0f };            // ...and either stays in until it strays further than this (hand jitter; not in the INI)
+		float holdRadius{ 12.0f };           // ...and either stays in until it strays further than this sideways (hand jitter; not in the INI)...
+		float holdDepth{ 4.0f };             // ...or this much further back out or in than it went in (not in the INI)
 		float pickPointOffset{ 0.0f };       // where the pick goes in: this far above the keyhole centre...
 		float wrenchPointOffset{ 0.0f };     // ...and the wrench this far below it (0 = both into the centre)
 		float fullTurnTwist{ 90.0f };        // turn of the wrench (deg) that equals "full" turn
 		// Lever controls (like the vanilla minigame): once a tool is in the keyhole its tip stays
 		// there and it pivots around it. The pick's angle is where its handle points (left, up,
 		// right); the wrench turns the lock when its handle is swung clockwise around the keyhole.
-		// Off: the pick angle is the roll of the wrist and the wrench is twisted like a key.
-		bool  leverControls{ true };
+		// Off (the default, "alternative mode" in the menu): the pick angle is the roll of the wrist
+		// and the wrench is twisted like a key.
+		bool  leverControls{ false };
 		float leverMinRadius{ 1.5f };        // handle closer than this to the keyhole axis: angle holds
 		float insertFront{ 0.0f };           // a tip counts as in from this far in front of the keyhole (0 = the keyhole plane)...
 		float maxDepth{ 3.0f };              // ...and down to this depth; deeper = pushed through, no control

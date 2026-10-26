@@ -141,10 +141,11 @@ namespace vrlp
 		const Mat3       shake = AxisAngle(f.forward, a_shake * kDegToRad);
 		Place(_face.get(), a_anchor.rot * shake * f.Basis(), a_anchor.rot * f.keyhole + a_anchor.pos, 1.0f);
 
-		// on the face (x right, y into the lock, z up), under the lock: the icon, then the number
+		// on the face (x right, y into the lock, z up), over the lock: the icon, then the number. The
+		// vanilla lock reaches about 5.7 above the keyhole; the digits sit about 1.8 over it.
 		const float s = _cfg.lockMeshRadius * std::clamp(_cfg.visualScale, 0.1f, 10.0f) / 8.0f;
 		const float w = 0.8f * s, h = 1.4f * s, gap = 0.45f * s;
-		const float y = -0.6f, z = -10.0f * s;
+		const float y = -0.6f, z = 8.2f * s;
 		const std::string digits = std::to_string(std::clamp(_count, 0, 999));
 		const float width = 2.6f * s + static_cast<float>(digits.size()) * (w + gap);
 		float       x = -width * 0.5f;

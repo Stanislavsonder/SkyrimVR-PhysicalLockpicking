@@ -7,7 +7,7 @@
 
 namespace vrlp
 {
-	// How many lockpicks are left, under the lock: a small lockpick and the number in seven-segment
+	// How many lockpicks are left, over the lock: a small lockpick and the number in seven-segment
 	// digits, on the lock's face so it turns and shakes with it. Hidden while picks can't break
 	// (the Skeleton Key, Unbreakable).
 	class PickCounter

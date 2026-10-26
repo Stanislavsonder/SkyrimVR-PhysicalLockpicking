@@ -28,17 +28,17 @@ The mod adds `VRLockpicking.esp`, which only holds the settings menu's quest. Ke
 
 1. Activate a locked door or chest. A lock appears in front of you and the game pauses until you are done. You stay where you are while lockpicking.
 2. You hold the **lockpick** in your right hand and the **tension wrench** in your left (the other way round with **Pick in left hand**). Your hands themselves are hidden.
-3. Put a tool into the keyhole by moving its tip into the keyhole's centre. You feel a click when it goes in. Once in, it stays in even if your hand drifts a little; pull it right out to take it out. Nothing else happens until both tools are in.
-4. **Lockpick:** put it in with its handle pointing up, then sweep the handle clockwise down the right side of the keyhole, from straight up to straight down, to search. While you search you feel pulses: slow far from the sweet spot, faster near it, fastest in it.
-5. **Tension wrench:** put it in with the back of your hand to the left, then turn it like a key until the back of your hand points up.
+3. Put a tool into the keyhole by moving its tip into the keyhole's centre. You feel a click when it goes in. Once in, it stays in even if your hand drifts well to the side; pull it straight back out to take it out. Nothing else happens until both tools are in.
+4. **Lockpick:** turn your wrist left and right, up to a quarter turn either way from how you held it when the lock appeared, to search. While you search you feel pulses: slow far from the sweet spot, faster near it, fastest in it.
+5. **Tension wrench:** put it in however you hold it, then turn it clockwise like a key.
 6. How far the lock turns tells you how close you are: all the way in the sweet spot (it opens), part of the way near it, only a wiggle far from it.
 7. If you keep turning a lock that has stopped, the pick strains (a fast rattle, the lock shakes) and then breaks. Take the broken pick out and put it in again for a new one, and turn the tension wrench back to its start.
-8. Under the lock you see how many lockpicks you have left. It is hidden while your picks can't break.
+8. Over the lock you see how many lockpicks you have left. It is hidden while your picks can't break.
 9. **B / Y** gives up, and so does walking away from the lock.
 
-**Alternative mode** (settings, General): instead of steering the pick's handle round the keyhole, you search by turning your wrist, and the tension wrench turns from any start.
+**Alternative mode** (settings, General) is on by default. Turn it off to play like the vanilla minigame: put the pick in with its handle pointing up and search by sweeping the handle clockwise down the right side of the keyhole, from straight up to straight down; put the tension wrench in with the back of your hand to the left and turn it until the back of your hand points up.
 
-**Pick in left hand** mirrors everything: the pick searches along the left side, the tension wrench goes in with the back of your hand to the right, and the lock turns the other way.
+**Pick in left hand** swaps the hands. With Alternative mode off it also mirrors the controls: the pick searches along the left side, the tension wrench goes in with the back of your hand to the right, and the lock turns the other way.
 
 ### Lock Variations
 

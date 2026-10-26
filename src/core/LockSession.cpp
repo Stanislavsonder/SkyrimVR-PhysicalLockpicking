@@ -291,13 +291,15 @@ namespace vrlp
 	{
 		// A short cylinder around the keyhole axis: inside the target circle sideways, and in
 		// depth between a little in front of the keyhole and the maximum depth. Once in, a tool
-		// may stray further (holdRadius, sideways, back out and further in), so hand jitter doesn't pull it out.
+		// may stray further (holdRadius sideways, holdDepth back out and further in), so hand jitter
+		// doesn't pull it out. Sideways is the wider one: the hand can't see where in the keyhole the
+		// tip is, but pulling straight back still takes the tool out.
 		const Vec3  d = a_tip - a_spot;
 		const float depth = Dot(d, _frame.forward);
 		const float side = Length(d - _frame.forward * depth);
 		const float radius = a_inserted ? std::max(_cfg.holdRadius, a_radius) : a_radius;
 		// ...and pushed further in (the drawn tool stays in the keyhole, so the hand can't see it)
-		const float slack = radius - a_radius;
+		const float slack = a_inserted ? _cfg.holdDepth : 0.0f;
 		if (side > radius || depth < -(_cfg.insertFront + slack)) {
 			return ToolPlace::kOut;
 		}

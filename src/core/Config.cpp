@@ -331,6 +331,7 @@ namespace vrlp
 
 		// sanity
 		holdRadius = std::max({ holdRadius, insertRadius, wrenchInsertRadius });
+		holdDepth = std::max(holdDepth, 0.0f);
 		if (fullTurnTwist < 5.0f) {
 			fullTurnTwist = 5.0f;
 		}

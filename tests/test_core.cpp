@@ -371,6 +371,7 @@ TEST(InsertedToolsHoldWithShakyHands)
 	Config c = TestCfg();
 	c.insertRadius = 3.0f;
 	c.holdRadius = 8.0f;
+	c.holdDepth = 5.0f;
 	const LockFrame f = MakeLockFrame(Hmd(), c);
 	LockSession     s(SimpleParams(0, 10), f, c, f.Basis(), f.Basis());
 	const Vec3      spot = f.PickPoint(c);
@@ -378,14 +379,14 @@ TEST(InsertedToolsHoldWithShakyHands)
 	// going in takes aiming at the small target...
 	CHECK(s.Classify(in + f.right * 5.0f, spot, c.insertRadius, false) == ToolPlace::kOut);
 	CHECK(s.Classify(in + f.right * 2.5f, spot, c.insertRadius, false) == ToolPlace::kIn);
-	// ...once in, it stays in out to the hold radius, sideways and a little back out
+	// ...once in, it stays in out to the hold radius sideways, and a little back out
 	CHECK(s.Classify(in + f.right * 5.0f, spot, c.insertRadius, true) == ToolPlace::kIn);
 	CHECK(s.Classify(in + f.up * -7.5f, spot, c.insertRadius, true) == ToolPlace::kIn);
 	CHECK(s.Classify(spot - f.forward * 3.0f, spot, c.insertRadius, true) == ToolPlace::kIn);
 	CHECK(s.Classify(in + f.right * 8.5f, spot, c.insertRadius, true) == ToolPlace::kOut);
 	CHECK(s.Classify(spot - f.forward * 6.0f, spot, c.insertRadius, true) == ToolPlace::kOut);
 	// ...and further in: pushing the hand towards the lock doesn't pull it out
-	const float slack = c.holdRadius - c.insertRadius;
+	const float slack = c.holdDepth;
 	CHECK(s.Classify(spot + f.forward * (c.maxDepth + 0.5f), spot, c.insertRadius, true) == ToolPlace::kIn);
 	CHECK(s.Classify(spot + f.forward * (c.maxDepth + slack - 0.5f), spot, c.insertRadius, true) == ToolPlace::kIn);
 	// pushed right through is still pushed through
@@ -394,6 +395,9 @@ TEST(InsertedToolsHoldWithShakyHands)
 	Config d;
 	d.LoadFromIni("[Controls]\nfInsertRadius = 9\n");
 	CHECK(d.holdRadius >= 9.0f);
+	// sideways it holds further than back out: pulling straight back takes it out
+	const Config e;
+	CHECK(e.holdRadius > e.holdDepth + e.insertRadius);
 }
 
 TEST(UnbreakableNeverBreaks)
@@ -681,7 +685,7 @@ TEST(ToolsCannotGoThroughTheLock)
 	in.pickHand.pose.pos = in.pickHand.pose.pos + f.forward * (c.maxDepth + 1.0f);  // pushed a little: stays in
 	s.Update(in);
 	CHECK(s.PickInserted());
-	in.pickHand.pose.pos = in.pickHand.pose.pos + f.forward * c.holdRadius;  // pushed through
+	in.pickHand.pose.pos = in.pickHand.pose.pos + f.forward * (c.holdDepth + 1.0f);  // pushed through
 	s.Update(in);
 	CHECK(s.PickPlace() == ToolPlace::kTooDeep);
 	CHECK(!s.PickInserted());

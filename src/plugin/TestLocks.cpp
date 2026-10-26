@@ -2,6 +2,7 @@
 
 #include "AddressCheck.h"
 #include "LockpickManager.h"
+#include "Text.h"
 
 namespace vrlp::TestLocks
 {
@@ -100,7 +101,7 @@ namespace vrlp::TestLocks
 		void SpawnTask()
 		{
 			if (!AddressCheck::Has(Ids::kTestLocks)) {
-				RE::SendHUDMessage::ShowHUDMessage("VR Lockpicking: test locks need a newer VR Address Library");
+				Text::Show("$VRLP_Msg_TestLocksNeedLibrary");
 				return;
 			}
 			Spawn();
@@ -229,8 +230,7 @@ namespace vrlp::TestLocks
 			}
 		}
 
-		const auto msg = std::format("VR Lockpicking: {} test chests and {} doors placed (levels in the log)", chests.size(), doors.size());
-		RE::SendHUDMessage::ShowHUDMessage(msg.c_str());
-		logger::info("{}", msg);
+		Text::Show("$VRLP_Msg_TestLocksPlaced", chests.size(), doors.size());
+		logger::info("{} test chests and {} doors placed", chests.size(), doors.size());
 	}
 }

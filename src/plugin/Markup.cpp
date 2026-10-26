@@ -2,6 +2,7 @@
 
 #include "AddressCheck.h"
 #include "LockProfile.h"
+#include "Text.h"
 
 namespace vrlp
 {
@@ -107,23 +108,14 @@ namespace vrlp
 
 	void Markup::Prompt() const
 	{
-		static constexpr const char* kLock[] = {
-			"Markup lock 1/3: put the pick's tip (its cube) on the CENTRE of the keyhole, press the left trigger. A: go to the pick.",
-			"Markup lock 2/3: put the pick's tip on the TOP of the keyhole (which way is up), left trigger. Stick click: back.",
-			"Markup lock 3/3: left trigger = save for this lock model, stick click = back. A: go to the pick.",
-		};
+		static constexpr const char* kLock[] = { "$VRLP_Msg_MarkupLock1", "$VRLP_Msg_MarkupLock2", "$VRLP_Msg_MarkupLock3" };
 		if (_part == Part::kLock) {
-			RE::SendHUDMessage::ShowHUDMessage(kLock[std::clamp(_step, 0, 2)]);
+			Text::Show(kLock[std::clamp(_step, 0, 2)]);
 			return;
 		}
-		const bool  pick = _part == Part::kPick;
-		const char* hand = (pick == _pickRight) ? "right" : "left";
-		const std::string text = std::format(
-			"Line up the {} ({} hand), out of the keyhole: hold the LEFT trigger - the model stays still while you move your hand until the tip cube sits where its tip should be; "
-			"let go and it moves with your hand again (saved). Fine: right stick swings it, left stick rolls it, right trigger + right stick sizes it. "
-			"Stick click: automatic again. A: go to {}.",
-			pick ? "pick" : "wrench", hand, pick ? "the wrench" : "the lock");
-		RE::SendHUDMessage::ShowHUDMessage(text.c_str());
+		const bool pick = _part == Part::kPick;
+		Text::Show(pick ? "$VRLP_Msg_MarkupPick" : "$VRLP_Msg_MarkupWrench",
+			Text::Get(pick == _pickRight ? "$VRLP_Msg_RightHand" : "$VRLP_Msg_LeftHand"));
 	}
 
 	std::optional<Markup::Result> Markup::Update(const LockSession& a_session, const Pose& a_anchor, const Vec3* a_tip, bool a_markPressed, bool a_backPressed)
@@ -148,7 +140,7 @@ namespace vrlp
 		} else if (lockPart && a_markPressed) {
 			if (!a_tip) {
 				logger::info("Markup lock: left trigger at step {}, but the pick hand is not tracked", _step + 1);
-				RE::SendHUDMessage::ShowHUDMessage("Markup: can't see the pick hand - try again.");
+				Text::Show("$VRLP_Msg_MarkupNoPickHand");
 			} else if (_step < 2) {
 				_marks[_step] = toLock(*a_tip);
 				logger::info("Markup lock: {} at ({:+.2f}, {:+.2f}, {:+.2f}) in the lock frame (x right, y into the lock, z up)",

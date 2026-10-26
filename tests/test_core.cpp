@@ -2,8 +2,11 @@
 // Build: see tests/CMakeLists.txt or run `cmake -S tests -B build-tests && cmake --build build-tests && ctest --test-dir build-tests`.
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <cstdio>
+#include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <functional>
 #include <sstream>
@@ -17,6 +20,7 @@
 #include "LockProfile.h"
 #include "LockVariations.h"
 #include "MeshFit.h"
+#include "Translations.h"
 #include "VecMath.h"
 
 using namespace vrlp;
@@ -1652,6 +1656,34 @@ TEST(LockVariationsSectionPriority)
 	CHECK(lv3.Choose(q).lockModel == "here.nif");
 }
 
+TEST(TranslationFilesParse)
+{
+	// UTF-16 LE with a byte order mark, as the game wants them; texts come back as UTF-8
+	const std::u16string src = u"$VRLP_A\tПривет\r\n$VRLP_B\t{} \U0001F512 {}\r\nnot a key\r\n$VRLP_C\r\n";
+	std::string bytes = "\xFF\xFE";
+	for (const char16_t u : src) {
+		bytes += static_cast<char>(u & 0xFF);
+		bytes += static_cast<char>(u >> 8);
+	}
+	const auto t = ParseTranslations(bytes);
+	CHECK(t.size() == 2);
+	CHECK(t.at("$VRLP_A") == "\xD0\x9F\xD1\x80\xD0\xB8\xD0\xB2\xD0\xB5\xD1\x82");
+	CHECK(t.at("$VRLP_B") == "{} \xF0\x9F\x94\x92 {}");
+	// UTF-8 (with or without its signature) is read as is
+	const auto u = ParseTranslations("\xEF\xBB\xBF$VRLP_A\tx\n$VRLP_B\ty z\n");
+	CHECK(u.size() == 2);
+	CHECK(u.at("$VRLP_A") == "x");
+	CHECK(u.at("$VRLP_B") == "y z");
+}
+
+TEST(FormatTextFillsInOrder)
+{
+	CHECK(FormatText("{} chests and {} doors", { "3", "2" }) == "3 chests and 2 doors");
+	CHECK(FormatText("no args", { "x" }) == "no args");
+	CHECK(FormatText("{} and {}", { "one" }) == "one and {}");
+	CHECK(FormatText("{}", {}) == "{}");
+}
+
 #ifdef VRLP_SOURCE_DIR
 namespace
 {
@@ -1732,5 +1764,77 @@ TEST(ShippedIniMatchesDefaults)
 	}
 	CHECK(unknown.empty());
 	CHECK(c == d);  // every value in the shipped INI is the default
+}
+TEST(TranslationsCoverEveryText)
+{
+	// the languages Skyrim VR runs in; a language without a file would show the raw $keys
+	const char* const languages[] = { "ENGLISH", "FRENCH", "GERMAN", "ITALIAN", "SPANISH", "POLISH", "RUSSIAN", "JAPANESE", "CHINESE" };
+	const std::string dir = VRLP_SOURCE_DIR "/package/translations/";
+	const auto        english = ParseTranslations(ReadFile((dir + "VRLockpicking_ENGLISH.txt").c_str()));
+	CHECK(english.size() > 100);
+	auto placeholders = [](const std::string& a_text) {
+		std::size_t n = 0;
+		for (std::size_t pos = 0; (pos = a_text.find("{}", pos)) != std::string::npos; pos += 2) {
+			++n;
+		}
+		return n;
+	};
+
+	// every key the settings menu and the plugin use is in English, and every English key is used
+	std::set<std::string> used;
+	auto collect = [&used](const std::string& a_text) {
+		for (std::size_t pos = 0; (pos = a_text.find("\"$VRLP_", pos)) != std::string::npos;) {
+			++pos;
+			const std::size_t end = a_text.find('"', pos);
+			const std::string key = a_text.substr(pos, end - pos);
+			if (std::ranges::all_of(key.substr(1), [](unsigned char ch) { return std::isalnum(ch) || ch == '_'; })) {
+				used.insert(key);  // not "$VRLP_..." in a comment
+			}
+			pos = end;
+		}
+	};
+	const std::string json = ReadFile(VRLP_SOURCE_DIR "/package/mcm/config.json");
+	collect(json);
+	for (const char* field : { "\"text\": \"", "\"help\": \"", "\"pageDisplayName\": \"" }) {
+		for (std::size_t pos = 0; (pos = json.find(field, pos)) != std::string::npos;) {
+			pos += std::strlen(field);
+			if (json[pos] != '$') {
+				std::printf("    untranslated MCM text: %s\n", json.substr(pos, json.find('"', pos) - pos).c_str());
+			}
+			CHECK(json[pos] == '$');
+		}
+	}
+	for (const auto& entry : std::filesystem::directory_iterator(VRLP_SOURCE_DIR "/src/plugin")) {
+		collect(ReadFile(entry.path().string().c_str()));
+	}
+	for (const auto& key : used) {
+		if (!english.contains(key)) {
+			std::printf("    %s has no English text\n", key.c_str());
+		}
+		CHECK(english.contains(key));
+	}
+	for (const auto& [key, text] : english) {
+		if (!used.contains(key)) {
+			std::printf("    %s is not used\n", key.c_str());
+		}
+		CHECK(used.contains(key));
+	}
+
+	// every language has every text, with the same placeholders
+	for (const char* language : languages) {
+		const std::string path = dir + "VRLockpicking_" + language + ".txt";
+		const auto        t = ParseTranslations(ReadFile(path.c_str()));
+		if (t.size() != english.size()) {
+			std::printf("    %s: %zu texts, English has %zu\n", language, t.size(), english.size());
+		}
+		CHECK(t.size() == english.size());
+		for (const auto& [key, text] : english) {
+			const auto it = t.find(key);
+			if (it == t.end() || it->second.empty() || placeholders(it->second) != placeholders(text)) {
+				std::printf("    %s: %s missing, empty or with other placeholders\n", language, key.c_str());
+				CHECK(false);
+			}
+		}
+	}
 }
 #endif

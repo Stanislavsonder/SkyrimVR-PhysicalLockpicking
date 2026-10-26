@@ -52,6 +52,8 @@ With SkyUI VR and MCM Helper: journal → System → Mod Configuration → **VR 
 - **Vibration:** overall strength, and how often and how strongly it pulses far from, near and in the sweet spot, and while a pick is about to break.
 - **Debug:** debug log and view, the keyhole target, the assist ring (dots on the lock showing where your pick is, and optionally the sweet spot on easy locks), the model markup tool, crime detection, test chests and doors, and buttons to set up a test: lockpicks, the Skeleton Key, the lockpicking perks, and your Lockpicking skill.
 
+The menu and the mod's messages follow the game's language: English, French, German, Italian, Spanish, Polish, Russian, Japanese or Chinese.
+
 Every setting, with comments, is also in `Data/SKSE/Plugins/VRLockpicking.ini`. Values set in the menu are saved to `Data/MCM/Settings/VRLockpicking.ini` and win over it.
 
 ### Pause on lockpicking

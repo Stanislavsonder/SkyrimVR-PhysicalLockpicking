@@ -39,6 +39,11 @@ def main() -> int:
         z.writestr(f"core/Scripts/Source/{make_mcm.SCRIPT}.psc", make_mcm.PSC.replace("\n", "\r\n"))
         z.write(PKG / "mcm" / "config.json", "core/MCM/Config/VRLockpicking/config.json")
         z.write(PKG / "mcm" / "settings.ini", "core/MCM/Config/VRLockpicking/settings.ini")
+        # Settings menu and message texts per game language. Kept as UTF-8 in the repo; the game
+        # reads UTF-16 LE with a byte order mark and CRLF line ends.
+        for f in sorted((PKG / "translations").glob("VRLockpicking_*.txt")):
+            text = f.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\n", "\r\n")
+            z.writestr("core/Interface/Translations/" + f.name, "﻿".encode("utf-16-le") + text.encode("utf-16-le"))
         # The mod's own models (debug blocks, keyhole target, assist ring, pick counter), made by tools/nifgen.
         for f in sorted((PKG / "assets").rglob("*")):
             if f.is_file():

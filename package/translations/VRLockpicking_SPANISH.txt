@@ -1,0 +1,129 @@
+$VRLP_Intro	Forzar cerraduras con tus propias manos.
+$VRLP_IntroApply	Los ajustes se aplican al forzar la próxima cerradura.
+$VRLP_PageGeneral	General
+$VRLP_HeaderGeneral	General
+$VRLP_Enabled	Activar forzado inmersivo
+$VRLP_Enabled_Help	Sustituye el forzado de cerraduras original por el del mod.
+$VRLP_AlternativeMode	Modo alternativo
+$VRLP_AlternativeMode_Help	Activado (por defecto): buscas girando la muñeca, como al girar una llave, y la llave de tensión gira desde cualquier posición. Desactivado: como el minijuego original - mueves el mango de la ganzúa por el aire alrededor de la cerradura.
+$VRLP_LeftHandedPick	Ganzúa en mano izquierda
+$VRLP_LeftHandedPick_Help	Intercambia las herramientas de mano: la ganzúa en la izquierda, la llave de tensión en la derecha.
+$VRLP_FullPause	Pausa al forzar cerraduras
+$VRLP_FullPause_Help	Pausa el juego mientras fuerzas una cerradura.
+$VRLP_ActivateContainerAfterUnlock	Abrir contenedor al forzarlo
+$VRLP_ActivateContainerAfterUnlock_Help	Abre un contenedor automáticamente en cuanto fuerzas su cerradura.
+$VRLP_HeaderDifficulty	Dificultad
+$VRLP_SweetSpotMult	Tamaño del punto justo
+$VRLP_SweetSpotMult_Help	Lo ancho que es el punto en el que la cerradura gira del todo (x el tamaño original para tu habilidad y tus mejoras). Menor = más difícil de encontrar.
+$VRLP_BreakTimeMult	Resistencia de ganzúas
+$VRLP_BreakTimeMult_Help	Cuánto dura una ganzúa mientras fuerzas una cerradura que no gira (x el tiempo original). Menor = las ganzúas se rompen antes.
+$VRLP_PageVibration	Vibración
+$VRLP_HeaderVibration	Vibración
+$VRLP_Strength	Intensidad general
+$VRLP_Strength_Help	Ajusta toda la vibración.
+$VRLP_HeaderFarFromTheSweetSpot	Lejos del punto justo
+$VRLP_PulseSlowInterval	Pulso cada (s)
+$VRLP_PulseSlowInterval_Help	Segundos entre pulsos de búsqueda cuando la ganzúa está lejos del punto justo.
+$VRLP_PulseFarStrength	Intensidad
+$VRLP_PulseFarStrength_Help	Intensidad de esos pulsos.
+$VRLP_HeaderNearTheSweetSpot	Cerca del punto justo
+$VRLP_PulseNearDegrees	Cerca a menos de (grados)
+$VRLP_PulseNearDegrees_Help	A qué distancia del borde del punto justo cuenta como cerca. De lejos a cerca los pulsos cambian de golpe; de cerca al punto justo cambian de forma gradual.
+$VRLP_PulseNearInterval	Pulso cada (s)
+$VRLP_PulseNearInterval_Help	Segundos entre pulsos en el borde exterior de la zona cercana.
+$VRLP_PulseNearStrength	Intensidad
+$VRLP_PulseNearStrength_Help	Intensidad en el borde exterior de la zona cercana.
+$VRLP_HeaderInTheSweetSpot	En el punto justo
+$VRLP_PulseSweetInterval	Pulso cada (s)
+$VRLP_PulseSweetInterval_Help	Segundos entre pulsos en el punto justo (y en su borde).
+$VRLP_PulseSweetStrength	Intensidad
+$VRLP_PulseSweetStrength_Help	Intensidad en el punto justo.
+$VRLP_HeaderPickAboutToBreak	Ganzúa a punto de romperse
+$VRLP_StrainInterval	Pulso cada (s)
+$VRLP_StrainInterval_Help	Mientras fuerzas una cerradura que no gira: un traqueteo constante que sustituye a cualquier otro pulso.
+$VRLP_StrainStrength	Intensidad
+$VRLP_StrainStrength_Help	Intensidad de ese traqueteo.
+$VRLP_PageDebug	Depuración
+$VRLP_HeaderDebug	Depuración
+$VRLP_DebugLogging	Registro de depuración
+$VRLP_DebugLogging_Help	Escribe detalles en Documents/My Games/Skyrim VR/SKSE/VRLockpicking.log.
+$VRLP_DebugView	Vista de depuración
+$VRLP_DebugView_Help	Muestra la cerradura y las herramientas como bloques de colores con indicadores (y números cada pocos segundos) para comprobar cómo se leen tus manos al forzar.
+$VRLP_ShowTargets	Mostrar objetivo
+$VRLP_ShowTargets_Help	Dibuja el objetivo verde transparente donde entran las herramientas, los cubos de las puntas y los indicadores sobre la cerradura.
+$VRLP_ShowMeshes	Mostrar cerradura y ganzúas
+$VRLP_ShowMeshes_Help	Desactivado: juega solo con vibración y sonido.
+$VRLP_AssistRing	Anillo de ayuda
+$VRLP_AssistRing_Help	Un anillo de puntos en la cerradura a lo largo del recorrido de la ganzúa, con un punto cian donde está tu ganzúa. 'Con punto justo' marca también el punto justo en cerraduras de novato y aprendiz. Desactivado = solo al tacto.
+$VRLP_AssistRing_Off	Desactivado
+$VRLP_AssistRing_PickAngle	Ángulo de la ganzúa
+$VRLP_AssistRing_WithSweetSpot	Con punto justo
+$VRLP_CrimeCheck	Detección de delitos
+$VRLP_CrimeCheck_Help	Que te vean forzar una cerradura ajena es un delito, como en el juego original.
+$VRLP_HeaderModelMarkup	Ajuste de modelos
+$VRLP_MarkupMode	Herramienta de ajuste
+$VRLP_MarkupMode_Help	Al forzar: 1) pon la punta de la ganzúa en el centro de la cerradura y luego arriba, con el gatillo izquierdo - el modelo de la cerradura se ajusta; 2) y 3) alinea la ganzúa y la llave de tensión en tus manos: mantén el gatillo izquierdo para dejar quieto el modelo mientras mueves la mano. A / X pasa a la siguiente parte. Se guarda por modelo.
+$VRLP_ResetMarkup	Reiniciar ajuste de modelos
+$VRLP_ResetMarkup_Help	Olvida todas las cerraduras y agarres de herramientas guardados con la herramienta de ajuste: se vuelven a usar las alineaciones integradas y el ajuste automático.
+$VRLP_HeaderTestLocks	Cerraduras de prueba
+$VRLP_SpawnTestLocks	Crear cerraduras de prueba
+$VRLP_SpawnTestLocks_Help	Coloca cofres y puertas cerrados a tu alrededor: uno por cada modelo de cofre / puerta de tu juego y tus mods, con cerraduras de novato a maestro (y algunas que necesitan llave), más una puerta de novato justo delante con llave, para probar la mejora Llave de cera. Cierra el menú para verlos. La lista está en el registro.
+$VRLP_RemoveTestLocks	Quitar cerraduras de prueba
+$VRLP_RemoveTestLocks_Help	Quita los cofres y puertas colocados con Crear cerraduras de prueba.
+$VRLP_HeaderTestSetup	Preparación de pruebas
+$VRLP_DebugGiveLockpicks	Dar 50 ganzúas
+$VRLP_DebugGiveLockpicks_Help	Añade 50 ganzúas.
+$VRLP_DebugToggleSkeletonKey	Llave Esqueleto sí / no
+$VRLP_DebugToggleSkeletonKey_Help	Te da la Llave Esqueleto, o te la quita si ya la tienes.
+$VRLP_HeaderPerks	Mejoras
+$VRLP_DebugAddLockPerks	Añadir mejoras de cerradura
+$VRLP_DebugAddLockPerks_Help	Añade todas las mejoras que amplían el punto justo (original: de Cerraduras de novato a Cerraduras de maestro).
+$VRLP_DebugAddLocksmith	Añadir Cerrajero
+$VRLP_DebugAddLocksmith_Help	Añade la mejora que hace que la ganzúa empiece cerca del punto justo.
+$VRLP_DebugAddUnbreakable	Añadir Irrompible
+$VRLP_DebugAddUnbreakable_Help	Añade la mejora que hace irrompibles las ganzúas.
+$VRLP_DebugAddWaxKey	Añadir Llave de cera
+$VRLP_DebugAddWaxKey_Help	Añade la mejora que te da una copia de la llave de una cerradura.
+$VRLP_DebugAddQuickHands	Añadir Manos rápidas
+$VRLP_DebugAddQuickHands_Help	Añade la mejora que evita que te pillen forzando cerraduras.
+$VRLP_DebugRemovePerks	Quitar mejoras de forzar
+$VRLP_DebugRemovePerks_Help	Quita todas las mejoras de arriba.
+$VRLP_HeaderLockpickingSkill	Habilidad Forzar cerraduras
+$VRLP_DebugSkill10	Forzar cerraduras 10
+$VRLP_DebugSkill10_Help	Pone tu habilidad Forzar cerraduras a 10.
+$VRLP_DebugSkill25	Forzar cerraduras 25
+$VRLP_DebugSkill25_Help	Pone tu habilidad Forzar cerraduras a 25.
+$VRLP_DebugSkill50	Forzar cerraduras 50
+$VRLP_DebugSkill50_Help	Pone tu habilidad Forzar cerraduras a 50.
+$VRLP_DebugSkill75	Forzar cerraduras 75
+$VRLP_DebugSkill75_Help	Pone tu habilidad Forzar cerraduras a 75.
+$VRLP_DebugSkill100	Forzar cerraduras 100
+$VRLP_DebugSkill100_Help	Pone tu habilidad Forzar cerraduras a 100.
+$VRLP_Msg_UpdateAddressLibrary	VR Lockpicking: actualiza VR Address Library for SKSEVR. Se usa el forzado de cerraduras original.
+$VRLP_Msg_HandsDontFollow	Tus manos no te siguen mientras el juego está en pausa - desactiva Pausa al forzar cerraduras en los ajustes.
+$VRLP_Msg_FinishLockpickingFirst	Termina primero de forzar la cerradura.
+$VRLP_Msg_MarkupLock1	Ajuste de cerradura 1/3: pon la punta de la ganzúa (su cubo) en el CENTRO de la cerradura y pulsa el gatillo izquierdo. A: pasar a la ganzúa.
+$VRLP_Msg_MarkupLock2	Ajuste de cerradura 2/3: pon la punta de la ganzúa en la parte de ARRIBA de la cerradura (hacia dónde es arriba), gatillo izquierdo. Clic en stick: atrás.
+$VRLP_Msg_MarkupLock3	Ajuste de cerradura 3/3: gatillo izquierdo = guardar para este modelo de cerradura, clic en stick = atrás. A: pasar a la ganzúa.
+$VRLP_Msg_MarkupPick	Alinea la ganzúa ({}), fuera de la cerradura: mantén el gatillo IZQUIERDO - el modelo se queda quieto mientras mueves la mano hasta que el cubo de la punta esté donde debe ir la punta; suelta y vuelve a moverse con tu mano (guardado). Ajuste fino: el stick derecho la inclina, el izquierdo la gira, gatillo derecho + stick derecho cambia su tamaño. Clic en stick: de nuevo automático. A: pasar a la llave de tensión.
+$VRLP_Msg_MarkupWrench	Alinea la llave de tensión ({}), fuera de la cerradura: mantén el gatillo IZQUIERDO - el modelo se queda quieto mientras mueves la mano hasta que el cubo de la punta esté donde debe ir la punta; suelta y vuelve a moverse con tu mano (guardado). Ajuste fino: el stick derecho la inclina, el izquierdo la gira, gatillo derecho + stick derecho cambia su tamaño. Clic en stick: de nuevo automático. A: pasar a la cerradura.
+$VRLP_Msg_RightHand	mano derecha
+$VRLP_Msg_LeftHand	mano izquierda
+$VRLP_Msg_MarkupNoPickHand	Ajuste: no se ve la mano de la ganzúa - inténtalo de nuevo.
+$VRLP_Msg_MarkupNoLockModel	Ajuste: no hay modelo de cerradura para el que guardarlo.
+$VRLP_Msg_MarkupLockSaved	Ajuste guardado para este modelo de cerradura: su ojo de cerradura está ahora en el objetivo verde.
+$VRLP_Msg_MarkupPickSaved	Ganzúa guardada.
+$VRLP_Msg_MarkupWrenchSaved	Llave de tensión guardada.
+$VRLP_Msg_MarkupAutomaticFit	De vuelta al ajuste automático.
+$VRLP_Msg_MarkupCouldNotSave	Ajuste: no se pudo guardar.
+$VRLP_Msg_MarkupReset	Ajuste de modelos restablecido.
+$VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: las cerraduras de prueba necesitan una VR Address Library más reciente.
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: colocados {} cofres y {} puertas de prueba (sus niveles de cerradura están en el registro).
+$VRLP_Msg_LockpicksAdded	50 ganzúas añadidas (ahora {}).
+$VRLP_Msg_SkeletonKeyAdded	Llave Esqueleto añadida.
+$VRLP_Msg_SkeletonKeyRemoved	Llave Esqueleto quitada.
+$VRLP_Msg_SkeletonKeyUnavailable	La Llave Esqueleto no está disponible (VR Address Library).
+$VRLP_Msg_PerksAdded	Mejoras añadidas: {}
+$VRLP_Msg_PerksRemoved	Mejoras quitadas: {}
+$VRLP_Msg_NoPerkFound	No se ha encontrado ninguna mejora.
+$VRLP_Msg_SkillSet	Forzar cerraduras puesto a {}.

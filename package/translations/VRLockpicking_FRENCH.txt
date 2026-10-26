@@ -1,0 +1,129 @@
+$VRLP_Intro	Le crochetage physique, avec vos mains.
+$VRLP_IntroApply	Les réglages s'appliquent au prochain crochetage.
+$VRLP_PageGeneral	Général
+$VRLP_HeaderGeneral	Général
+$VRLP_Enabled	Crochetage immersif
+$VRLP_Enabled_Help	Remplace le crochetage d'origine par celui du mod.
+$VRLP_AlternativeMode	Mode alternatif
+$VRLP_AlternativeMode_Help	Activé (par défaut) : vous cherchez en tournant le poignet, comme pour tourner une clé, et la clé de tension tourne quelle que soit sa position de départ. Désactivé : comme le mini-jeu d'origine - vous guidez le manche du crochet dans l'air autour de la serrure.
+$VRLP_LeftHandedPick	Crochet en main gauche
+$VRLP_LeftHandedPick_Help	Inverse les outils dans vos mains : le crochet à gauche, la clé de tension à droite.
+$VRLP_FullPause	Pause pendant le crochetage
+$VRLP_FullPause_Help	Met le jeu en pause pendant que vous crochetez une serrure.
+$VRLP_ActivateContainerAfterUnlock	Ouvrir le contenant ensuite
+$VRLP_ActivateContainerAfterUnlock_Help	Ouvre automatiquement un contenant une fois sa serrure crochetée.
+$VRLP_HeaderDifficulty	Difficulté
+$VRLP_SweetSpotMult	Taille du point idéal
+$VRLP_SweetSpotMult_Help	Largeur de la zone où la serrure tourne entièrement (x la taille d'origine pour votre compétence et vos atouts). Plus petit = plus dur à trouver.
+$VRLP_BreakTimeMult	Solidité des crochets
+$VRLP_BreakTimeMult_Help	Combien de temps un crochet tient quand vous forcez une serrure qui ne tourne pas (x la durée d'origine). Plus petit = les crochets cassent plus tôt.
+$VRLP_PageVibration	Vibration
+$VRLP_HeaderVibration	Vibration
+$VRLP_Strength	Puissance globale
+$VRLP_Strength_Help	Ajuste toutes les vibrations.
+$VRLP_HeaderFarFromTheSweetSpot	Loin du point idéal
+$VRLP_PulseSlowInterval	Impulsion toutes les (s)
+$VRLP_PulseSlowInterval_Help	Secondes entre les impulsions de recherche quand le crochet est loin du point idéal.
+$VRLP_PulseFarStrength	Puissance
+$VRLP_PulseFarStrength_Help	Puissance de ces impulsions.
+$VRLP_HeaderNearTheSweetSpot	Près du point idéal
+$VRLP_PulseNearDegrees	Proche à moins de (degrés)
+$VRLP_PulseNearDegrees_Help	À quelle distance du bord du point idéal on est considéré proche. De loin à proche, les impulsions changent d'un coup ; de proche au point idéal, elles changent progressivement.
+$VRLP_PulseNearInterval	Impulsion toutes les (s)
+$VRLP_PulseNearInterval_Help	Secondes entre les impulsions au bord extérieur de la zone proche.
+$VRLP_PulseNearStrength	Puissance
+$VRLP_PulseNearStrength_Help	Puissance au bord extérieur de la zone proche.
+$VRLP_HeaderInTheSweetSpot	Dans le point idéal
+$VRLP_PulseSweetInterval	Impulsion toutes les (s)
+$VRLP_PulseSweetInterval_Help	Secondes entre les impulsions dans le point idéal (et à son bord).
+$VRLP_PulseSweetStrength	Puissance
+$VRLP_PulseSweetStrength_Help	Puissance dans le point idéal.
+$VRLP_HeaderPickAboutToBreak	Crochet près de casser
+$VRLP_StrainInterval	Impulsion toutes les (s)
+$VRLP_StrainInterval_Help	Quand vous forcez une serrure qui ne tourne pas : un cliquetis régulier qui remplace toutes les autres impulsions.
+$VRLP_StrainStrength	Puissance
+$VRLP_StrainStrength_Help	Puissance de ce cliquetis.
+$VRLP_PageDebug	Débogage
+$VRLP_HeaderDebug	Débogage
+$VRLP_DebugLogging	Journal de débogage
+$VRLP_DebugLogging_Help	Écrit les détails dans Documents/My Games/Skyrim VR/SKSE/VRLockpicking.log.
+$VRLP_DebugView	Vue de débogage
+$VRLP_DebugView_Help	Affiche la serrure et les outils sous forme de blocs colorés avec des jauges (et des valeurs toutes les quelques secondes) pour vérifier comment le crochetage lit vos mains.
+$VRLP_ShowTargets	Cible du trou de serrure
+$VRLP_ShowTargets_Help	Dessine la cible verte transparente où entrent les outils, les cubes au bout des outils et les jauges au-dessus de la serrure.
+$VRLP_ShowMeshes	Afficher serrure et crochets
+$VRLP_ShowMeshes_Help	Désactivé : jouer uniquement avec la vibration et le son.
+$VRLP_AssistRing	Anneau d'aide
+$VRLP_AssistRing_Help	Un anneau de points sur la face de la serrure, le long de la course du crochet, avec un point cyan à l'endroit où se trouve votre crochet. 'Avec point idéal' marque aussi le point idéal sur les serrures Novice et Apprenti. Désactivé = au toucher uniquement.
+$VRLP_AssistRing_Off	Désactivé
+$VRLP_AssistRing_PickAngle	Angle du crochet
+$VRLP_AssistRing_WithSweetSpot	Avec point idéal
+$VRLP_CrimeCheck	Détection des crimes
+$VRLP_CrimeCheck_Help	Être vu en train de crocheter une serrure qui appartient à quelqu'un est un crime, comme dans le jeu d'origine.
+$VRLP_HeaderModelMarkup	Marquage des modèles
+$VRLP_MarkupMode	Outil de marquage
+$VRLP_MarkupMode_Help	Pendant le crochetage : 1) placez la pointe du crochet au centre du trou de serrure, puis en haut, avec la gâchette gauche - le modèle de serrure s'ajuste ; 2) et 3) alignez le crochet et la clé de tension dans vos mains : maintenez la gâchette gauche pour garder le modèle immobile pendant que vous bougez la main. A / X passe à la partie suivante. Enregistré par modèle.
+$VRLP_ResetMarkup	Réinitialiser le marquage
+$VRLP_ResetMarkup_Help	Oublie tous les trous de serrure et prises d'outils enregistrés avec l'outil de marquage : les alignements intégrés et l'ajustement automatique sont de nouveau utilisés.
+$VRLP_HeaderTestLocks	Serrures de test
+$VRLP_SpawnTestLocks	Créer des serrures de test
+$VRLP_SpawnTestLocks_Help	Place des coffres et des portes verrouillés autour de vous : un par modèle de coffre / porte de votre jeu et de vos mods, avec des serrures de Novice à Maître (et certaines qui demandent une clé), plus une porte Novice juste devant vous qui a une clé, pour essayer l'atout Empreinte de cire. Fermez le menu pour les voir. La liste est dans le journal.
+$VRLP_RemoveTestLocks	Retirer les serrures de test
+$VRLP_RemoveTestLocks_Help	Retire les coffres et les portes placés par 'Créer des serrures de test'.
+$VRLP_HeaderTestSetup	Préparation des tests
+$VRLP_DebugGiveLockpicks	Donner 50 crochets
+$VRLP_DebugGiveLockpicks_Help	Ajoute 50 crochets.
+$VRLP_DebugToggleSkeletonKey	Passe-partout oui / non
+$VRLP_DebugToggleSkeletonKey_Help	Vous donne le Passe-partout, ou vous le retire si vous l'avez.
+$VRLP_HeaderPerks	Atouts
+$VRLP_DebugAddLockPerks	Ajouter atouts point idéal
+$VRLP_DebugAddLockPerks_Help	Ajoute tous les atouts qui élargissent le point idéal (jeu d'origine : des serrures de novice aux serrures de maître).
+$VRLP_DebugAddLocksmith	Ajouter Serrurier
+$VRLP_DebugAddLocksmith_Help	Ajoute l'atout qui place le crochet près du point idéal au départ.
+$VRLP_DebugAddUnbreakable	Ajouter Incassable
+$VRLP_DebugAddUnbreakable_Help	Ajoute l'atout qui rend les crochets incassables.
+$VRLP_DebugAddWaxKey	Ajouter Empreinte de cire
+$VRLP_DebugAddWaxKey_Help	Ajoute l'atout qui vous donne une copie de la clé d'une serrure.
+$VRLP_DebugAddQuickHands	Ajouter Doigts de fée
+$VRLP_DebugAddQuickHands_Help	Ajoute l'atout qui vous évite d'être pris en train de crocheter.
+$VRLP_DebugRemovePerks	Retirer atouts crochetage
+$VRLP_DebugRemovePerks_Help	Retire tous les atouts ci-dessus.
+$VRLP_HeaderLockpickingSkill	Compétence Crochetage
+$VRLP_DebugSkill10	Crochetage 10
+$VRLP_DebugSkill10_Help	Règle votre compétence Crochetage sur 10.
+$VRLP_DebugSkill25	Crochetage 25
+$VRLP_DebugSkill25_Help	Règle votre compétence Crochetage sur 25.
+$VRLP_DebugSkill50	Crochetage 50
+$VRLP_DebugSkill50_Help	Règle votre compétence Crochetage sur 50.
+$VRLP_DebugSkill75	Crochetage 75
+$VRLP_DebugSkill75_Help	Règle votre compétence Crochetage sur 75.
+$VRLP_DebugSkill100	Crochetage 100
+$VRLP_DebugSkill100_Help	Règle votre compétence Crochetage sur 100.
+$VRLP_Msg_UpdateAddressLibrary	VR Lockpicking : veuillez mettre à jour VR Address Library pour SKSEVR. Le crochetage d'origine est utilisé.
+$VRLP_Msg_HandsDontFollow	Vos mains ne suivent pas tant que le jeu est en pause - désactivez 'Pause pendant le crochetage' dans les réglages.
+$VRLP_Msg_FinishLockpickingFirst	Terminez d'abord le crochetage.
+$VRLP_Msg_MarkupLock1	Marquage serrure 1/3 : placez la pointe du crochet (son cube) au CENTRE du trou de serrure, appuyez sur la gâchette gauche. A : passer au crochet.
+$VRLP_Msg_MarkupLock2	Marquage serrure 2/3 : placez la pointe du crochet en HAUT du trou de serrure (où se trouve le haut), gâchette gauche. Clic du stick : retour.
+$VRLP_Msg_MarkupLock3	Marquage serrure 3/3 : gâchette gauche = enregistrer pour ce modèle de serrure, clic du stick = retour. A : passer au crochet.
+$VRLP_Msg_MarkupPick	Alignez le crochet ({}), hors du trou de serrure : maintenez la gâchette GAUCHE - le modèle reste immobile pendant que vous bougez la main, jusqu'à ce que le cube de pointe soit là où doit se trouver sa pointe ; relâchez et il suit de nouveau votre main (enregistré). Réglage fin : le stick droit le fait pivoter, le stick gauche le fait rouler, gâchette droite + stick droit change sa taille. Clic du stick : de nouveau automatique. A : passer à la clé de tension.
+$VRLP_Msg_MarkupWrench	Alignez la clé de tension ({}), hors du trou de serrure : maintenez la gâchette GAUCHE - le modèle reste immobile pendant que vous bougez la main, jusqu'à ce que le cube de pointe soit là où doit se trouver sa pointe ; relâchez et il suit de nouveau votre main (enregistré). Réglage fin : le stick droit le fait pivoter, le stick gauche le fait rouler, gâchette droite + stick droit change sa taille. Clic du stick : de nouveau automatique. A : passer à la serrure.
+$VRLP_Msg_RightHand	main droite
+$VRLP_Msg_LeftHand	main gauche
+$VRLP_Msg_MarkupNoPickHand	Marquage : main du crochet introuvable - réessayez.
+$VRLP_Msg_MarkupNoLockModel	Marquage : aucun modèle de serrure pour lequel enregistrer.
+$VRLP_Msg_MarkupLockSaved	Marquage enregistré pour ce modèle de serrure : son trou de serrure est maintenant dans la cible verte.
+$VRLP_Msg_MarkupPickSaved	Crochet enregistré.
+$VRLP_Msg_MarkupWrenchSaved	Clé de tension enregistrée.
+$VRLP_Msg_MarkupAutomaticFit	Retour à l'ajustement automatique.
+$VRLP_Msg_MarkupCouldNotSave	Marquage : enregistrement impossible.
+$VRLP_Msg_MarkupReset	Marquage des modèles réinitialisé.
+$VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking : les serrures de test nécessitent une version plus récente de VR Address Library.
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking : {} coffres et {} portes de test placés (leurs niveaux de serrure sont dans le journal).
+$VRLP_Msg_LockpicksAdded	50 crochets ajoutés ({} au total).
+$VRLP_Msg_SkeletonKeyAdded	Passe-partout ajouté.
+$VRLP_Msg_SkeletonKeyRemoved	Passe-partout retiré.
+$VRLP_Msg_SkeletonKeyUnavailable	Le Passe-partout n'est pas disponible (VR Address Library).
+$VRLP_Msg_PerksAdded	Atouts ajoutés : {}
+$VRLP_Msg_PerksRemoved	Atouts retirés : {}
+$VRLP_Msg_NoPerkFound	Aucun atout correspondant trouvé.
+$VRLP_Msg_SkillSet	Crochetage réglé sur {}.

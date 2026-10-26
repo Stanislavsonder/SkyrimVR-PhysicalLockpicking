@@ -1,0 +1,129 @@
+$VRLP_Intro	Scasso fisico con le tue mani.
+$VRLP_IntroApply	Le impostazioni valgono dal prossimo scasso.
+$VRLP_PageGeneral	Generale
+$VRLP_HeaderGeneral	Generale
+$VRLP_Enabled	Attiva scasso immersivo
+$VRLP_Enabled_Help	Sostituisce lo scasso originale con quello della mod.
+$VRLP_AlternativeMode	Modalità alternativa
+$VRLP_AlternativeMode_Help	Attiva (predefinito): cerchi ruotando il polso, come per girare una chiave, e la chiave di tensione gira da qualsiasi posizione. Disattiva: come il minigioco originale - muovi il manico del grimaldello nell'aria attorno alla serratura.
+$VRLP_LeftHandedPick	Grimaldello nella sinistra
+$VRLP_LeftHandedPick_Help	Scambia gli attrezzi tra le mani: il grimaldello nella sinistra, la chiave di tensione nella destra.
+$VRLP_FullPause	Pausa durante lo scasso
+$VRLP_FullPause_Help	Mette in pausa il gioco mentre scassini una serratura.
+$VRLP_ActivateContainerAfterUnlock	Apri contenitore dopo scasso
+$VRLP_ActivateContainerAfterUnlock_Help	Apre automaticamente un contenitore dopo averne scassinato la serratura.
+$VRLP_HeaderDifficulty	Difficoltà
+$VRLP_SweetSpotMult	Ampiezza punto giusto
+$VRLP_SweetSpotMult_Help	Quanto è ampio il punto in cui la serratura gira del tutto (x l'ampiezza originale per la tua abilità e i tuoi talenti). Più piccolo = più difficile da trovare.
+$VRLP_BreakTimeMult	Resistenza grimaldello
+$VRLP_BreakTimeMult_Help	Quanto dura un grimaldello mentre forzi una serratura che non gira (x il tempo originale). Più piccolo = i grimaldelli si rompono prima.
+$VRLP_PageVibration	Vibrazione
+$VRLP_HeaderVibration	Vibrazione
+$VRLP_Strength	Intensità generale
+$VRLP_Strength_Help	Regola tutte le vibrazioni.
+$VRLP_HeaderFarFromTheSweetSpot	Lontano dal punto giusto
+$VRLP_PulseSlowInterval	Impulso ogni (s)
+$VRLP_PulseSlowInterval_Help	Secondi tra gli impulsi di ricerca quando il grimaldello è lontano dal punto giusto.
+$VRLP_PulseFarStrength	Intensità
+$VRLP_PulseFarStrength_Help	Intensità di quegli impulsi.
+$VRLP_HeaderNearTheSweetSpot	Vicino al punto giusto
+$VRLP_PulseNearDegrees	Vicino entro (gradi)
+$VRLP_PulseNearDegrees_Help	Quanto vicino al bordo del punto giusto conta come vicino. Da lontano a vicino gli impulsi cambiano di colpo; da vicino al punto giusto cambiano gradualmente.
+$VRLP_PulseNearInterval	Impulso ogni (s)
+$VRLP_PulseNearInterval_Help	Secondi tra gli impulsi al bordo esterno della zona vicina.
+$VRLP_PulseNearStrength	Intensità
+$VRLP_PulseNearStrength_Help	Intensità al bordo esterno della zona vicina.
+$VRLP_HeaderInTheSweetSpot	Nel punto giusto
+$VRLP_PulseSweetInterval	Impulso ogni (s)
+$VRLP_PulseSweetInterval_Help	Secondi tra gli impulsi nel punto giusto (e al suo bordo).
+$VRLP_PulseSweetStrength	Intensità
+$VRLP_PulseSweetStrength_Help	Intensità nel punto giusto.
+$VRLP_HeaderPickAboutToBreak	Grimaldello che si rompe
+$VRLP_StrainInterval	Impulso ogni (s)
+$VRLP_StrainInterval_Help	Mentre forzi una serratura che non gira: un tremolio costante che sostituisce ogni altro impulso.
+$VRLP_StrainStrength	Intensità
+$VRLP_StrainStrength_Help	Intensità di quel tremolio.
+$VRLP_PageDebug	Debug
+$VRLP_HeaderDebug	Debug
+$VRLP_DebugLogging	Log di debug
+$VRLP_DebugLogging_Help	Scrive i dettagli in Documents/My Games/Skyrim VR/SKSE/VRLockpicking.log.
+$VRLP_DebugView	Vista di debug
+$VRLP_DebugView_Help	Mostra la serratura e gli attrezzi come blocchi colorati con indicatori (e numeri ogni pochi secondi) per controllare come lo scasso legge le tue mani.
+$VRLP_ShowTargets	Mostra bersaglio serratura
+$VRLP_ShowTargets_Help	Disegna il bersaglio verde trasparente dove entrano gli attrezzi, i cubi sulle punte degli attrezzi e gli indicatori sopra la serratura.
+$VRLP_ShowMeshes	Mostra serratura e attrezzi
+$VRLP_ShowMeshes_Help	Disattiva: gioca solo con vibrazione e suono.
+$VRLP_AssistRing	Anello di aiuto
+$VRLP_AssistRing_Help	Un anello di punti sulla serratura lungo la corsa del grimaldello, con un punto azzurro dove si trova il tuo grimaldello. 'Con punto giusto' segna anche il punto giusto sulle serrature da novizio e da apprendista. Disattivato = solo al tatto.
+$VRLP_AssistRing_Off	Disattivato
+$VRLP_AssistRing_PickAngle	Angolo grimaldello
+$VRLP_AssistRing_WithSweetSpot	Con punto giusto
+$VRLP_CrimeCheck	Rilevamento crimini
+$VRLP_CrimeCheck_Help	Essere visti scassinare una serratura altrui è un crimine, come nel gioco originale.
+$VRLP_HeaderModelMarkup	Calibrazione modelli
+$VRLP_MarkupMode	Strumento di calibrazione
+$VRLP_MarkupMode_Help	Durante lo scasso: 1) metti la punta del grimaldello al centro della serratura, poi in cima, col grilletto sinistro - il modello della serratura si adatta; 2) e 3) allinea il grimaldello e la chiave di tensione nelle mani: tieni premuto il grilletto sinistro per tenere fermo il modello mentre muovi la mano. A / X passa alla parte successiva. Salvato per modello.
+$VRLP_ResetMarkup	Azzera calibrazione modelli
+$VRLP_ResetMarkup_Help	Dimentica tutte le serrature e le impugnature degli attrezzi salvate con lo strumento di calibrazione: si tornano a usare gli allineamenti integrati e l'adattamento automatico.
+$VRLP_HeaderTestLocks	Serrature di prova
+$VRLP_SpawnTestLocks	Crea serrature di prova
+$VRLP_SpawnTestLocks_Help	Piazza forzieri e porte chiusi attorno a te: uno per ogni modello di forziere / porta del gioco e delle mod, con serrature da novizio a maestro (e alcune che richiedono una chiave), più una porta da novizio proprio davanti a te con una chiave, per provare il talento Chiave di cera. Chiudi il menu per vederli. L'elenco è nel log.
+$VRLP_RemoveTestLocks	Rimuovi serrature di prova
+$VRLP_RemoveTestLocks_Help	Rimuove i forzieri e le porte piazzati da Crea serrature di prova.
+$VRLP_HeaderTestSetup	Preparazione test
+$VRLP_DebugGiveLockpicks	Dai 50 grimaldelli
+$VRLP_DebugGiveLockpicks_Help	Aggiunge 50 grimaldelli.
+$VRLP_DebugToggleSkeletonKey	Chiave scheletro sì / no
+$VRLP_DebugToggleSkeletonKey_Help	Ti dà la Chiave scheletro, o te la toglie se ce l'hai.
+$VRLP_HeaderPerks	Talenti
+$VRLP_DebugAddLockPerks	Aggiungi talenti serrature
+$VRLP_DebugAddLockPerks_Help	Aggiunge ogni talento che allarga il punto giusto (gioco originale: da Serrature da novizio a Serrature da maestro).
+$VRLP_DebugAddLocksmith	Aggiungi Fabbro
+$VRLP_DebugAddLocksmith_Help	Aggiunge il talento che fa partire il grimaldello vicino al punto giusto.
+$VRLP_DebugAddUnbreakable	Aggiungi Infrangibile
+$VRLP_DebugAddUnbreakable_Help	Aggiunge il talento che rende i grimaldelli infrangibili.
+$VRLP_DebugAddWaxKey	Aggiungi Chiave di cera
+$VRLP_DebugAddWaxKey_Help	Aggiunge il talento che ti dà una copia della chiave di una serratura.
+$VRLP_DebugAddQuickHands	Aggiungi Mani rapide
+$VRLP_DebugAddQuickHands_Help	Aggiunge il talento che evita che tu venga scoperto mentre scassini.
+$VRLP_DebugRemovePerks	Rimuovi talenti di Scasso
+$VRLP_DebugRemovePerks_Help	Rimuove tutti i talenti qui sopra.
+$VRLP_HeaderLockpickingSkill	Abilità Scasso
+$VRLP_DebugSkill10	Scasso 10
+$VRLP_DebugSkill10_Help	Imposta la tua abilità Scasso a 10.
+$VRLP_DebugSkill25	Scasso 25
+$VRLP_DebugSkill25_Help	Imposta la tua abilità Scasso a 25.
+$VRLP_DebugSkill50	Scasso 50
+$VRLP_DebugSkill50_Help	Imposta la tua abilità Scasso a 50.
+$VRLP_DebugSkill75	Scasso 75
+$VRLP_DebugSkill75_Help	Imposta la tua abilità Scasso a 75.
+$VRLP_DebugSkill100	Scasso 100
+$VRLP_DebugSkill100_Help	Imposta la tua abilità Scasso a 100.
+$VRLP_Msg_UpdateAddressLibrary	VR Lockpicking: aggiorna VR Address Library for SKSEVR. Viene usato lo scasso originale.
+$VRLP_Msg_HandsDontFollow	Le tue mani non si muovono mentre il gioco è in pausa - disattiva Pausa durante lo scasso nelle impostazioni.
+$VRLP_Msg_FinishLockpickingFirst	Prima finisci lo scasso.
+$VRLP_Msg_MarkupLock1	Calibrazione serratura 1/3: metti la punta del grimaldello (il suo cubo) al CENTRO della serratura, premi il grilletto sinistro. A: passa al grimaldello.
+$VRLP_Msg_MarkupLock2	Calibrazione serratura 2/3: metti la punta del grimaldello in CIMA alla serratura (dove sta l'alto), grilletto sinistro. Clic levetta: indietro.
+$VRLP_Msg_MarkupLock3	Calibrazione serratura 3/3: grilletto sinistro = salva per questo modello di serratura, clic levetta = indietro. A: passa al grimaldello.
+$VRLP_Msg_MarkupPick	Allinea il grimaldello ({}), fuori dalla serratura: tieni premuto il grilletto SINISTRO - il modello resta fermo mentre muovi la mano finché il cubo della punta non è dove deve stare la punta; rilascia e torna a seguire la mano (salvato). Rifinitura: la levetta destra lo inclina, la sinistra lo ruota, grilletto destro + levetta destra lo ridimensiona. Clic levetta: di nuovo automatico. A: passa alla chiave di tensione.
+$VRLP_Msg_MarkupWrench	Allinea la chiave di tensione ({}), fuori dalla serratura: tieni premuto il grilletto SINISTRO - il modello resta fermo mentre muovi la mano finché il cubo della punta non è dove deve stare la punta; rilascia e torna a seguire la mano (salvato). Rifinitura: la levetta destra la inclina, la sinistra la ruota, grilletto destro + levetta destra la ridimensiona. Clic levetta: di nuovo automatico. A: passa alla serratura.
+$VRLP_Msg_RightHand	mano destra
+$VRLP_Msg_LeftHand	mano sinistra
+$VRLP_Msg_MarkupNoPickHand	Calibrazione: la mano del grimaldello non è visibile - riprova.
+$VRLP_Msg_MarkupNoLockModel	Calibrazione: nessun modello di serratura per cui salvare.
+$VRLP_Msg_MarkupLockSaved	Calibrazione salvata per questo modello di serratura: ora il foro è nel bersaglio verde.
+$VRLP_Msg_MarkupPickSaved	Grimaldello salvato.
+$VRLP_Msg_MarkupWrenchSaved	Chiave di tensione salvata.
+$VRLP_Msg_MarkupAutomaticFit	Tornato all'adattamento automatico.
+$VRLP_Msg_MarkupCouldNotSave	Calibrazione: impossibile salvare.
+$VRLP_Msg_MarkupReset	Calibrazione modelli azzerata.
+$VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: le serrature di prova richiedono una VR Address Library più recente.
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: piazzati {} forzieri e {} porte di prova (i livelli delle serrature sono nel log).
+$VRLP_Msg_LockpicksAdded	50 grimaldelli aggiunti (ora {}).
+$VRLP_Msg_SkeletonKeyAdded	Chiave scheletro aggiunta.
+$VRLP_Msg_SkeletonKeyRemoved	Chiave scheletro rimossa.
+$VRLP_Msg_SkeletonKeyUnavailable	La Chiave scheletro non è disponibile (VR Address Library).
+$VRLP_Msg_PerksAdded	Talenti aggiunti: {}
+$VRLP_Msg_PerksRemoved	Talenti rimossi: {}
+$VRLP_Msg_NoPerkFound	Nessun talento corrispondente trovato.
+$VRLP_Msg_SkillSet	Scasso impostato a {}.

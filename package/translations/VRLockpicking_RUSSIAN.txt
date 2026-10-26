@@ -1,0 +1,129 @@
+$VRLP_Intro	Взлом замков своими руками.
+$VRLP_IntroApply	Настройки применяются при следующем взломе замка.
+$VRLP_PageGeneral	Основное
+$VRLP_HeaderGeneral	Основное
+$VRLP_Enabled	Включить ручной взлом
+$VRLP_Enabled_Help	Заменяет стандартный взлом замков взломом из этого мода.
+$VRLP_AlternativeMode	Альтернативный режим
+$VRLP_AlternativeMode_Help	Вкл. (по умолчанию): вы ищете, поворачивая запястье, как ключ, а натяжитель поворачивается из любого положения. Выкл.: как в стандартной мини-игре - вы ведёте рукоять отмычки по воздуху вокруг скважины.
+$VRLP_LeftHandedPick	Отмычка в левой руке
+$VRLP_LeftHandedPick_Help	Меняет инструменты в руках местами: отмычка в левой, натяжитель в правой.
+$VRLP_FullPause	Пауза при взломе
+$VRLP_FullPause_Help	Ставит игру на паузу, пока вы взламываете замок.
+$VRLP_ActivateContainerAfterUnlock	Автооткрытие контейнера
+$VRLP_ActivateContainerAfterUnlock_Help	Автоматически открывает контейнер, когда его замок взломан.
+$VRLP_HeaderDifficulty	Сложность
+$VRLP_SweetSpotMult	Размер верной точки
+$VRLP_SweetSpotMult_Help	Насколько широка зона, в которой замок поворачивается до конца (x стандартный размер для вашего навыка и способностей). Меньше = труднее найти.
+$VRLP_BreakTimeMult	Прочность отмычки
+$VRLP_BreakTimeMult_Help	Сколько держится отмычка, пока вы давите на замок, который не поворачивается (x стандартное время). Меньше = отмычки ломаются быстрее.
+$VRLP_PageVibration	Вибрация
+$VRLP_HeaderVibration	Вибрация
+$VRLP_Strength	Общая сила
+$VRLP_Strength_Help	Масштабирует всю вибрацию.
+$VRLP_HeaderFarFromTheSweetSpot	Далеко от верной точки
+$VRLP_PulseSlowInterval	Импульс каждые (с)
+$VRLP_PulseSlowInterval_Help	Секунды между импульсами поиска, пока отмычка далеко от верной точки.
+$VRLP_PulseFarStrength	Сила
+$VRLP_PulseFarStrength_Help	Сила этих импульсов.
+$VRLP_HeaderNearTheSweetSpot	Рядом с верной точкой
+$VRLP_PulseNearDegrees	Рядом в пределах (°)
+$VRLP_PulseNearDegrees_Help	Насколько близко к краю верной точки считается «рядом». От «далеко» к «рядом» импульсы меняются скачком, от «рядом» к верной точке - плавно.
+$VRLP_PulseNearInterval	Импульс каждые (с)
+$VRLP_PulseNearInterval_Help	Секунды между импульсами на внешнем краю ближней зоны.
+$VRLP_PulseNearStrength	Сила
+$VRLP_PulseNearStrength_Help	Сила на внешнем краю ближней зоны.
+$VRLP_HeaderInTheSweetSpot	В верной точке
+$VRLP_PulseSweetInterval	Импульс каждые (с)
+$VRLP_PulseSweetInterval_Help	Секунды между импульсами в верной точке (и на её краю).
+$VRLP_PulseSweetStrength	Сила
+$VRLP_PulseSweetStrength_Help	Сила в верной точке.
+$VRLP_HeaderPickAboutToBreak	Отмычка вот-вот сломается
+$VRLP_StrainInterval	Импульс каждые (с)
+$VRLP_StrainInterval_Help	Пока вы давите на замок, который не поворачивается: ровная дрожь, заменяющая все остальные импульсы.
+$VRLP_StrainStrength	Сила
+$VRLP_StrainStrength_Help	Сила этой дрожи.
+$VRLP_PageDebug	Отладка
+$VRLP_HeaderDebug	Отладка
+$VRLP_DebugLogging	Журнал отладки
+$VRLP_DebugLogging_Help	Записывает подробности в Documents/My Games/Skyrim VR/SKSE/VRLockpicking.log.
+$VRLP_DebugView	Отладочный вид
+$VRLP_DebugView_Help	Показывает замок и инструменты цветными блоками со шкалами (и числами каждые несколько секунд), чтобы проверить, как взлом считывает ваши руки.
+$VRLP_ShowTargets	Показать цель скважины
+$VRLP_ShowTargets_Help	Рисует прозрачную зелёную цель там, куда входят инструменты, кубики на кончиках инструментов и шкалы над замком.
+$VRLP_ShowMeshes	Показать замок и отмычки
+$VRLP_ShowMeshes_Help	Выкл.: игра только по вибрации и звуку.
+$VRLP_AssistRing	Кольцо-подсказка
+$VRLP_AssistRing_Help	Кольцо точек на лицевой стороне замка вдоль хода отмычки, с голубой точкой там, где ваша отмычка. «С верной точкой» также отмечает верную точку на замках уровня «Новичок» и «Ученик». Выкл. = только на ощупь.
+$VRLP_AssistRing_Off	Выкл.
+$VRLP_AssistRing_PickAngle	Угол отмычки
+$VRLP_AssistRing_WithSweetSpot	С верной точкой
+$VRLP_CrimeCheck	Обнаружение преступлений
+$VRLP_CrimeCheck_Help	Если вас заметят за взломом чужого замка, это преступление, как в оригинале.
+$VRLP_HeaderModelMarkup	Разметка моделей
+$VRLP_MarkupMode	Инструмент разметки
+$VRLP_MarkupMode_Help	Во время взлома: 1) поставьте кончик отмычки в центр скважины, затем на её верх, нажимая левый курок - модель замка подстроится; 2) и 3) выровняйте отмычку и натяжитель в руках: держите левый курок, чтобы модель стояла на месте, пока вы двигаете руку. A / X - следующая часть. Сохраняется для каждой модели.
+$VRLP_ResetMarkup	Сбросить разметку
+$VRLP_ResetMarkup_Help	Забывает все скважины замков и хваты инструментов, сохранённые инструментом разметки: снова используются встроенные выравнивания и автоподгонка.
+$VRLP_HeaderTestLocks	Тестовые замки
+$VRLP_SpawnTestLocks	Создать тестовые замки
+$VRLP_SpawnTestLocks_Help	Ставит вокруг вас запертые сундуки и двери: по одному на каждую модель сундука / двери из игры и модов, с замками от «Новичка» до «Мастера» (и несколько, которым нужен ключ), плюс дверь уровня «Новичок» прямо перед вами, у которой есть ключ, чтобы опробовать способность «Восковой ключ». Закройте меню, чтобы их увидеть. Список - в журнале.
+$VRLP_RemoveTestLocks	Убрать тестовые замки
+$VRLP_RemoveTestLocks_Help	Убирает сундуки и двери, поставленные кнопкой «Создать тестовые замки».
+$VRLP_HeaderTestSetup	Подготовка теста
+$VRLP_DebugGiveLockpicks	Дать 50 отмычек
+$VRLP_DebugGiveLockpicks_Help	Добавляет 50 отмычек.
+$VRLP_DebugToggleSkeletonKey	Скелетный ключ вкл. / выкл.
+$VRLP_DebugToggleSkeletonKey_Help	Даёт вам Скелетный ключ или забирает его, если он у вас есть.
+$VRLP_HeaderPerks	Способности
+$VRLP_DebugAddLockPerks	Способности верной точки
+$VRLP_DebugAddLockPerks_Help	Добавляет все способности, расширяющие верную точку (в оригинале: от «Новичка-взломщика» до «Мастера-взломщика»).
+$VRLP_DebugAddLocksmith	Добавить «Слесарь»
+$VRLP_DebugAddLocksmith_Help	Добавляет способность, с которой отмычка начинает рядом с верной точкой.
+$VRLP_DebugAddUnbreakable	Добавить «Несокрушимость»
+$VRLP_DebugAddUnbreakable_Help	Добавляет способность, делающую отмычки неломающимися.
+$VRLP_DebugAddWaxKey	Добавить «Восковой ключ»
+$VRLP_DebugAddWaxKey_Help	Добавляет способность, дающую вам копию ключа от замка.
+$VRLP_DebugAddQuickHands	Добавить «Быстрые руки»
+$VRLP_DebugAddQuickHands_Help	Добавляет способность, с которой вас не поймают за взломом.
+$VRLP_DebugRemovePerks	Убрать способности взлома
+$VRLP_DebugRemovePerks_Help	Убирает все способности выше.
+$VRLP_HeaderLockpickingSkill	Навык «Взлом»
+$VRLP_DebugSkill10	Взлом 10
+$VRLP_DebugSkill10_Help	Устанавливает навык «Взлом» на 10.
+$VRLP_DebugSkill25	Взлом 25
+$VRLP_DebugSkill25_Help	Устанавливает навык «Взлом» на 25.
+$VRLP_DebugSkill50	Взлом 50
+$VRLP_DebugSkill50_Help	Устанавливает навык «Взлом» на 50.
+$VRLP_DebugSkill75	Взлом 75
+$VRLP_DebugSkill75_Help	Устанавливает навык «Взлом» на 75.
+$VRLP_DebugSkill100	Взлом 100
+$VRLP_DebugSkill100_Help	Устанавливает навык «Взлом» на 100.
+$VRLP_Msg_UpdateAddressLibrary	VR Lockpicking: обновите VR Address Library for SKSEVR. Используется стандартный взлом.
+$VRLP_Msg_HandsDontFollow	Ваши руки не двигаются, пока игра на паузе - выключите «Пауза при взломе» в настройках.
+$VRLP_Msg_FinishLockpickingFirst	Сначала закончите взлом.
+$VRLP_Msg_MarkupLock1	Разметка замка 1/3: поставьте кончик отмычки (её кубик) в ЦЕНТР скважины, нажмите левый курок. A: к отмычке.
+$VRLP_Msg_MarkupLock2	Разметка замка 2/3: поставьте кончик отмычки на ВЕРХ скважины (где верх), левый курок. Нажатие стика: назад.
+$VRLP_Msg_MarkupLock3	Разметка замка 3/3: левый курок = сохранить для этой модели замка, нажатие стика = назад. A: к отмычке.
+$VRLP_Msg_MarkupPick	Выровняйте отмычку ({}), вне скважины: держите ЛЕВЫЙ курок - модель стоит на месте, пока вы двигаете руку так, чтобы кубик оказался там, где должен быть кончик; отпустите, и она снова движется с рукой (сохранено). Точно: правый стик поворачивает её, левый стик вращает, правый курок + правый стик меняют размер. Нажатие стика: снова автоматически. A: к натяжителю.
+$VRLP_Msg_MarkupWrench	Выровняйте натяжитель ({}), вне скважины: держите ЛЕВЫЙ курок - модель стоит на месте, пока вы двигаете руку так, чтобы кубик оказался там, где должен быть кончик; отпустите, и она снова движется с рукой (сохранено). Точно: правый стик поворачивает её, левый стик вращает, правый курок + правый стик меняют размер. Нажатие стика: снова автоматически. A: к замку.
+$VRLP_Msg_RightHand	правая рука
+$VRLP_Msg_LeftHand	левая рука
+$VRLP_Msg_MarkupNoPickHand	Разметка: не видно руки с отмычкой - попробуйте ещё раз.
+$VRLP_Msg_MarkupNoLockModel	Разметка: нет модели замка, для которой сохранить.
+$VRLP_Msg_MarkupLockSaved	Разметка сохранена для этой модели замка: её скважина теперь в зелёной цели.
+$VRLP_Msg_MarkupPickSaved	Отмычка сохранена.
+$VRLP_Msg_MarkupWrenchSaved	Натяжитель сохранён.
+$VRLP_Msg_MarkupAutomaticFit	Снова автоподгонка.
+$VRLP_Msg_MarkupCouldNotSave	Разметка: не удалось сохранить.
+$VRLP_Msg_MarkupReset	Разметка моделей сброшена.
+$VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: для тестовых замков нужна более новая VR Address Library.
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: поставлено тестовых сундуков: {}, дверей: {} (уровни замков - в журнале).
+$VRLP_Msg_LockpicksAdded	Добавлено 50 отмычек (теперь {}).
+$VRLP_Msg_SkeletonKeyAdded	Скелетный ключ добавлен.
+$VRLP_Msg_SkeletonKeyRemoved	Скелетный ключ убран.
+$VRLP_Msg_SkeletonKeyUnavailable	Скелетный ключ недоступен (VR Address Library).
+$VRLP_Msg_PerksAdded	Добавлены способности: {}
+$VRLP_Msg_PerksRemoved	Убраны способности: {}
+$VRLP_Msg_NoPerkFound	Подходящая способность не найдена.
+$VRLP_Msg_SkillSet	Взлом установлен на {}.

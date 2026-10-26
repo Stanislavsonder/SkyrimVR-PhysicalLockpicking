@@ -1,0 +1,129 @@
+$VRLP_Intro	自分の手で行う物理的な開錠。
+$VRLP_IntroApply	設定は次に開錠するときから反映されます。
+$VRLP_PageGeneral	一般
+$VRLP_HeaderGeneral	一般
+$VRLP_Enabled	手による開錠を有効化
+$VRLP_Enabled_Help	バニラの開錠をこのMODの開錠に置き換えます。
+$VRLP_AlternativeMode	別モード
+$VRLP_AlternativeMode_Help	オン (既定): 鍵を回すように手首をひねって探り、テンションレンチはどの向きからでも回せます。オフ: バニラのミニゲームと同じく、鍵穴の周りの空中でピックの持ち手を動かします。
+$VRLP_LeftHandedPick	ピックを左手に
+$VRLP_LeftHandedPick_Help	両手の道具を入れ替えます: ロックピックを左手、テンションレンチを右手に持ちます。
+$VRLP_FullPause	開錠中に一時停止
+$VRLP_FullPause_Help	開錠している間、ゲームを一時停止します。
+$VRLP_ActivateContainerAfterUnlock	開錠後に容器を開く
+$VRLP_ActivateContainerAfterUnlock_Help	錠を開けると、容器を自動で開きます。
+$VRLP_HeaderDifficulty	難易度
+$VRLP_SweetSpotMult	スイートスポット幅
+$VRLP_SweetSpotMult_Help	錠が最後まで回る範囲の広さです (スキルとパークに応じたバニラの幅の倍率)。小さいほど見つけにくくなります。
+$VRLP_BreakTimeMult	ピックの強度
+$VRLP_BreakTimeMult_Help	回らない錠を無理に回している間、ピックがどれだけ持つかです (バニラの時間の倍率)。小さいほど早く折れます。
+$VRLP_PageVibration	振動
+$VRLP_HeaderVibration	振動
+$VRLP_Strength	全体の強さ
+$VRLP_Strength_Help	すべての振動の強さを調整します。
+$VRLP_HeaderFarFromTheSweetSpot	スイートスポットから遠い
+$VRLP_PulseSlowInterval	振動の間隔 (秒)
+$VRLP_PulseSlowInterval_Help	ピックがスイートスポットから遠いときに、探っている間の振動の間隔 (秒) です。
+$VRLP_PulseFarStrength	強さ
+$VRLP_PulseFarStrength_Help	その振動の強さです。
+$VRLP_HeaderNearTheSweetSpot	スイートスポットに近い
+$VRLP_PulseNearDegrees	近い範囲 (度)
+$VRLP_PulseNearDegrees_Help	スイートスポットの端からどこまでを「近い」とするかです。遠いから近いへは振動が一段階で変わり、近いからスイートスポットへは滑らかに変わります。
+$VRLP_PulseNearInterval	振動の間隔 (秒)
+$VRLP_PulseNearInterval_Help	「近い」範囲の外側の端での振動の間隔 (秒) です。
+$VRLP_PulseNearStrength	強さ
+$VRLP_PulseNearStrength_Help	「近い」範囲の外側の端での強さです。
+$VRLP_HeaderInTheSweetSpot	スイートスポット内
+$VRLP_PulseSweetInterval	振動の間隔 (秒)
+$VRLP_PulseSweetInterval_Help	スイートスポット内 (とその端) での振動の間隔 (秒) です。
+$VRLP_PulseSweetStrength	強さ
+$VRLP_PulseSweetStrength_Help	スイートスポット内での強さです。
+$VRLP_HeaderPickAboutToBreak	ピックが折れそう
+$VRLP_StrainInterval	振動の間隔 (秒)
+$VRLP_StrainInterval_Help	回らない錠を無理に回している間: ほかのすべての振動の代わりに続く、一定のガタつきです。
+$VRLP_StrainStrength	強さ
+$VRLP_StrainStrength_Help	そのガタつきの強さです。
+$VRLP_PageDebug	デバッグ
+$VRLP_HeaderDebug	デバッグ
+$VRLP_DebugLogging	デバッグログ
+$VRLP_DebugLogging_Help	詳細を Documents/My Games/Skyrim VR/SKSE/VRLockpicking.log に書き出します。
+$VRLP_DebugView	デバッグ表示
+$VRLP_DebugView_Help	錠と道具を色付きのブロックとゲージ (と数秒ごとの数値) で表示し、開錠が手の動きをどう読み取っているか確認できます。
+$VRLP_ShowTargets	鍵穴の目標を表示
+$VRLP_ShowTargets_Help	道具を差し込む位置に半透明の緑の目標を、さらに道具の先端の立方体と錠の上のゲージを表示します。
+$VRLP_ShowMeshes	錠とピックを表示
+$VRLP_ShowMeshes_Help	オフ: 振動と音だけで遊びます。
+$VRLP_AssistRing	補助リング
+$VRLP_AssistRing_Help	ピックの可動範囲に沿って錠の表面に点のリングを表示し、ピックの位置を水色の点で示します。「スイートスポット付き」では、初心者と見習いの錠でスイートスポットも示します。オフ = 感覚だけ。
+$VRLP_AssistRing_Off	オフ
+$VRLP_AssistRing_PickAngle	ピックの角度
+$VRLP_AssistRing_WithSweetSpot	スイートスポット付き
+$VRLP_CrimeCheck	犯罪の判定
+$VRLP_CrimeCheck_Help	所有者のいる錠を開錠しているところを見られると、バニラと同じく犯罪になります。
+$VRLP_HeaderModelMarkup	モデルの調整
+$VRLP_MarkupMode	モデル調整ツール
+$VRLP_MarkupMode_Help	開錠中に: 1) ピックの先端を鍵穴の中心に、次にその上端に当てて左トリガーを押すと、錠のモデルが合わせて動きます。2) と 3) 手に持ったピックとテンションレンチの位置を合わせます: 左トリガーを押している間はモデルが止まるので、その間に手を動かします。A / X で次の部分へ。モデルごとに保存されます。
+$VRLP_ResetMarkup	モデル調整をリセット
+$VRLP_ResetMarkup_Help	モデル調整ツールで保存した錠の鍵穴と道具の持ち方をすべて消去し、内蔵の位置合わせと自動フィットに戻します。
+$VRLP_HeaderTestLocks	テスト用の錠
+$VRLP_SpawnTestLocks	テスト用の錠を配置
+$VRLP_SpawnTestLocks_Help	施錠されたチェストと扉を周りに配置します: ゲームとMODのチェスト / 扉のモデルごとに1つずつ、初心者からマスターまでの錠 (と鍵が必要なものいくつか) です。さらに正面に、蝋の鍵のパークを試すための鍵がある初心者の扉を置きます。メニューを閉じると見えます。一覧はログにあります。
+$VRLP_RemoveTestLocks	テスト用の錠を削除
+$VRLP_RemoveTestLocks_Help	「テスト用の錠を配置」で置いたチェストと扉を削除します。
+$VRLP_HeaderTestSetup	テストの準備
+$VRLP_DebugGiveLockpicks	ロックピック50本
+$VRLP_DebugGiveLockpicks_Help	ロックピックを50本追加します。
+$VRLP_DebugToggleSkeletonKey	スケルトン・キー切替
+$VRLP_DebugToggleSkeletonKey_Help	スケルトン・キーを渡します。持っている場合は取り上げます。
+$VRLP_HeaderPerks	パーク
+$VRLP_DebugAddLockPerks	スイートスポットのパーク
+$VRLP_DebugAddLockPerks_Help	スイートスポットを広げるパークをすべて追加します (バニラでは初心者の錠からマスターの錠まで)。
+$VRLP_DebugAddLocksmith	錠前師を追加
+$VRLP_DebugAddLocksmith_Help	ピックをスイートスポットの近くから始めるパークを追加します。
+$VRLP_DebugAddUnbreakable	壊れぬ物を追加
+$VRLP_DebugAddUnbreakable_Help	ロックピックが壊れなくなるパークを追加します。
+$VRLP_DebugAddWaxKey	蝋の鍵を追加
+$VRLP_DebugAddWaxKey_Help	錠の鍵の複製が手に入るパークを追加します。
+$VRLP_DebugAddQuickHands	早業を追加
+$VRLP_DebugAddQuickHands_Help	開錠しているところを見つからなくするパークを追加します。
+$VRLP_DebugRemovePerks	開錠のパークを削除
+$VRLP_DebugRemovePerks_Help	上のパークをすべて削除します。
+$VRLP_HeaderLockpickingSkill	開錠スキル
+$VRLP_DebugSkill10	開錠 10
+$VRLP_DebugSkill10_Help	開錠スキルを10にします。
+$VRLP_DebugSkill25	開錠 25
+$VRLP_DebugSkill25_Help	開錠スキルを25にします。
+$VRLP_DebugSkill50	開錠 50
+$VRLP_DebugSkill50_Help	開錠スキルを50にします。
+$VRLP_DebugSkill75	開錠 75
+$VRLP_DebugSkill75_Help	開錠スキルを75にします。
+$VRLP_DebugSkill100	開錠 100
+$VRLP_DebugSkill100_Help	開錠スキルを100にします。
+$VRLP_Msg_UpdateAddressLibrary	VR Lockpicking: SKSEVR 用の VR Address Library を更新してください。バニラの開錠を使います。
+$VRLP_Msg_HandsDontFollow	ゲームの一時停止中は手が追従しません。設定で「開錠中に一時停止」をオフにしてください。
+$VRLP_Msg_FinishLockpickingFirst	先に開錠を終えてください。
+$VRLP_Msg_MarkupLock1	錠の調整 1/3: ピックの先端 (立方体) を鍵穴の「中心」に当て、左トリガーを押します。A: ピックへ。
+$VRLP_Msg_MarkupLock2	錠の調整 2/3: ピックの先端を鍵穴の「上端」(上の方向) に当て、左トリガー。スティック押し込み: 戻る。
+$VRLP_Msg_MarkupLock3	錠の調整 3/3: 左トリガー = この錠のモデルに保存、スティック押し込み = 戻る。A: ピックへ。
+$VRLP_Msg_MarkupPick	ピック ({}) を鍵穴の外で合わせます: 「左」トリガーを押している間はモデルが止まるので、先端の立方体が本来の先端の位置に来るまで手を動かします。離すとまた手と一緒に動きます (保存)。微調整: 右スティックで振る、左スティックで回転、右トリガー + 右スティックでサイズ。スティック押し込み: 自動に戻す。A: テンションレンチへ。
+$VRLP_Msg_MarkupWrench	テンションレンチ ({}) を鍵穴の外で合わせます: 「左」トリガーを押している間はモデルが止まるので、先端の立方体が本来の先端の位置に来るまで手を動かします。離すとまた手と一緒に動きます (保存)。微調整: 右スティックで振る、左スティックで回転、右トリガー + 右スティックでサイズ。スティック押し込み: 自動に戻す。A: 錠へ。
+$VRLP_Msg_RightHand	右手
+$VRLP_Msg_LeftHand	左手
+$VRLP_Msg_MarkupNoPickHand	調整: ピックを持つ手が見つかりません。もう一度試してください。
+$VRLP_Msg_MarkupNoLockModel	調整: 保存先の錠のモデルがありません。
+$VRLP_Msg_MarkupLockSaved	この錠のモデルの調整を保存しました: 鍵穴が緑の目標の中に来ます。
+$VRLP_Msg_MarkupPickSaved	ピックを保存しました。
+$VRLP_Msg_MarkupWrenchSaved	テンションレンチを保存しました。
+$VRLP_Msg_MarkupAutomaticFit	自動フィットに戻しました。
+$VRLP_Msg_MarkupCouldNotSave	調整: 保存できませんでした。
+$VRLP_Msg_MarkupReset	モデル調整をリセットしました。
+$VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: テスト用の錠には新しい VR Address Library が必要です。
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: テスト用のチェストを{}個、扉を{}個配置しました (錠のレベルはログにあります)。
+$VRLP_Msg_LockpicksAdded	ロックピックを50本追加しました (現在{}本)。
+$VRLP_Msg_SkeletonKeyAdded	スケルトン・キーを追加しました。
+$VRLP_Msg_SkeletonKeyRemoved	スケルトン・キーを削除しました。
+$VRLP_Msg_SkeletonKeyUnavailable	スケルトン・キーは使えません (VR Address Library)。
+$VRLP_Msg_PerksAdded	追加したパーク: {}
+$VRLP_Msg_PerksRemoved	削除したパーク: {}
+$VRLP_Msg_NoPerkFound	該当するパークが見つかりません。
+$VRLP_Msg_SkillSet	開錠を{}にしました。

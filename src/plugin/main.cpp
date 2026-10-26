@@ -5,6 +5,7 @@
 #include "LockpickManager.h"
 #include "DebugCheats.h"
 #include "TestLocks.h"
+#include "Text.h"
 #include "VRInput.h"
 #include "Version.h"
 
@@ -14,6 +15,7 @@ namespace
 	{
 		switch (a_msg->type) {
 		case SKSE::MessagingInterface::kDataLoaded:
+			vrlp::Text::Load();
 			vrlp::LockpickManager::Get().RegisterEvents();
 			// after every plugin has loaded (and hooked), so it can chain after HIGGS
 			vrlp::FrameHook::Install(&vrlp::LockpickManager::OnPostWandUpdate);

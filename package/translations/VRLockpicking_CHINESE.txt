@@ -1,0 +1,129 @@
+$VRLP_Intro	用你的雙手親自開鎖。
+$VRLP_IntroApply	設定會在下次開鎖時生效。
+$VRLP_PageGeneral	一般
+$VRLP_HeaderGeneral	一般
+$VRLP_Enabled	啟用沉浸式開鎖
+$VRLP_Enabled_Help	以本模組的開鎖取代原版開鎖。
+$VRLP_AlternativeMode	替代模式
+$VRLP_AlternativeMode_Help	開啟 (預設): 像轉鑰匙一樣轉動手腕來搜尋，張力扳手從任何角度都能轉動。關閉: 與原版小遊戲相同，在鑰匙孔周圍的空中移動開鎖器的握柄。
+$VRLP_LeftHandedPick	開鎖器拿在左手
+$VRLP_LeftHandedPick_Help	對調雙手的工具: 開鎖器在左手，張力扳手在右手。
+$VRLP_FullPause	開鎖時暫停
+$VRLP_FullPause_Help	開鎖時暫停遊戲。
+$VRLP_ActivateContainerAfterUnlock	開鎖後打開容器
+$VRLP_ActivateContainerAfterUnlock_Help	鎖被撬開後自動打開容器。
+$VRLP_HeaderDifficulty	難度
+$VRLP_SweetSpotMult	最佳點大小
+$VRLP_SweetSpotMult_Help	鎖能完全轉開的範圍有多寬 (依你的技能與天賦，為原版大小的倍數)。越小越難找到。
+$VRLP_BreakTimeMult	開鎖器強度
+$VRLP_BreakTimeMult_Help	強行轉動轉不動的鎖時，開鎖器能撐多久 (為原版時間的倍數)。越小越快斷。
+$VRLP_PageVibration	震動
+$VRLP_HeaderVibration	震動
+$VRLP_Strength	整體強度
+$VRLP_Strength_Help	調整所有震動的強度。
+$VRLP_HeaderFarFromTheSweetSpot	遠離最佳點
+$VRLP_PulseSlowInterval	震動間隔 (秒)
+$VRLP_PulseSlowInterval_Help	開鎖器遠離最佳點時，搜尋震動之間的秒數。
+$VRLP_PulseFarStrength	強度
+$VRLP_PulseFarStrength_Help	這些震動的強度。
+$VRLP_HeaderNearTheSweetSpot	接近最佳點
+$VRLP_PulseNearDegrees	接近範圍 (度)
+$VRLP_PulseNearDegrees_Help	距離最佳點邊緣多近算是接近。從遠到近，震動一次切換；從接近到最佳點，震動平順變化。
+$VRLP_PulseNearInterval	震動間隔 (秒)
+$VRLP_PulseNearInterval_Help	在接近範圍外緣時，震動之間的秒數。
+$VRLP_PulseNearStrength	強度
+$VRLP_PulseNearStrength_Help	在接近範圍外緣時的強度。
+$VRLP_HeaderInTheSweetSpot	在最佳點內
+$VRLP_PulseSweetInterval	震動間隔 (秒)
+$VRLP_PulseSweetInterval_Help	在最佳點內 (及其邊緣) 震動之間的秒數。
+$VRLP_PulseSweetStrength	強度
+$VRLP_PulseSweetStrength_Help	在最佳點內的強度。
+$VRLP_HeaderPickAboutToBreak	開鎖器快斷了
+$VRLP_StrainInterval	震動間隔 (秒)
+$VRLP_StrainInterval_Help	強行轉動轉不動的鎖時: 取代其他所有震動的持續顫動。
+$VRLP_StrainStrength	強度
+$VRLP_StrainStrength_Help	這種顫動的強度。
+$VRLP_PageDebug	除錯
+$VRLP_HeaderDebug	除錯
+$VRLP_DebugLogging	除錯記錄
+$VRLP_DebugLogging_Help	將詳細資訊寫入 Documents/My Games/Skyrim VR/SKSE/VRLockpicking.log。
+$VRLP_DebugView	除錯檢視
+$VRLP_DebugView_Help	以彩色方塊和量表 (以及每隔幾秒的數值) 顯示鎖與工具，用來檢查開鎖如何讀取你的雙手。
+$VRLP_ShowTargets	顯示鑰匙孔目標
+$VRLP_ShowTargets_Help	在工具插入處畫出半透明的綠色目標，並顯示工具尖端的方塊與鎖上方的量表。
+$VRLP_ShowMeshes	顯示鎖與開鎖器
+$VRLP_ShowMeshes_Help	關閉: 只靠震動和聲音來玩。
+$VRLP_AssistRing	輔助環
+$VRLP_AssistRing_Help	沿著開鎖器的活動範圍在鎖面上顯示一圈點，並以青色點標示開鎖器的位置。「含最佳點」還會在新手與學徒等級的鎖上標出最佳點。關閉 = 完全憑手感。
+$VRLP_AssistRing_Off	關閉
+$VRLP_AssistRing_PickAngle	開鎖器角度
+$VRLP_AssistRing_WithSweetSpot	含最佳點
+$VRLP_CrimeCheck	犯罪偵測
+$VRLP_CrimeCheck_Help	被人看到撬有主的鎖算是犯罪，與原版相同。
+$VRLP_HeaderModelMarkup	模型標定
+$VRLP_MarkupMode	模型標定工具
+$VRLP_MarkupMode_Help	開鎖時: 1) 用左扳機將開鎖器尖端先對準鑰匙孔中心，再對準其上端，鎖的模型會隨之調整；2) 和 3) 對齊手中的開鎖器和張力扳手: 按住左扳機讓模型保持不動，同時移動你的手。A / X 進入下一部分。每個模型分別儲存。
+$VRLP_ResetMarkup	重設模型標定
+$VRLP_ResetMarkup_Help	清除你用模型標定工具儲存的所有鑰匙孔與工具握法: 改回使用內建對齊與自動調整。
+$VRLP_HeaderTestLocks	測試用鎖
+$VRLP_SpawnTestLocks	產生測試用鎖
+$VRLP_SpawnTestLocks_Help	在你周圍放置上鎖的箱子和門: 遊戲與模組中每種箱子 / 門模型各一個，鎖從新手到大師 (還有一些需要鑰匙的)，另外正前方有一扇附鑰匙的新手門，可用來試用蠟製鑰匙天賦。關閉選單即可看到。清單在記錄中。
+$VRLP_RemoveTestLocks	移除測試用鎖
+$VRLP_RemoveTestLocks_Help	移除「產生測試用鎖」放置的箱子和門。
+$VRLP_HeaderTestSetup	測試準備
+$VRLP_DebugGiveLockpicks	給予 50 個開鎖器
+$VRLP_DebugGiveLockpicks_Help	增加 50 個開鎖器。
+$VRLP_DebugToggleSkeletonKey	骷髏鑰匙 開 / 關
+$VRLP_DebugToggleSkeletonKey_Help	給你骷髏鑰匙，若已持有則收回。
+$VRLP_HeaderPerks	天賦
+$VRLP_DebugAddLockPerks	加入最佳點天賦
+$VRLP_DebugAddLockPerks_Help	加入所有擴大最佳點的天賦 (原版: 新手鎖到大師鎖)。
+$VRLP_DebugAddLocksmith	加入鎖匠
+$VRLP_DebugAddLocksmith_Help	加入讓開鎖器從最佳點附近開始的天賦。
+$VRLP_DebugAddUnbreakable	加入牢不可破
+$VRLP_DebugAddUnbreakable_Help	加入讓開鎖器不會損壞的天賦。
+$VRLP_DebugAddWaxKey	加入蠟製鑰匙
+$VRLP_DebugAddWaxKey_Help	加入讓你獲得鎖的鑰匙複製品的天賦。
+$VRLP_DebugAddQuickHands	加入快手
+$VRLP_DebugAddQuickHands_Help	加入讓你開鎖時不會被抓到的天賦。
+$VRLP_DebugRemovePerks	移除開鎖天賦
+$VRLP_DebugRemovePerks_Help	移除以上所有天賦。
+$VRLP_HeaderLockpickingSkill	開鎖技能
+$VRLP_DebugSkill10	開鎖 10
+$VRLP_DebugSkill10_Help	將你的開鎖技能設為 10。
+$VRLP_DebugSkill25	開鎖 25
+$VRLP_DebugSkill25_Help	將你的開鎖技能設為 25。
+$VRLP_DebugSkill50	開鎖 50
+$VRLP_DebugSkill50_Help	將你的開鎖技能設為 50。
+$VRLP_DebugSkill75	開鎖 75
+$VRLP_DebugSkill75_Help	將你的開鎖技能設為 75。
+$VRLP_DebugSkill100	開鎖 100
+$VRLP_DebugSkill100_Help	將你的開鎖技能設為 100。
+$VRLP_Msg_UpdateAddressLibrary	VR Lockpicking: 請更新 SKSEVR 的 VR Address Library。目前使用原版開鎖。
+$VRLP_Msg_HandsDontFollow	遊戲暫停時雙手不會跟隨 - 請在設定中關閉「開鎖時暫停」。
+$VRLP_Msg_FinishLockpickingFirst	請先完成開鎖。
+$VRLP_Msg_MarkupLock1	標定鎖 1/3: 將開鎖器尖端 (其方塊) 放在鑰匙孔的「中心」，按左扳機。A: 前往開鎖器。
+$VRLP_Msg_MarkupLock2	標定鎖 2/3: 將開鎖器尖端放在鑰匙孔的「上端」(哪邊朝上)，按左扳機。按下搖桿: 返回。
+$VRLP_Msg_MarkupLock3	標定鎖 3/3: 左扳機 = 為此鎖模型儲存，按下搖桿 = 返回。A: 前往開鎖器。
+$VRLP_Msg_MarkupPick	在鑰匙孔外對齊開鎖器 ({}): 按住「左」扳機 - 模型保持不動，移動你的手直到尖端方塊位於尖端應在的位置；放開後模型再次隨手移動 (已儲存)。微調: 右搖桿擺動，左搖桿翻轉，右扳機 + 右搖桿調整大小。按下搖桿: 改回自動。A: 前往張力扳手。
+$VRLP_Msg_MarkupWrench	在鑰匙孔外對齊張力扳手 ({}): 按住「左」扳機 - 模型保持不動，移動你的手直到尖端方塊位於尖端應在的位置；放開後模型再次隨手移動 (已儲存)。微調: 右搖桿擺動，左搖桿翻轉，右扳機 + 右搖桿調整大小。按下搖桿: 改回自動。A: 前往鎖。
+$VRLP_Msg_RightHand	右手
+$VRLP_Msg_LeftHand	左手
+$VRLP_Msg_MarkupNoPickHand	標定: 看不到拿開鎖器的手 - 請再試一次。
+$VRLP_Msg_MarkupNoLockModel	標定: 沒有可儲存的鎖模型。
+$VRLP_Msg_MarkupLockSaved	已為此鎖模型儲存標定: 鑰匙孔現在位於綠色目標內。
+$VRLP_Msg_MarkupPickSaved	已儲存開鎖器。
+$VRLP_Msg_MarkupWrenchSaved	已儲存張力扳手。
+$VRLP_Msg_MarkupAutomaticFit	已改回自動調整。
+$VRLP_Msg_MarkupCouldNotSave	標定: 無法儲存。
+$VRLP_Msg_MarkupReset	已重設模型標定。
+$VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: 測試用鎖需要較新的 VR Address Library。
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: 已放置 {} 個測試箱子和 {} 扇門 (鎖的等級在記錄中)。
+$VRLP_Msg_LockpicksAdded	已增加 50 個開鎖器 (目前 {} 個)。
+$VRLP_Msg_SkeletonKeyAdded	已加入骷髏鑰匙。
+$VRLP_Msg_SkeletonKeyRemoved	已移除骷髏鑰匙。
+$VRLP_Msg_SkeletonKeyUnavailable	無法使用骷髏鑰匙 (VR Address Library)。
+$VRLP_Msg_PerksAdded	已加入天賦: {}
+$VRLP_Msg_PerksRemoved	已移除天賦: {}
+$VRLP_Msg_NoPerkFound	找不到相符的天賦。
+$VRLP_Msg_SkillSet	開鎖已設為 {}。

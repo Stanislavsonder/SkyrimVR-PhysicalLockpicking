@@ -1,6 +1,7 @@
 #include "DebugCheats.h"
 
 #include "AddressCheck.h"
+#include "Text.h"
 
 #undef GetObject  // wingdi.h's, over BGSDefaultObjectManager::GetObject
 
@@ -10,10 +11,12 @@ namespace vrlp::DebugCheats
 	{
 		using EntryPoint = RE::BGSEntryPoint::ENTRY_POINT;
 
-		void Say(const std::string& a_text)
+		template <class... Args>
+		void Say(const char* a_key, const Args&... a_args)
 		{
-			RE::SendHUDMessage::ShowHUDMessage(a_text.c_str());
-			logger::info("Debug: {}", a_text);
+			const std::string text = Text::Format(a_key, a_args...);
+			RE::SendHUDMessage::ShowHUDMessage(text.c_str());
+			logger::info("Debug: {}", text);
 		}
 
 		bool UsesEntryPoint(const RE::BGSPerk* a_perk, std::initializer_list<EntryPoint> a_points)
@@ -33,7 +36,7 @@ namespace vrlp::DebugCheats
 
 		// Every perk (vanilla or a mod's) that uses one of these entry points: added, or with
 		// a_add false removed.
-		void Perks(std::initializer_list<EntryPoint> a_points, bool a_add, const char* a_what)
+		void Perks(std::initializer_list<EntryPoint> a_points, bool a_add)
 		{
 			auto* player = RE::PlayerCharacter::GetSingleton();
 			auto* data = RE::TESDataHandler::GetSingleton();
@@ -54,21 +57,21 @@ namespace vrlp::DebugCheats
 				names.push_back(std::format("{} {:08X}", name && *name ? name : "?", perk->GetFormID()));
 			}
 			if (names.empty()) {
-				Say(std::format("No perk found for {}", a_what));
+				Say("$VRLP_Msg_NoPerkFound");
 				return;
 			}
 			std::string list;
 			for (const auto& n : names) {
 				list += (list.empty() ? "" : ", ") + n;
 			}
-			Say(std::format("{} {}: {}", a_add ? "Added" : "Removed", a_what, list));
+			Say(a_add ? "$VRLP_Msg_PerksAdded" : "$VRLP_Msg_PerksRemoved", list);
 		}
 
 		void SetSkill(float a_value)
 		{
 			if (auto* player = RE::PlayerCharacter::GetSingleton()) {
 				player->AsActorValueOwner()->SetBaseActorValue(RE::ActorValue::kLockpicking, a_value);
-				Say(std::format("Lockpicking set to {:.0f}", a_value));
+				Say("$VRLP_Msg_SkillSet", std::format("{:.0f}", a_value));
 			}
 		}
 
@@ -78,7 +81,7 @@ namespace vrlp::DebugCheats
 			auto* pick = RE::TESForm::LookupByID<RE::TESObjectMISC>(0x0000000A);
 			if (player && pick) {
 				player->AddObjectToContainer(pick, nullptr, 50, nullptr);
-				Say(std::format("50 lockpicks added ({} now)", player->GetItemCount(pick)));
+				Say("$VRLP_Msg_LockpicksAdded", player->GetItemCount(pick));
 			}
 		}
 
@@ -88,15 +91,15 @@ namespace vrlp::DebugCheats
 			auto* objects = AddressCheck::Has(Ids::kDefaultObjects) ? RE::BGSDefaultObjectManager::GetSingleton() : nullptr;
 			auto* key = objects ? objects->GetObject<RE::TESBoundObject>(static_cast<std::size_t>(RE::DefaultObjectID::kSkeletonKey)) : nullptr;
 			if (!player || !key) {
-				Say("The Skeleton Key is not available (VR Address Library)");
+				Say("$VRLP_Msg_SkeletonKeyUnavailable");
 				return;
 			}
 			if (const auto count = player->GetItemCount(key); count > 0) {
 				player->RemoveItem(key, count, RE::ITEM_REMOVE_REASON::kRemove, nullptr, nullptr);
-				Say("Skeleton Key removed");
+				Say("$VRLP_Msg_SkeletonKeyRemoved");
 			} else {
 				player->AddObjectToContainer(key, nullptr, 1, nullptr);
-				Say("Skeleton Key added");
+				Say("$VRLP_Msg_SkeletonKeyAdded");
 			}
 		}
 
@@ -109,16 +112,16 @@ namespace vrlp::DebugCheats
 			}
 		}
 
-		void LockPerks() { Perks({ EntryPoint::kModLockpickSweetSpot }, true, "the sweet spot perks"); }
-		void Locksmith() { Perks({ EntryPoint::kSetLockpickStartingArc }, true, "Locksmith"); }
-		void Unbreakable() { Perks({ EntryPoint::kMakeLockpicksUnbreakable }, true, "Unbreakable"); }
-		void WaxKey() { Perks({ EntryPoint::kModLockpickingKeyRewardChance }, true, "Wax Key"); }
-		void QuickHands() { Perks({ EntryPoint::kModLockpickingCrimeChance }, true, "Quick Hands"); }
+		void LockPerks() { Perks({ EntryPoint::kModLockpickSweetSpot }, true); }
+		void Locksmith() { Perks({ EntryPoint::kSetLockpickStartingArc }, true); }
+		void Unbreakable() { Perks({ EntryPoint::kMakeLockpicksUnbreakable }, true); }
+		void WaxKey() { Perks({ EntryPoint::kModLockpickingKeyRewardChance }, true); }
+		void QuickHands() { Perks({ EntryPoint::kModLockpickingCrimeChance }, true); }
 		void RemovePerks()
 		{
 			Perks({ EntryPoint::kModLockpickSweetSpot, EntryPoint::kSetLockpickStartingArc, EntryPoint::kMakeLockpicksUnbreakable,
 					  EntryPoint::kModLockpickingKeyRewardChance, EntryPoint::kModLockpickingCrimeChance },
-				false, "the lockpicking perks");
+				false);
 		}
 		void Skill10() { SetSkill(10.0f); }
 		void Skill25() { SetSkill(25.0f); }

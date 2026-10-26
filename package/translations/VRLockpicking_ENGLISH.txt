@@ -1,0 +1,129 @@
+$VRLP_Intro	Physical lockpicking with your hands.
+$VRLP_IntroApply	Settings apply the next time you pick a lock.
+$VRLP_PageGeneral	General
+$VRLP_HeaderGeneral	General
+$VRLP_Enabled	Enable immersive lockpicking
+$VRLP_Enabled_Help	Replaces the vanilla lockpicking with the mod's.
+$VRLP_AlternativeMode	Alternative mode
+$VRLP_AlternativeMode_Help	On (default): you search by turning your wrist, like turning a key, and the tension wrench twists from any start. Off: like the vanilla minigame - you steer the pick's handle through the air around the keyhole.
+$VRLP_LeftHandedPick	Pick in left hand
+$VRLP_LeftHandedPick_Help	Mirrors the tools in your hands: the lockpick in the left, the tension wrench in the right.
+$VRLP_FullPause	Pause on lockpicking
+$VRLP_FullPause_Help	Pauses the game while you pick a lock.
+$VRLP_ActivateContainerAfterUnlock	Open container after unlocking
+$VRLP_ActivateContainerAfterUnlock_Help	Opens a container automatically once its lock is picked.
+$VRLP_HeaderDifficulty	Difficulty
+$VRLP_SweetSpotMult	Sweet spot size
+$VRLP_SweetSpotMult_Help	How wide the spot is where the lock turns all the way (x the vanilla size for your skill and perks). Smaller = harder to find.
+$VRLP_BreakTimeMult	Pick strength
+$VRLP_BreakTimeMult_Help	How long a pick lasts while you force a lock that won't turn (x the vanilla time). Smaller = picks break sooner.
+$VRLP_PageVibration	Vibration
+$VRLP_HeaderVibration	Vibration
+$VRLP_Strength	Overall strength
+$VRLP_Strength_Help	Scales all vibration.
+$VRLP_HeaderFarFromTheSweetSpot	Far from the sweet spot
+$VRLP_PulseSlowInterval	Pulse every (s)
+$VRLP_PulseSlowInterval_Help	Seconds between searching pulses while the pick is far from the sweet spot.
+$VRLP_PulseFarStrength	Strength
+$VRLP_PulseFarStrength_Help	Strength of those pulses.
+$VRLP_HeaderNearTheSweetSpot	Near the sweet spot
+$VRLP_PulseNearDegrees	Near within (deg)
+$VRLP_PulseNearDegrees_Help	How close to the sweet spot's edge counts as near. From far to near the pulses change in one step; from near to the sweet spot they change smoothly.
+$VRLP_PulseNearInterval	Pulse every (s)
+$VRLP_PulseNearInterval_Help	Seconds between pulses at the outer edge of the near zone.
+$VRLP_PulseNearStrength	Strength
+$VRLP_PulseNearStrength_Help	Strength at the outer edge of the near zone.
+$VRLP_HeaderInTheSweetSpot	In the sweet spot
+$VRLP_PulseSweetInterval	Pulse every (s)
+$VRLP_PulseSweetInterval_Help	Seconds between pulses in the sweet spot (and at its edge).
+$VRLP_PulseSweetStrength	Strength
+$VRLP_PulseSweetStrength_Help	Strength in the sweet spot.
+$VRLP_HeaderPickAboutToBreak	Pick about to break
+$VRLP_StrainInterval	Pulse every (s)
+$VRLP_StrainInterval_Help	While you force a lock that won't turn: a steady rattle that replaces every other pulse.
+$VRLP_StrainStrength	Strength
+$VRLP_StrainStrength_Help	Strength of that rattle.
+$VRLP_PageDebug	Debug
+$VRLP_HeaderDebug	Debug
+$VRLP_DebugLogging	Debug log
+$VRLP_DebugLogging_Help	Writes details to Documents/My Games/Skyrim VR/SKSE/VRLockpicking.log.
+$VRLP_DebugView	Debug view
+$VRLP_DebugView_Help	Shows the lock and tools as coloured blocks with gauges (and numbers every few seconds) to check how lockpicking reads your hands.
+$VRLP_ShowTargets	Show keyhole target
+$VRLP_ShowTargets_Help	Draws the see-through green target where the tools go in, the tool tip cubes and the gauges over the lock.
+$VRLP_ShowMeshes	Show lock and picks
+$VRLP_ShowMeshes_Help	Off: play with vibration and sound only.
+$VRLP_AssistRing	Assist ring
+$VRLP_AssistRing_Help	A ring of dots on the lock face along the pick's range, with a cyan dot where your pick is. 'With sweet spot' also marks the sweet spot on Novice and Apprentice locks. Off = by feel only.
+$VRLP_AssistRing_Off	Off
+$VRLP_AssistRing_PickAngle	Pick angle
+$VRLP_AssistRing_WithSweetSpot	With sweet spot
+$VRLP_CrimeCheck	Crime detection
+$VRLP_CrimeCheck_Help	Being seen picking an owned lock is a crime, like vanilla.
+$VRLP_HeaderModelMarkup	Model markup
+$VRLP_MarkupMode	Model markup tool
+$VRLP_MarkupMode_Help	While lockpicking: 1) put the pick's tip on the keyhole's centre, then its top, with the left trigger - the lock model moves to fit; 2) and 3) line up the pick and the tension wrench in your hands: hold the left trigger to keep the model still while you move your hand. A / X goes to the next part. Saved per model.
+$VRLP_ResetMarkup	Reset model markup
+$VRLP_ResetMarkup_Help	Forgets every lock keyhole and tool grip you saved with the model markup tool: the built-in alignments and the automatic fit are used again.
+$VRLP_HeaderTestLocks	Test locks
+$VRLP_SpawnTestLocks	Spawn test locks
+$VRLP_SpawnTestLocks_Help	Places locked chests and doors around you: one per chest / door model of your game and mods, with Novice to Master locks (and some that need a key), plus a Novice door straight ahead that has a key, to try the Wax Key perk. Close the menu to see them. The list is in the log.
+$VRLP_RemoveTestLocks	Remove test locks
+$VRLP_RemoveTestLocks_Help	Removes the chests and doors placed by Spawn test locks.
+$VRLP_HeaderTestSetup	Test setup
+$VRLP_DebugGiveLockpicks	Give 50 lockpicks
+$VRLP_DebugGiveLockpicks_Help	Adds 50 lockpicks.
+$VRLP_DebugToggleSkeletonKey	Skeleton Key on / off
+$VRLP_DebugToggleSkeletonKey_Help	Gives you the Skeleton Key, or takes it away if you have it.
+$VRLP_HeaderPerks	Perks
+$VRLP_DebugAddLockPerks	Add sweet spot perks
+$VRLP_DebugAddLockPerks_Help	Adds every perk that widens the sweet spot (vanilla: Novice to Master Locks).
+$VRLP_DebugAddLocksmith	Add Locksmith
+$VRLP_DebugAddLocksmith_Help	Adds the perk that starts the pick close to the sweet spot.
+$VRLP_DebugAddUnbreakable	Add Unbreakable
+$VRLP_DebugAddUnbreakable_Help	Adds the perk that makes lockpicks unbreakable.
+$VRLP_DebugAddWaxKey	Add Wax Key
+$VRLP_DebugAddWaxKey_Help	Adds the perk that gives you a copy of a lock's key.
+$VRLP_DebugAddQuickHands	Add Quick Hands
+$VRLP_DebugAddQuickHands_Help	Adds the perk that keeps you from being caught picking locks.
+$VRLP_DebugRemovePerks	Remove lockpicking perks
+$VRLP_DebugRemovePerks_Help	Removes all the perks above.
+$VRLP_HeaderLockpickingSkill	Lockpicking skill
+$VRLP_DebugSkill10	Lockpicking 10
+$VRLP_DebugSkill10_Help	Sets your Lockpicking skill to 10.
+$VRLP_DebugSkill25	Lockpicking 25
+$VRLP_DebugSkill25_Help	Sets your Lockpicking skill to 25.
+$VRLP_DebugSkill50	Lockpicking 50
+$VRLP_DebugSkill50_Help	Sets your Lockpicking skill to 50.
+$VRLP_DebugSkill75	Lockpicking 75
+$VRLP_DebugSkill75_Help	Sets your Lockpicking skill to 75.
+$VRLP_DebugSkill100	Lockpicking 100
+$VRLP_DebugSkill100_Help	Sets your Lockpicking skill to 100.
+$VRLP_Msg_UpdateAddressLibrary	VR Lockpicking: please update VR Address Library for SKSEVR. Using vanilla lockpicking.
+$VRLP_Msg_HandsDontFollow	Your hands don't follow while the game is paused - turn Pause on lockpicking off in the settings.
+$VRLP_Msg_FinishLockpickingFirst	Finish lockpicking first.
+$VRLP_Msg_MarkupLock1	Markup lock 1/3: put the pick's tip (its cube) on the CENTRE of the keyhole, press the left trigger. A: go to the pick.
+$VRLP_Msg_MarkupLock2	Markup lock 2/3: put the pick's tip on the TOP of the keyhole (which way is up), left trigger. Stick click: back.
+$VRLP_Msg_MarkupLock3	Markup lock 3/3: left trigger = save for this lock model, stick click = back. A: go to the pick.
+$VRLP_Msg_MarkupPick	Line up the pick ({}), out of the keyhole: hold the LEFT trigger - the model stays still while you move your hand until the tip cube sits where its tip should be; let go and it moves with your hand again (saved). Fine: right stick swings it, left stick rolls it, right trigger + right stick sizes it. Stick click: automatic again. A: go to the tension wrench.
+$VRLP_Msg_MarkupWrench	Line up the tension wrench ({}), out of the keyhole: hold the LEFT trigger - the model stays still while you move your hand until the tip cube sits where its tip should be; let go and it moves with your hand again (saved). Fine: right stick swings it, left stick rolls it, right trigger + right stick sizes it. Stick click: automatic again. A: go to the lock.
+$VRLP_Msg_RightHand	right hand
+$VRLP_Msg_LeftHand	left hand
+$VRLP_Msg_MarkupNoPickHand	Markup: can't see the pick hand - try again.
+$VRLP_Msg_MarkupNoLockModel	Markup: no lock model to save it for.
+$VRLP_Msg_MarkupLockSaved	Markup saved for this lock model: its keyhole is now in the green target.
+$VRLP_Msg_MarkupPickSaved	Pick saved.
+$VRLP_Msg_MarkupWrenchSaved	Tension wrench saved.
+$VRLP_Msg_MarkupAutomaticFit	Back to the automatic fit.
+$VRLP_Msg_MarkupCouldNotSave	Markup: could not save.
+$VRLP_Msg_MarkupReset	Model markup reset.
+$VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: test locks need a newer VR Address Library.
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: {} test chests and {} doors placed (their lock levels are in the log).
+$VRLP_Msg_LockpicksAdded	50 lockpicks added ({} now).
+$VRLP_Msg_SkeletonKeyAdded	Skeleton Key added.
+$VRLP_Msg_SkeletonKeyRemoved	Skeleton Key removed.
+$VRLP_Msg_SkeletonKeyUnavailable	The Skeleton Key is not available (VR Address Library).
+$VRLP_Msg_PerksAdded	Perks added: {}
+$VRLP_Msg_PerksRemoved	Perks removed: {}
+$VRLP_Msg_NoPerkFound	No matching perk found.
+$VRLP_Msg_SkillSet	Lockpicking set to {}.

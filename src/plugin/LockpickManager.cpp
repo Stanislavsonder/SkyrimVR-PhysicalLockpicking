@@ -3,6 +3,7 @@
 #include "AddressCheck.h"
 #include "FrameHook.h"
 #include "LockMods.h"
+#include "Text.h"
 #include "VRInput.h"
 
 #undef GetObject  // wingdi.h's, over BGSDefaultObjectManager::GetObject
@@ -280,7 +281,7 @@ namespace vrlp
 			if (!warned) {
 				warned = true;
 				logger::error("VR Address Library {} lacks IDs this mod needs; using the vanilla lockpicking menu", AddressCheck::LibraryVersion());
-				RE::SendHUDMessage::ShowHUDMessage("VR Lockpicking: please update VR Address Library for SKSEVR. Using vanilla lockpicking.");
+				Text::Show("$VRLP_Msg_UpdateAddressLibrary");
 			}
 			Visuals::NoteVanillaMenu();
 			return RE::BSEventNotifyControl::kContinue;
@@ -897,7 +898,7 @@ namespace vrlp
 		logger::debug("Full pause: in the last second the right hand moved {:.1f}, its controller {:.1f}", handMoved, wandMoved);
 		if (wandMoved > 3.0f && handMoved < 0.3f) {
 			logger::warn("Full pause: the visible hands don't follow the controllers while the game is paused");
-			RE::SendHUDMessage::ShowHUDMessage("Full pause: your hands don't follow while the game is paused - turn Full pause off in the MCM.");
+			Text::Show("$VRLP_Msg_HandsDontFollow");
 			_handCheck.reported = true;
 		}
 		_handCheck.hand = h;
@@ -1058,7 +1059,7 @@ namespace vrlp
 			const LockProfile p = ProfileFromMarks(result->centre, result->top, _visuals.LockPlacement(), _visuals.LockRoll());
 			if (!p.valid || _visuals.LockModelPath().empty()) {
 				logger::info("Markup lock: no lock model shown, nothing to save");
-				RE::SendHUDMessage::ShowHUDMessage("Markup: no lock model to save it for.");
+				Text::Show("$VRLP_Msg_MarkupNoLockModel");
 			} else {
 				SaveLockProfile(p, _visuals.LockModelPath());
 			}
@@ -1083,7 +1084,7 @@ namespace vrlp
 			_visuals.SetToolProfile(a_wrench, ToolProfile{}, false);
 			_alignDirty = true;
 			SaveAlignment();
-			RE::SendHUDMessage::ShowHUDMessage("Back to the automatic fit.");
+			Text::Show("$VRLP_Msg_MarkupAutomaticFit");
 			return;
 		}
 
@@ -1164,13 +1165,13 @@ namespace vrlp
 		logger::info("Hold {} [{}] {} (model tip {:.2f} from the tip cube, its axis {:.0f} deg off the reach, side ({:+.2f}, {:+.2f}, {:+.2f}), size x{:.2f}, scale={:.2f})",
 			wrench ? "wrench" : "pick", NormalizeModelPath(path), ToolProfileText(prefix, p), Length(p.offset), turned, side.x, side.y, side.z,
 			p.scale, _cfg.visualScale);
-		RE::SendHUDMessage::ShowHUDMessage(std::format("{} saved.", wrench ? "Wrench" : "Pick").c_str());
+		Text::Show(wrench ? "$VRLP_Msg_MarkupWrenchSaved" : "$VRLP_Msg_MarkupPickSaved");
 	}
 
 	void LockpickManager::ResetMarkup()
 	{
 		if (_session) {
-			RE::SendHUDMessage::ShowHUDMessage("Finish lockpicking first.");
+			Text::Show("$VRLP_Msg_FinishLockpickingFirst");
 			return;
 		}
 		// emptied rather than deleted: under Mod Organizer the file lives in its overwrite folder
@@ -1181,7 +1182,7 @@ namespace vrlp
 		_pickProfiles.clear();
 		_shivProfiles.clear();
 		logger::info("Model markup reset ({})", kProfilesPath);
-		RE::SendHUDMessage::ShowHUDMessage("Model markup reset.");
+		Text::Show("$VRLP_Msg_MarkupReset");
 	}
 
 	bool LockpickManager::SaveProfilesText(const std::string& a_text)
@@ -1189,7 +1190,7 @@ namespace vrlp
 		std::ofstream out(kProfilesPath, std::ios::trunc);
 		if (!out) {
 			logger::warn("Could not write {}", kProfilesPath);
-			RE::SendHUDMessage::ShowHUDMessage("Markup: could not save.");
+			Text::Show("$VRLP_Msg_MarkupCouldNotSave");
 			return false;
 		}
 		out << a_text;
@@ -1205,7 +1206,7 @@ namespace vrlp
 		_visuals.SetLockProfile(a_profile);  // the model moves so its keyhole sits in the target
 		logger::info("Markup saved for '{}': keyhole ({:.3f}, {:.3f}, {:.3f}) in model units, roll {:.1f} deg -> {}", a_modelPath,
 			a_profile.keyhole.x, a_profile.keyhole.y, a_profile.keyhole.z, a_profile.roll, kProfilesPath);
-		RE::SendHUDMessage::ShowHUDMessage("Markup saved for this lock model: its keyhole is now in the green target.");
+		Text::Show("$VRLP_Msg_MarkupLockSaved");
 	}
 
 	// Keeps the player in place while picking: no walking, turning, sneaking, jumping or attacks.

@@ -17,6 +17,7 @@ add_library(vrlp_core STATIC
 	src/core/MeshFit.cpp
 	src/core/LockProfile.cpp
 	src/core/LockVariations.cpp
+	src/core/Translations.cpp
 )
 target_include_directories(vrlp_core PUBLIC src/core)
 target_compile_features(vrlp_core PUBLIC cxx_std_20)
@@ -57,6 +58,7 @@ add_library(VRLockpicking SHARED
 	src/plugin/AssistRing.cpp
 	src/plugin/PickCounter.cpp
 	src/plugin/LockMods.cpp
+	src/plugin/Text.cpp
 	src/plugin/version.rc
 )
 target_include_directories(VRLockpicking PRIVATE src/plugin)

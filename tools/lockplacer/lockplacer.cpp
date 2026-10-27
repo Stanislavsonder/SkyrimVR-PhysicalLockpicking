@@ -408,7 +408,11 @@ int main(int argc, char** argv)
 		return Usage();
 	}
 	const std::string command = argv[1];
-	const auto        list = vrlp::ParseLockableModels(ReadText(argv[2]));
+	if (!fs::is_regular_file(argv[2])) {
+		std::fprintf(stderr, "can't find %s (give its full path; the game writes it to Documents\\My Games\\Skyrim VR\\SKSE)\n", argv[2]);
+		return 1;
+	}
+	const auto list = vrlp::ParseLockableModels(ReadText(argv[2]));
 	if (list.empty()) {
 		std::fprintf(stderr, "no models in %s\n", argv[2]);
 		return 1;

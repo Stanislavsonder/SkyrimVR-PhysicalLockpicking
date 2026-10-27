@@ -237,6 +237,25 @@ namespace
 		return a;
 	}
 
+	// Collision isn't needed to line up a lock, and NifSkope can fail to save some of it
+	// (bhkCompressedMeshShapeData): the preview copies have none.
+	int StripCollision(nifly::NifFile& a_nif)
+	{
+		auto& hdr = a_nif.GetHeader();
+		int   stripped = 0;
+		for (uint32_t i = 0; i < hdr.GetNumBlocks(); ++i) {
+			if (auto* obj = hdr.GetBlock<nifly::NiAVObject>(i); obj && !obj->collisionRef.IsEmpty()) {
+				obj->collisionRef.Clear();
+				++stripped;
+			}
+		}
+		if (stripped > 0) {
+			uint32_t deleted = 0;
+			hdr.DeleteUnreferencedBlocks<nifly::NiObject>(a_nif.GetBlockID(a_nif.GetRootNode()), &deleted);
+		}
+		return stripped;
+	}
+
 	struct Mesh
 	{
 		std::vector<Vector3>  v;
@@ -489,6 +508,7 @@ namespace
 				anchor = vrlp::GuessObjectAnchor(m.boundMin, m.boundMax, m.door);
 				from = "guessed";
 			}
+			StripCollision(nif);
 			fs::create_directories(out.parent_path());
 			if (!AddMarker(nif, anchor, &lock) || nif.Save(out) != 0) {
 				std::printf("failed   %s (could not write it)\n", key.c_str());

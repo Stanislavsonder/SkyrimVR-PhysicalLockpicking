@@ -1,9 +1,9 @@
 #pragma once
 
 // Reads a plugin file (.esm / .esp / .esl, Skyrim SE / VR format) for the placed references
-// that have a lock, and the base objects they place. Only those doors and containers are ever
-// locked in the game, so only those get the lock on the object itself, and only those are
-// offered as test locks.
+// that have a lock that can be picked (not "requires a key"), and the base objects they place.
+// Only those doors and containers are ever picked in the game, so only those get the lock on
+// the object itself, and only those are offered as test locks.
 
 #include <cstdint>
 #include <istream>

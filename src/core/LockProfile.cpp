@@ -287,6 +287,16 @@ namespace vrlp
 			a.valid = true;
 			return a;
 		}
+		// a trapdoor or a floor grate lies flat: its lock is on top, near the edge away from the hinge,
+		// read by a player standing past that edge, so the lock's up points to the hinge
+		if (size.z < 0.5f * std::min(size.x, size.y)) {
+			const float inset = std::clamp(size.y * 0.12f, 4.0f, 14.0f);
+			const bool  awayEdge = std::fabs(a_max.y) >= std::fabs(a_min.y);
+			a.keyhole = { mid.x, awayEdge ? a_max.y - inset : a_min.y + inset, a_max.z + 0.5f };
+			a.rot = LockAxes({ 0, 0, -1 }, { 0, awayEdge ? -1.0f : 1.0f, 0 });
+			a.valid = true;
+			return a;
+		}
 		// the door's thickness is its thinner horizontal side; its lock is on that face
 		const int   through = size.y <= size.x ? 1 : 0;
 		const int   along = 1 - through;

@@ -1313,6 +1313,15 @@ TEST(ObjectAnchorGuessAndOtherSide)
 	const ObjectAnchor again = OtherSide(back, { 0, -4, 0 }, { 90, 4, 180 });
 	CHECK_NEAR(Distance(again.keyhole, door.keyhole), 0.0, 1e-4);
 	CHECK_NEAR(Dot(again.rot.Column(0), door.rot.Column(0)), 1.0, 1e-4);
+	// a trapdoor hinged at its origin, lying flat: on top, near the free edge, facing down
+	const ObjectAnchor trap = GuessObjectAnchor({ -50, 0, -4 }, { 50, 120, 4 }, true);
+	CHECK(trap.keyhole.y > 100.0f && trap.keyhole.y < 120.0f);
+	CHECK(trap.keyhole.z > 4.0f && trap.keyhole.z < 5.0f);
+	CHECK_NEAR(Dot(trap.rot.Column(1), Vec3{ 0, 0, -1 }), 1.0, 1e-4);
+	CHECK_NEAR(Dot(trap.rot.Column(2), Vec3{ 0, -1, 0 }), 1.0, 1e-4);
+	const ObjectAnchor below = OtherSide(trap, { -50, 0, -4 }, { 50, 120, 4 });
+	CHECK(below.keyhole.z < -4.0f);
+	CHECK_NEAR(Dot(below.rot.Column(1), Vec3{ 0, 0, 1 }), 1.0, 1e-4);
 }
 
 TEST(ObjectAnchorPlacementRoundTrip)
@@ -1369,11 +1378,11 @@ namespace
 		{
 			return std::string("GRUP") + U32(std::uint32_t(a_content.size() + 24)) + std::string(a_label, 4) + U32(a_type) + std::string(8, '\0') + a_content;
 		}
-		static std::string Ref(std::uint32_t a_base, bool a_locked, std::uint32_t a_flags = 0)
+		static std::string Ref(std::uint32_t a_base, bool a_locked, std::uint32_t a_flags = 0, char a_level = 0)
 		{
 			std::string f = Field("NAME", U32(a_base));
 			if (a_locked) {
-				f += Field("XLOC", std::string(20, '\0'));
+				f += Field("XLOC", a_level + std::string(19, '\0'));
 			}
 			f += Field("DATA", std::string(24, '\0'));
 			return Record("REFR", f, a_flags);
@@ -1404,9 +1413,10 @@ TEST(PluginScanFindsLockedReferences)
 	// a chest base record outside the cells: not a reference, skipped
 	const std::string conts = W::Group("CONT", W::Record("CONT", W::Field("EDID", "Chest\0") + W::Field("NAME", W::U32(0x0000AAAA))));
 	// an interior cell: two locked chests of one kind, an open one, a locked door from Dawnguard,
-	// and one compressed reference
+	// one compressed reference, and a door only its key opens
 	const std::string cellChildren = W::Ref(0x00012345, true) + W::Ref(0x00012345, true) + W::Ref(0x00099999, false) +
-	                                 W::Ref(0x01000777, true) + W::Ref(0x00055555, true, 0x00040000);
+	                                 W::Ref(0x01000777, true) + W::Ref(0x00055555, true, 0x00040000) +
+	                                 W::Ref(0x00066666, true, 0, char(0xFF));
 	const std::string cells = W::Group("CELL", W::Group("\0\0\0\0", W::Record("CELL", W::Field("EDID", "Test\0")) +
 	                                                                    W::Group("\x01\0\0\0", cellChildren, 6), 2));
 	// an exterior: a locked door the plugin itself adds (index 2 = after its two masters)
@@ -1416,11 +1426,12 @@ TEST(PluginScanFindsLockedReferences)
 	const LockedRefScan scan = ScanLockedReferences(in);
 	CHECK(scan.ok);
 	CHECK(scan.masters.size() == 2 && scan.masters[0] == "Skyrim.esm" && scan.masters[1] == "Dawnguard.esm");
-	CHECK(scan.references == 6);
+	CHECK(scan.references == 7);
 	CHECK(scan.compressedSkipped == 1);
 	CHECK(scan.bases.size() == 3);
 	CHECK(scan.bases.contains(0x00012345) && scan.bases.at(0x00012345) == 2);
 	CHECK(!scan.bases.contains(0x00099999));
+	CHECK(!scan.bases.contains(0x00066666));
 	CHECK(!scan.bases.contains(0x0000AAAA));
 	CHECK(scan.bases.contains(0x01000777) && scan.bases.contains(0x02000801));
 	CHECK(FormFile(0x00012345, scan, "Mine.esp") == "Skyrim.esm");

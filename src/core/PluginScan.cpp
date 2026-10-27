@@ -109,8 +109,9 @@ namespace vrlp
 			Fields(data, [&](const std::uint8_t* a_type, const std::uint8_t* a_d, std::uint32_t a_size) {
 				if (Is(a_type, "NAME") && a_size >= 4) {
 					base = U32(a_d);
-				} else if (Is(a_type, "XLOC")) {
-					locked = true;
+				} else if (Is(a_type, "XLOC") && a_size >= 1) {
+					// its level: 255 means only its key opens it, it can't be picked
+					locked = a_d[0] != 0xFF;
 				}
 			});
 			if (locked && base) {

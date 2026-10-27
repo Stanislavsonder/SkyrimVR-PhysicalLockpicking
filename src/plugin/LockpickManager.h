@@ -67,6 +67,7 @@ namespace vrlp
 		void NudgeKeyhole(const Numpad::Input& a_pad, float a_dt);
 		bool LockOnObject(RE::TESObjectREFR* a_target, const Vec3& a_head);
 		Pose ObjectLockWorld() const;
+		ObjectAnchor ObjectSideShown() const;  // the door's side you stand on, as a lock on the object
 		void SaveObjectPlacement();
 		void EndGrab(bool a_save);
 		void SaveAlignment();

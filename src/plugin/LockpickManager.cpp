@@ -451,7 +451,7 @@ namespace vrlp
 		} else {
 			if (!_visuals.Create(models, ref.get(), profile)) {
 				logger::info("Running without 3D meshes (haptics + sound only)");
-			} else if (_onObject && _onObject->anchor.keyholeOnly) {
+			} else if (_onObject && ObjectSideShown().keyholeOnly) {
 				_visuals.ShowKeyholeOnly();
 			}
 			if (_cfg.showTargets || _cfg.markupMode) {
@@ -1292,7 +1292,8 @@ namespace vrlp
 
 	// bLockOnObject: where the lock goes on the door or chest being picked. Its placement for the
 	// model: the player's own (markup tool), else a built-in one, else a guess from the model's
-	// bounds. A door's lock is on the side you stand. Doors and containers the game's plugins
+	// bounds. A door's lock is on the side you stand (marked there too, or the mirror of the marked
+	// side). Doors and containers the game's plugins
 	// never lock keep the lock in front of you.
 	bool LockpickManager::LockOnObject(RE::TESObjectREFR* a_target, const Vec3& a_head)
 	{
@@ -1337,15 +1338,13 @@ namespace vrlp
 			o.anchor = GuessObjectAnchor(o.boundMin, o.boundMax, o.door);
 		}
 		if (o.door) {
-			// you face into the lock: if its "into the lock" points at you, you're on the other side
-			const Pose front = PlaceOnObject(o.anchor, o.object, o.scale);
-			o.otherSide = Dot(front.pos - a_head, front.rot.Column(1)) < 0.0f;
+			o.otherSide = UseOtherSide(o.anchor, o.boundMin, o.boundMax, o.object, o.scale, a_head);
 		}
 		_onObject = o;
 		const Pose  lock = ObjectLockWorld();
 		const float dist = Distance(lock.pos, a_head);
-		logger::info("Lock on the {} [{}] ({}{}), {:.0f} from your head; bounds ({:.0f}, {:.0f}, {:.0f}) - ({:.0f}, {:.0f}, {:.0f}), scale {:.2f}",
-			o.door ? "door" : "container", key, source, o.otherSide ? ", the other side" : "", dist, o.boundMin.x, o.boundMin.y, o.boundMin.z,
+		logger::info("Lock on the {} [{}] ({}{}{}), {:.0f} from your head; bounds ({:.0f}, {:.0f}, {:.0f}) - ({:.0f}, {:.0f}, {:.0f}), scale {:.2f}",
+			o.door ? "door" : "container", key, source, o.anchor.back ? ", both sides marked" : "", o.otherSide ? ", the other side" : "", dist, o.boundMin.x, o.boundMin.y, o.boundMin.z,
 			o.boundMax.x, o.boundMax.y, o.boundMax.z, o.scale);
 		return true;
 	}
@@ -1355,9 +1354,13 @@ namespace vrlp
 		if (!_onObject) {
 			return {};
 		}
-		const auto&        o = *_onObject;
-		const ObjectAnchor a = o.otherSide ? OtherSide(o.anchor, o.boundMin, o.boundMax) : o.anchor;
-		return PlaceOnObject(a, o.object, o.scale);
+		return PlaceOnObject(ObjectSideShown(), _onObject->object, _onObject->scale);
+	}
+
+	ObjectAnchor LockpickManager::ObjectSideShown() const
+	{
+		const auto& o = *_onObject;
+		return o.otherSide ? OtherSide(o.anchor, o.boundMin, o.boundMax) : o.anchor;
 	}
 
 	// Markup, object part: where the lock sits on its door or chest.
@@ -1371,11 +1374,18 @@ namespace vrlp
 			return;
 		}
 		auto& o = *_onObject;
-		// a lock pose in the world -> the anchor as saved (a door: its marked side)
-		auto store = [&o](const Pose& a_world) {
+		// a lock pose in the world -> the anchor as saved. Moved on a door's other side, that side
+		// is marked on its own from then on (no longer the mirror).
+		auto store = [this, &o](const Pose& a_world) {
 			ObjectAnchor shown = ObjectAnchorFromPose(a_world, o.object, o.scale);
+			if (o.otherSide) {
+				const bool keyholeOnly = ObjectSideShown().keyholeOnly;
+				o.anchor.back = ObjectAnchor::Side{ shown.keyhole, shown.rot, keyholeOnly };
+				return;
+			}
 			shown.keyholeOnly = o.anchor.keyholeOnly;
-			o.anchor = o.otherSide ? OtherSide(shown, o.boundMin, o.boundMax) : shown;
+			shown.back = o.anchor.back;
+			o.anchor = shown;
 		};
 		if (a_reset) {
 			_lockGrab.reset();

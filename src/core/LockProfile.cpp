@@ -1,6 +1,7 @@
 #include "LockProfile.h"
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <cmath>
 #include <cstdlib>
@@ -265,14 +266,27 @@ namespace vrlp
 
 		std::string AnchorVecText(const Vec3& a_v) { return std::format("{:.3f}, {:.3f}, {:.3f}", a_v.x, a_v.y, a_v.z); }
 
-		std::vector<IniValue> AnchorValues(const std::string& a_section, const ObjectAnchor& a_a)
+		// a_clearBack: a back side saved before is gone (its keys are emptied)
+		std::vector<IniValue> AnchorValues(const std::string& a_section, const ObjectAnchor& a_a, bool a_clearBack = false)
 		{
-			return {
+			std::vector<IniValue> out = {
 				{ a_section, "vObjectKeyhole", AnchorVecText(a_a.keyhole) },
 				{ a_section, "vObjectInto", AnchorVecText(a_a.rot.Column(1)) },
 				{ a_section, "vObjectUp", AnchorVecText(a_a.rot.Column(2)) },
 				{ a_section, "bObjectKeyholeOnly", a_a.keyholeOnly ? "1" : "0" },
 			};
+			if (a_a.back) {
+				const auto& b = *a_a.back;
+				out.push_back({ a_section, "vObjectKeyhole2", AnchorVecText(b.keyhole) });
+				out.push_back({ a_section, "vObjectInto2", AnchorVecText(b.rot.Column(1)) });
+				out.push_back({ a_section, "vObjectUp2", AnchorVecText(b.rot.Column(2)) });
+				out.push_back({ a_section, "bObjectKeyholeOnly2", b.keyholeOnly ? "1" : "0" });
+			} else if (a_clearBack) {
+				for (const char* key : { "vObjectKeyhole2", "vObjectInto2", "vObjectUp2", "bObjectKeyholeOnly2" }) {
+					out.push_back({ a_section, key, "" });
+				}
+			}
+			return out;
 		}
 	}
 
@@ -317,6 +331,14 @@ namespace vrlp
 
 	ObjectAnchor OtherSide(const ObjectAnchor& a_anchor, const Vec3& a_min, const Vec3& a_max)
 	{
+		if (a_anchor.back) {
+			ObjectAnchor a = a_anchor;
+			a.keyhole = a_anchor.back->keyhole;
+			a.rot = a_anchor.back->rot;
+			a.keyholeOnly = a_anchor.back->keyholeOnly;
+			a.back = ObjectAnchor::Side{ a_anchor.keyhole, a_anchor.rot, a_anchor.keyholeOnly };
+			return a;
+		}
 		ObjectAnchor a = a_anchor;
 		const Vec3   into = a_anchor.rot.Column(1);
 		const int    i = std::fabs(into.x) >= std::fabs(into.y) ? (std::fabs(into.x) >= std::fabs(into.z) ? 0 : 2) :
@@ -327,6 +349,19 @@ namespace vrlp
 		return a;
 	}
 
+	bool UseOtherSide(const ObjectAnchor& a_anchor, const Vec3& a_min, const Vec3& a_max, const Pose& a_object, float a_scale, const Vec3& a_head)
+	{
+		const Pose front = PlaceOnObject(a_anchor, a_object, a_scale);
+		const Pose back = PlaceOnObject(OtherSide(a_anchor, a_min, a_max), a_object, a_scale);
+		// you face into the lock: its "into the lock" points away from you
+		const bool atFront = Dot(front.pos - a_head, front.rot.Column(1)) > 0.0f;
+		const bool atBack = Dot(back.pos - a_head, back.rot.Column(1)) > 0.0f;
+		if (atFront != atBack) {
+			return atBack;
+		}
+		return Distance(back.pos, a_head) < Distance(front.pos, a_head);
+	}
+
 	std::map<std::string, ObjectAnchor> ParseObjectAnchors(const std::string& a_text)
 	{
 		struct Raw
@@ -335,17 +370,22 @@ namespace vrlp
 			bool valid{ false };
 			bool keyholeOnly{ false };
 		};
-		std::map<std::string, Raw> raw;
+		// [0] the marked side, [1] a door's other side (the keys ending in 2)
+		std::map<std::string, std::array<Raw, 2>> raw;
 		for (const auto& [key, value] : ParseIni(a_text)) {
 			const auto dot = key.rfind('.');
 			if (dot == std::string::npos) {
 				continue;
 			}
-			const std::string name = key.substr(dot + 1);
+			std::string name = key.substr(dot + 1);
+			const int   side = !name.empty() && name.back() == '2' ? 1 : 0;
+			if (side == 1) {
+				name.pop_back();
+			}
 			if (name != "vobjectkeyhole" && name != "vobjectinto" && name != "vobjectup" && name != "bobjectkeyholeonly") {
 				continue;
 			}
-			Raw& r = raw[NormalizeModelPath(key.substr(0, dot))];
+			Raw& r = raw[NormalizeModelPath(key.substr(0, dot))][side];
 			if (name == "vobjectkeyhole") {
 				r.valid = ParseVec(value, r.keyhole);
 			} else if (name == "bobjectkeyholeonly") {
@@ -359,17 +399,27 @@ namespace vrlp
 			}
 		}
 		std::map<std::string, ObjectAnchor> out;
-		for (const auto& [model, r] : raw) {
-			if (r.valid) {
-				out[model] = ObjectAnchor{ r.keyhole, LockAxes(r.into, r.up), true, r.keyholeOnly };
+		for (const auto& [model, sides] : raw) {
+			const Raw& r = sides[0];
+			if (!r.valid) {
+				continue;
 			}
+			ObjectAnchor a{ r.keyhole, LockAxes(r.into, r.up), true, r.keyholeOnly };
+			if (const Raw& b = sides[1]; b.valid) {
+				a.back = ObjectAnchor::Side{ b.keyhole, LockAxes(b.into, b.up), b.keyholeOnly };
+			}
+			out[model] = a;
 		}
 		return out;
 	}
 
 	std::string WriteObjectAnchor(const std::string& a_text, const std::string& a_modelPath, const ObjectAnchor& a_anchor)
 	{
-		return SetIniValues(a_text, AnchorValues(NormalizeModelPath(a_modelPath), a_anchor));
+		const std::string key = NormalizeModelPath(a_modelPath);
+		const auto        before = ParseObjectAnchors(a_text);
+		const auto        old = before.find(key);
+		const bool        clearBack = old != before.end() && old->second.back && !a_anchor.back;
+		return SetIniValues(a_text, AnchorValues(key, a_anchor, clearBack));
 	}
 
 	std::string ObjectAnchorText(const ObjectAnchor& a_anchor)

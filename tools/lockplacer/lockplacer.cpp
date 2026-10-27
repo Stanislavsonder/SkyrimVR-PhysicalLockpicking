@@ -15,6 +15,7 @@
 //
 // The marker is a node named VRLP_Lock under the model's root: its origin is the keyhole, +Y
 // points into the door or chest, +Z is up. Move and turn it with NifSkope's Transform > Edit.
+// A second VRLP_Lock (a copy of the first) marks a door's other side (vObjectKeyhole2 ...).
 
 #include <NifFile.hpp>
 
@@ -237,6 +238,42 @@ namespace
 		return a;
 	}
 
+	// The VRLP_Lock nodes, in the file's order: the marked side, then a door's other side.
+	std::vector<nifly::NiNode*> Markers(nifly::NifFile& a_nif)
+	{
+		std::vector<nifly::NiNode*> out;
+		auto&                       hdr = a_nif.GetHeader();
+		for (uint32_t i = 0; i < hdr.GetNumBlocks(); ++i) {
+			if (auto* node = hdr.GetBlock<nifly::NiNode>(i); node && node->name.get() == kMarker) {
+				out.push_back(node);
+			}
+		}
+		return out;
+	}
+
+	// Where the markers are: the first one, and the second as the door's other side.
+	std::optional<vrlp::ObjectAnchor> MarkersAnchor(nifly::NifFile& a_nif, const std::string& a_key)
+	{
+		const auto markers = Markers(a_nif);
+		if (markers.empty()) {
+			return std::nullopt;
+		}
+		for (auto* node : markers) {
+			if (a_nif.GetParentNode(node) != a_nif.GetRootNode()) {
+				std::printf("note     %s: a marker is no longer right under the root; its place is read as if it were\n", a_key.c_str());
+			}
+		}
+		if (markers.size() > 2) {
+			std::printf("note     %s: %zu markers; the first two are used (one for each side of a door)\n", a_key.c_str(), markers.size());
+		}
+		vrlp::ObjectAnchor a = MarkerAnchor(a_nif, markers[0]);
+		if (markers.size() >= 2) {
+			const vrlp::ObjectAnchor b = MarkerAnchor(a_nif, markers[1]);
+			a.back = vrlp::ObjectAnchor::Side{ b.keyhole, b.rot, b.keyholeOnly };
+		}
+		return a;
+	}
+
 	// Collision isn't needed to line up a lock, and NifSkope can fail to save some of it
 	// (bhkCompressedMeshShapeData): the preview copies have none.
 	int StripCollision(nifly::NifFile& a_nif)
@@ -422,7 +459,28 @@ namespace
 		std::printf("lock     %s from %s: %zu part(s) shown on the markers\n", key.c_str(), from.c_str(), a_lock.shapes.size());
 	}
 
-	bool AddMarker(nifly::NifFile& a_nif, const vrlp::ObjectAnchor& a_anchor, LockModel* a_lock = nullptr)
+	bool AddMarker(nifly::NifFile& a_nif, const vrlp::ObjectAnchor& a_anchor, LockModel* a_lock = nullptr);
+
+	// The marked side, and a door's other side when it was marked too.
+	bool AddMarkers(nifly::NifFile& a_nif, const vrlp::ObjectAnchor& a_anchor, LockModel* a_lock)
+	{
+		vrlp::ObjectAnchor front = a_anchor;
+		front.back.reset();
+		if (!AddMarker(a_nif, front, a_lock)) {
+			return false;
+		}
+		if (!a_anchor.back) {
+			return true;
+		}
+		vrlp::ObjectAnchor back;
+		back.keyhole = a_anchor.back->keyhole;
+		back.rot = a_anchor.back->rot;
+		back.keyholeOnly = a_anchor.back->keyholeOnly;
+		back.valid = true;
+		return AddMarker(a_nif, back, a_lock);
+	}
+
+	bool AddMarker(nifly::NifFile& a_nif, const vrlp::ObjectAnchor& a_anchor, LockModel* a_lock)
 	{
 		auto* root = a_nif.GetRootNode();
 		if (!root) {
@@ -474,9 +532,7 @@ namespace
 			if (fs::exists(out)) {
 				nifly::NifFile existing;
 				if (existing.Load(out) == 0) {
-					if (auto* node = existing.FindBlockByName<nifly::NiNode>(kMarker)) {
-						moved = MarkerAnchor(existing, node);
-					}
+					moved = MarkersAnchor(existing, key);
 				}
 			}
 			std::string source;
@@ -510,12 +566,13 @@ namespace
 			}
 			StripCollision(nif);
 			fs::create_directories(out.parent_path());
-			if (!AddMarker(nif, anchor, &lock) || nif.Save(out) != 0) {
+			if (!AddMarkers(nif, anchor, &lock) || nif.Save(out) != 0) {
 				std::printf("failed   %s (could not write it)\n", key.c_str());
 				++failed;
 				continue;
 			}
-			std::printf("placed   %s (%s, %s, locked %d times, from %s)\n", key.c_str(), m.door ? "door" : "container", from, m.locked, source.c_str());
+			std::printf("placed   %s (%s, %s%s, locked %d times, from %s)\n", key.c_str(), m.door ? "door" : "container", from, anchor.back ? ", both sides" : "",
+				m.locked, source.c_str());
 			++placed;
 		}
 		// the marker alone, to copy into other models
@@ -544,18 +601,14 @@ namespace
 			if (!fs::exists(path) || nif.Load(path) != 0) {
 				continue;
 			}
-			auto* node = nif.FindBlockByName<nifly::NiNode>(kMarker);
-			if (!node) {
+			const auto a = MarkersAnchor(nif, key);
+			if (!a) {
 				std::printf("no marker %s\n", key.c_str());
 				++without;
 				continue;
 			}
-			if (nif.GetParentNode(node) != nif.GetRootNode()) {
-				std::printf("note     %s: the marker is no longer right under the root; its place is read as if it were\n", key.c_str());
-			}
-			const vrlp::ObjectAnchor a = MarkerAnchor(nif, node);
-			text = vrlp::WriteObjectAnchor(text, key, a);
-			std::printf("saved    %s: %s\n", key.c_str(), vrlp::ObjectAnchorText(a).c_str());
+			text = vrlp::WriteObjectAnchor(text, key, *a);
+			std::printf("saved    %s: %s\n", key.c_str(), vrlp::ObjectAnchorText(*a).c_str());
 			++saved;
 		}
 		std::ofstream out(a_ini, std::ios::binary | std::ios::trunc);

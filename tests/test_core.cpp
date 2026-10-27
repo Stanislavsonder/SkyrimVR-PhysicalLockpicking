@@ -1325,6 +1325,56 @@ TEST(ObjectAnchorGuessAndOtherSide)
 	CHECK_NEAR(Dot(below.rot.Column(1), Vec3{ 0, 0, 1 }), 1.0, 1e-4);
 }
 
+TEST(ObjectAnchorBothSidesMarked)
+{
+	// a door whose bounds take in its frame: the mirror would be far off, so its other side is marked
+	const Vec3   lo{ -60, 192, 0 }, hi{ 57, 319, 181 };
+	ObjectAnchor door;
+	door.keyhole = { 42, 192, 62 };
+	door.rot = Mat3::FromColumns({ 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 });
+	door.valid = true;
+	std::string text = WriteObjectAnchor("", "architecture\\orclonghouse\\orcdoor01.nif", door);
+	text = text + "vObjectKeyhole2 = 40, 214, 61\nvObjectInto2 = 0, -1, 0\nvObjectUp2 = 0, 0, 1\nbObjectKeyholeOnly2 = 1\n";
+	const ObjectAnchor both = ParseObjectAnchors(text).at("architecture\\orclonghouse\\orcdoor01.nif");
+	CHECK(both.back.has_value());
+	CHECK(!both.keyholeOnly && both.back->keyholeOnly);
+	// the other side is the one marked there, and back again
+	const ObjectAnchor other = OtherSide(both, lo, hi);
+	CHECK_NEAR(Distance(other.keyhole, { 40, 214, 61 }), 0.0, 1e-4);
+	CHECK_NEAR(Dot(other.rot.Column(1), Vec3{ 0, -1, 0 }), 1.0, 1e-4);
+	CHECK(other.keyholeOnly);
+	const ObjectAnchor again = OtherSide(other, lo, hi);
+	CHECK_NEAR(Distance(again.keyhole, both.keyhole), 0.0, 1e-4);
+	CHECK(!again.keyholeOnly);
+
+	// the lock you stand in front of: the marked one is read from smaller Y, the other from larger
+	Pose object;
+	CHECK(!UseOtherSide(both, lo, hi, object, 1.0f, { 42, 150, 120 }));
+	CHECK(UseOtherSide(both, lo, hi, object, 1.0f, { 40, 260, 120 }));
+	// turned and moved in the world: the same
+	object.rot = AxisAngle({ 0, 0, 1 }, 1.2f);
+	object.pos = { 500, -300, 20 };
+	CHECK(UseOtherSide(both, lo, hi, object, 1.0f, object.pos + object.rot * Vec3{ 40, 260, 120 }));
+	// in front of both (or neither): the nearer one
+	ObjectAnchor odd = both;
+	odd.back->rot = door.rot;
+	odd.back->keyhole = { 40, 240, 61 };
+	CHECK(UseOtherSide(odd, lo, hi, Pose{}, 1.0f, { 40, 300, 120 }));
+	CHECK(!UseOtherSide(odd, lo, hi, Pose{}, 1.0f, { 40, 150, 120 }));
+	// only one side marked: the mirror, as before
+	CHECK(UseOtherSide(door, lo, hi, Pose{}, 1.0f, { 42, 400, 120 }));
+	CHECK(!UseOtherSide(door, lo, hi, Pose{}, 1.0f, { 42, 100, 120 }));
+
+	// saved with both sides; the other side's marker deleted -> its keys emptied, read as one side
+	const std::string saved = WriteObjectAnchor("", "architecture\\orclonghouse\\orcdoor01.nif", both);
+	CHECK(saved.find("vObjectKeyhole2=40.000, 214.000, 61.000") != std::string::npos);
+	CHECK(ParseObjectAnchors(saved).at("architecture\\orclonghouse\\orcdoor01.nif").back.has_value());
+	const std::string cleared = WriteObjectAnchor(saved, "architecture\\orclonghouse\\orcdoor01.nif", door);
+	CHECK(!ParseObjectAnchors(cleared).at("architecture\\orclonghouse\\orcdoor01.nif").back.has_value());
+	CHECK(WriteObjectAnchor("", "a.nif", door).find("Keyhole2") == std::string::npos);
+	CHECK(ObjectAnchorText(both).find("vObjectKeyhole2 = 40.000") != std::string::npos);
+}
+
 TEST(ObjectAnchorPlacementRoundTrip)
 {
 	ObjectAnchor a;

@@ -4,6 +4,7 @@
 // and saved per model (by its .nif path), so lock-model mods can be supported model by model.
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -69,23 +70,35 @@ namespace vrlp
 	// Where the lock sits on a door or chest (bLockOnObject), in the object's own model space
 	// (before the reference's scale): the keyhole, and the lock frame's axes (right, into the
 	// lock, up). Set with the markup tool's first step and saved under the object's model in the
-	// same file: vObjectKeyhole, vObjectInto, vObjectUp. For a door it is the side marked; the
-	// other side is its mirror through the door (OtherSide).
+	// same file: vObjectKeyhole, vObjectInto, vObjectUp. A door can have its other side marked too
+	// (the same keys ending in 2); without it, the other side is the mirror through the door
+	// (OtherSide).
 	struct ObjectAnchor
 	{
-		Vec3 keyhole;
-		Mat3 rot;  // columns: right, into the lock, up
-		bool valid{ false };
-		bool keyholeOnly{ false };  // only the lock's turning part is drawn (small chests, safes)
+		struct Side
+		{
+			Vec3 keyhole;
+			Mat3 rot;
+			bool keyholeOnly{ false };
+		};
+		Vec3                keyhole;
+		Mat3                rot;  // columns: right, into the lock, up
+		bool                valid{ false };
+		bool                keyholeOnly{ false };  // only the lock's turning part is drawn (small chests, safes)
+		std::optional<Side> back;                  // the door's other side, when it was marked
 	};
 
 	// A first guess from the model's bounds (OBND, model space). Chest: on its front (-Y) face,
 	// in the middle, a little below the lid. Door: on the face of its thin side, at handle height,
 	// near the edge furthest from the model's origin (doors swing about their origin).
 	ObjectAnchor GuessObjectAnchor(const Vec3& a_boundMin, const Vec3& a_boundMax, bool a_door);
-	// The same lock seen from the other side of a door: mirrored through the middle of the door,
-	// facing the other way. Applying it twice gives the anchor back.
+	// The lock on the other side of a door: the one marked there (front and back swapped), else
+	// this one mirrored through the middle of the door, facing the other way. Applying it twice
+	// gives the anchor back.
 	ObjectAnchor OtherSide(const ObjectAnchor& a_anchor, const Vec3& a_boundMin, const Vec3& a_boundMax);
+	// Which of a door's two locks a player with the head at a_head picks: the one they stand in
+	// front of, else the nearer one. True for the other side.
+	bool UseOtherSide(const ObjectAnchor& a_anchor, const Vec3& a_boundMin, const Vec3& a_boundMax, const Pose& a_object, float a_scale, const Vec3& a_head);
 
 	std::map<std::string, ObjectAnchor> ParseObjectAnchors(const std::string& a_text);
 	std::string                         WriteObjectAnchor(const std::string& a_text, const std::string& a_modelPath, const ObjectAnchor& a_anchor);

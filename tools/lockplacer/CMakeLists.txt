@@ -8,7 +8,7 @@ set(NIFLY_DIR "" CACHE PATH "nifly source checkout (https://github.com/ousnius/n
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 add_subdirectory(${NIFLY_DIR} nifly EXCLUDE_FROM_ALL)
 set(CORE ${CMAKE_CURRENT_SOURCE_DIR}/../../src/core)
-add_executable(lockplacer lockplacer.cpp ${CORE}/LockProfile.cpp ${CORE}/Config.cpp ${CORE}/MeshFit.cpp)
+add_executable(lockplacer lockplacer.cpp ${CORE}/LockProfile.cpp ${CORE}/Config.cpp ${CORE}/MeshFit.cpp ${CORE}/Bsa.cpp)
 target_include_directories(lockplacer PRIVATE ${CORE})
 target_link_libraries(lockplacer PRIVATE nifly)
 if(MSVC)

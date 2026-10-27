@@ -19,6 +19,7 @@ add_library(vrlp_core STATIC
 	src/core/LockVariations.cpp
 	src/core/Translations.cpp
 	src/core/PluginScan.cpp
+	src/core/Bsa.cpp
 )
 target_include_directories(vrlp_core PUBLIC src/core)
 target_compile_features(vrlp_core PUBLIC cxx_std_20)

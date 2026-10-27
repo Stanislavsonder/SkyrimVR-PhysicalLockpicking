@@ -13,12 +13,12 @@ cmake --build build-lockplacer
 ## Steps
 
 1. **The list.** Start the game once with this version of the mod. A few seconds after the main menu it writes `Documents\My Games\Skyrim VR\SKSE\VRLockpicking_LockableModels.txt`: every door and chest model that your game and mods lock somewhere, the most often locked first.
-2. **The models.** Extract the meshes from the game's archives (for example with BSA Browser: `Skyrim - Meshes0.bsa`, `Skyrim - Meshes1.bsa`, the DLC archives, and those of your mods) into a folder outside `Data`, say `C:\VRLP\extracted`. Loose meshes of your mods can be read from their own folders too.
+2. **The models.** lockplacer reads them straight from the game's archives: give it your `Data` folder. Add the folders of mods with their own door or chest models (loose meshes or their `.bsa`), or single `.bsa` files, separated by `;`. A folder's loose meshes come first, then its archives, the game's later ones (`Update.bsa`, the DLC) before `Skyrim - Meshes0/1.bsa`, as in the game. Extracted meshes work too: a folder with `meshes\...` in it.
 3. **Place the markers:**
    ```
-   lockplacer place VRLockpicking_LockableModels.txt C:\VRLP\preview C:\VRLP\extracted;C:\Mods\SomeMod VRLockpicking_Locks.ini
+   lockplacer place VRLockpicking_LockableModels.txt C:\VRLP\preview "D:\SteamLibrary\steamapps\common\SkyrimVR\Data;C:\Mods\SomeMod" VRLockpicking_Locks.ini
    ```
-   Each model is copied to `C:\VRLP\preview\meshes\...` with a marker where the lock is now: what the INI says, else the mod's guess. The INI is optional. Copies that are already there keep their marker, so you can run it again after adding models. Never put the preview folder into `Data`.
+   Each model is copied to `C:\VRLP\preview\meshes\...` with a marker where the lock is now: what the INI says, else the mod's guess. Each line says where the model came from; a `missing` line means it was in none of them. The INI is optional. Copies that are already there keep their marker, so you can run it again after adding models. Never put the preview folder into `Data`.
 4. **Line them up in NifSkope.** Open a copy. The marker is the node `VRLP_Lock`: a white frame the size of the lock's face, a red keyhole in the middle, a green arrow pointing into the door or chest, and a blue tick on top. Select `VRLP_Lock`, then Transform → Edit, and move and turn it until the keyhole sits where the lock should be. Save.
 5. **Save them for the mod:**
    ```

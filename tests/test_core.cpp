@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "Bsa.h"
 #include "Config.h"
 #include "LockSession.h"
 #include "LockProfile.h"
@@ -1440,6 +1441,52 @@ TEST(PluginScanFindsLockedReferences)
 
 	std::istringstream notPlugin("not a plugin at all, just text");
 	CHECK(!ScanLockedReferences(notPlugin).ok);
+}
+
+TEST(BsaReadsStoredAndLz4Files)
+{
+	using W = PluginWriter;
+	// "abcabc..." (18 bytes): 3 literals, then a match 3 back, 15 long (token 0x3B)
+	const std::string block = std::string("\x3B", 1) + "abc" + std::string("\x03\x00", 2);
+	const std::string frame = W::U32(0x184D2204) + std::string("\x60\x40\x00", 3) + W::U32(std::uint32_t(block.size())) + block + W::U32(0);
+	const std::string packed = W::U32(18) + frame;
+	const std::string stored = "hello";
+	const auto        decoded = DecodeLz4Frame(reinterpret_cast<const std::uint8_t*>(frame.data()), frame.size());
+	CHECK(decoded && std::string(decoded->begin(), decoded->end()) == "abcabcabcabcabcabc");
+
+	// version 105, one folder with two files: stored as it is, and packed (the size's toggle bit)
+	const std::string folder = std::string("meshes\\clutter") + '\0';
+	const std::string names = std::string("Chest01.nif") + '\0' + "Door01.nif" + '\0';
+	const std::uint32_t dataStart = 36 + 24 + 1 + std::uint32_t(folder.size()) + 32 + std::uint32_t(names.size());
+	std::string bsa = std::string("BSA\0", 4) + W::U32(105) + W::U32(36) + W::U32(0x3) + W::U32(1) + W::U32(2) + W::U32(std::uint32_t(folder.size())) +
+	                  W::U32(std::uint32_t(names.size())) + W::U32(0);
+	bsa += std::string(8, '\0') + W::U32(2) + W::U32(0) + std::string(8, '\0');  // folder record
+	bsa += char(folder.size()) + folder;
+	bsa += std::string(8, '\0') + W::U32(std::uint32_t(stored.size())) + W::U32(dataStart);
+	bsa += std::string(8, '\0') + W::U32(std::uint32_t(packed.size()) | 0x40000000) + W::U32(dataStart + std::uint32_t(stored.size()));
+	bsa += names + stored + packed;
+	const auto path = std::filesystem::temp_directory_path() / "vrlp_test.bsa";
+	{
+		std::ofstream out(path, std::ios::binary);
+		out << bsa;
+	}
+	BsaArchive archive;
+	CHECK(archive.Open(path.string()));
+	CHECK(archive.Size() == 2);
+	CHECK(archive.Contains("Meshes/Clutter/chest01.NIF"));
+	const auto chest = archive.Read("meshes\\clutter\\chest01.nif");
+	CHECK(chest && std::string(chest->begin(), chest->end()) == "hello");
+	const auto door = archive.Read("\\MESHES\\clutter\\door01.nif");
+	CHECK(door && std::string(door->begin(), door->end()) == "abcabcabcabcabcabc");
+	CHECK(!archive.Read("meshes\\clutter\\nothing.nif"));
+	std::filesystem::remove(path);
+	const auto notArchive = std::filesystem::temp_directory_path() / "vrlp_test.txt";
+	{
+		std::ofstream out(notArchive, std::ios::binary);
+		out << "not an archive, just some text to read";
+	}
+	CHECK(!archive.Open(notArchive.string()));
+	std::filesystem::remove(notArchive);
 }
 
 TEST(LockVariationsDescribesItsSections)

@@ -4,3 +4,12 @@ out/
 vcpkg_installed/
 *.user
 __pycache__/
+# tools/ holds only the repo's own tools; anything else put there (BSA tools, lockplacer.exe,
+# extracted or previewed meshes) stays local
+/tools/*
+!/tools/audit_address_ids.py
+!/tools/lockplacer/
+!/tools/make_mcm.py
+!/tools/nifgen/
+!/tools/package.py
+/tools/lockplacer/*.exe

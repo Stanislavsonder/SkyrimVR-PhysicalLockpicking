@@ -1,10 +1,13 @@
 // Lines up the lock on door and chest models outside the game, in NifSkope (see README.md).
 //
-//   lockplacer place <list> <out dir> <data dir>[;<data dir>...] [VRLockpicking_Locks.ini]
+//   lockplacer place <list> <out dir> <data>[;<data>...] [VRLockpicking_Locks.ini]
 //     For every model in the list the plugin writes (VRLockpicking_LockableModels.txt), copies
-//     the model from the extracted game data into <out dir>\meshes\..., with a marker where the
+//     the model from the game's data into <out dir>\meshes\..., with a marker where the
 //     lock sits: the place saved in the INI, else the plugin's guess from the model's size. A
 //     copy that is already there keeps its marker (you may have moved it).
+//     Each <data> is a folder (the game's Data, a mod's folder, extracted meshes) or one .bsa. A
+//     folder's loose meshes come first, then its .bsa archives, the game's later ones first, as
+//     the game reads them.
 //   lockplacer read <list> <out dir> <VRLockpicking_Locks.ini>
 //     Reads where the markers are now and saves them to the INI (vObjectKeyhole / vObjectInto /
 //     vObjectUp), the same file and keys the in-game markup tool writes.
@@ -14,14 +17,18 @@
 
 #include <NifFile.hpp>
 
+#include <algorithm>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <map>
+#include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <vector>
 
+#include "Bsa.h"
 #include "Config.h"
 #include "LockProfile.h"
 
@@ -97,6 +104,92 @@ namespace
 		}
 		return p;
 	}
+
+	// Where the models come from: folders of loose files and the archives in them, by priority.
+	class Sources
+	{
+	public:
+		explicit Sources(const std::vector<std::string>& a_data)
+		{
+			for (const auto& d : a_data) {
+				const fs::path path(d);
+				if (fs::is_directory(path)) {
+					_items.push_back({ path, nullptr });
+					std::vector<fs::path> archives;
+					for (const auto& e : fs::directory_iterator(path)) {
+						if (e.is_regular_file() && Lower(e.path().extension().string()) == ".bsa") {
+							archives.push_back(e.path());
+						}
+					}
+					std::sort(archives.begin(), archives.end(), [](const fs::path& a_l, const fs::path& a_r) {
+						const int l = Rank(a_l), r = Rank(a_r);
+						return l != r ? l > r : Lower(a_l.filename().string()) > Lower(a_r.filename().string());
+					});
+					for (const auto& a : archives) {
+						AddArchive(a);
+					}
+				} else if (Lower(path.extension().string()) == ".bsa") {
+					AddArchive(path);
+				} else {
+					std::printf("note     %s is neither a folder nor a .bsa\n", d.c_str());
+				}
+			}
+		}
+
+		// The model's file as it is, and where it was found; empty when nowhere.
+		std::optional<std::string> Get(const std::string& a_key, std::string& a_from)
+		{
+			const std::string inArchive = "meshes\\" + a_key;
+			for (auto& item : _items) {
+				if (!item.archive) {
+					const fs::path p = Find(item.path, inArchive);
+					if (fs::exists(p)) {
+						a_from = p.string();
+						return ReadText(p);
+					}
+				} else if (item.archive->Contains(inArchive)) {
+					a_from = item.path.filename().string();
+					if (auto data = item.archive->Read(inArchive)) {
+						return std::string(data->begin(), data->end());
+					}
+					std::printf("note     %s: could not unpack it from %s\n", a_key.c_str(), a_from.c_str());
+				}
+			}
+			return std::nullopt;
+		}
+
+	private:
+		struct Item
+		{
+			fs::path                          path;
+			std::unique_ptr<vrlp::BsaArchive> archive;
+		};
+
+		// The game loads its own archives first and in this order; the rest (mods) after them.
+		static int Rank(const fs::path& a_path)
+		{
+			const std::string n = Lower(a_path.filename().string());
+			const char*       order[] = { "skyrim - ", "update.bsa", "dawnguard.bsa", "hearthfires.bsa", "dragonborn.bsa", "skyrim_vr" };
+			for (int i = 0; i < 6; ++i) {
+				if (n.starts_with(order[i])) {
+					return i;
+				}
+			}
+			return 6;
+		}
+
+		void AddArchive(const fs::path& a_path)
+		{
+			auto archive = std::make_unique<vrlp::BsaArchive>();
+			if (!archive->Open(a_path.string())) {
+				std::printf("note     %s: not an archive this can read\n", a_path.string().c_str());
+				return;
+			}
+			_items.push_back({ a_path, std::move(archive) });
+		}
+
+		std::vector<Item> _items;
+	};
 
 	nifly::MatTransform ToNif(const vrlp::ObjectAnchor& a_a)
 	{
@@ -201,7 +294,7 @@ namespace
 		return true;
 	}
 
-	int Place(const std::vector<vrlp::LockableModel>& a_list, const fs::path& a_out, const std::vector<std::string>& a_data, const fs::path& a_ini)
+	int Place(const std::vector<vrlp::LockableModel>& a_list, const fs::path& a_out, Sources& a_sources, const fs::path& a_ini)
 	{
 		const auto saved = a_ini.empty() ? std::map<std::string, vrlp::ObjectAnchor>{} : vrlp::ParseObjectAnchors(ReadText(a_ini));
 		int        placed = 0, kept = 0, missing = 0, failed = 0;
@@ -215,22 +308,17 @@ namespace
 					continue;
 				}
 			}
-			fs::path source;
-			for (const auto& dir : a_data) {
-				const fs::path p = Find(fs::path(dir), "meshes\\" + key);
-				if (fs::exists(p)) {
-					source = p;
-					break;
-				}
-			}
-			if (source.empty()) {
-				std::printf("missing  %s (not in the data folders)\n", key.c_str());
+			std::string source;
+			const auto  file = a_sources.Get(key, source);
+			if (!file) {
+				std::printf("missing  %s (not in the data)\n", key.c_str());
 				++missing;
 				continue;
 			}
-			nifly::NifFile nif;
-			if (nif.Load(source) != 0) {
-				std::printf("failed   %s (could not read it)\n", key.c_str());
+			nifly::NifFile     nif;
+			std::istringstream in(*file);
+			if (nif.Load(in) != 0) {
+				std::printf("failed   %s (could not read it from %s)\n", key.c_str(), source.c_str());
 				++failed;
 				continue;
 			}
@@ -251,7 +339,7 @@ namespace
 				++failed;
 				continue;
 			}
-			std::printf("placed   %s (%s, %s, locked %d times)\n", key.c_str(), m.door ? "door" : "container", from, m.locked);
+			std::printf("placed   %s (%s, %s, locked %d times, from %s)\n", key.c_str(), m.door ? "door" : "container", from, m.locked, source.c_str());
 			++placed;
 		}
 		// the marker alone, to copy into other models
@@ -308,7 +396,7 @@ namespace
 	{
 		std::fprintf(stderr,
 			"usage:\n"
-			"  lockplacer place <VRLockpicking_LockableModels.txt> <out dir> <data dir>[;<data dir>...] [VRLockpicking_Locks.ini]\n"
+			"  lockplacer place <VRLockpicking_LockableModels.txt> <out dir> <Data folder or .bsa>[;...] [VRLockpicking_Locks.ini]\n"
 			"  lockplacer read  <VRLockpicking_LockableModels.txt> <out dir> <VRLockpicking_Locks.ini>\n");
 		return 2;
 	}
@@ -326,7 +414,8 @@ int main(int argc, char** argv)
 		return 1;
 	}
 	if (command == "place") {
-		return Place(list, argv[3], Split(argv[4], ';'), argc > 5 ? fs::path(argv[5]) : fs::path());
+		Sources sources(Split(argv[4], ';'));
+		return Place(list, argv[3], sources, argc > 5 ? fs::path(argv[5]) : fs::path());
 	}
 	if (command == "read") {
 		return Read(list, argv[3], argv[4]);

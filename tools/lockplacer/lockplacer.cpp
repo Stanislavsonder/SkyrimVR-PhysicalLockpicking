@@ -4,7 +4,8 @@
 //     For every model in the list the plugin writes (VRLockpicking_LockableModels.txt), copies
 //     the model from the game's data into <out dir>\meshes\..., with a marker where the
 //     lock sits: the place saved in the INI, else the plugin's guess from the model's size. A
-//     copy that is already there keeps its marker (you may have moved it).
+//     copy that is already there is made again, its marker where it was (you may have moved it).
+//     The marker shows the lock the mod draws, when the data has it.
 //     Each <data> is a folder (the game's Data, a mod's folder, extracted meshes) or one .bsa. A
 //     folder's loose meshes come first, then its .bsa archives, the game's later ones first, as
 //     the game reads them.
@@ -20,7 +21,9 @@
 #include <algorithm>
 #include <cstdio>
 #include <filesystem>
+#include <format>
 #include <fstream>
+#include <functional>
 #include <map>
 #include <memory>
 #include <optional>
@@ -31,6 +34,7 @@
 #include "Bsa.h"
 #include "Config.h"
 #include "LockProfile.h"
+#include "MeshFit.h"
 
 namespace fs = std::filesystem;
 using nifly::Color4;
@@ -251,9 +255,9 @@ namespace
 	};
 
 	// The marker in the lock frame (x right, y into the object, z up, keyhole at the origin): the
-	// outline of the lock's face as the plugin sizes it, the keyhole, an arrow into the object and
-	// a tick on top.
-	Mesh MarkerMesh()
+	// outline of the lock's face as the plugin sizes it (when the lock itself isn't shown), the
+	// keyhole, an arrow into the object and a tick on top.
+	Mesh MarkerMesh(bool a_frame)
 	{
 		const vrlp::Config cfg;
 		const float        r = cfg.lockMeshRadius * cfg.visualScale;
@@ -261,24 +265,127 @@ namespace
 		const Color4       white(0.95f, 0.95f, 0.95f, 1.0f), red(0.95f, 0.15f, 0.15f, 1.0f), green(0.2f, 0.9f, 0.3f, 1.0f),
 			blue(0.25f, 0.5f, 1.0f, 1.0f);
 		Mesh m;
-		m.Box(Vector3(-r, -w, r - w), Vector3(r, w, r + w), white);    // top
-		m.Box(Vector3(-r, -w, -r - w), Vector3(r, w, -r + w), white);  // bottom
-		m.Box(Vector3(-r - w, -w, -r), Vector3(-r + w, w, r), white);  // left
-		m.Box(Vector3(r - w, -w, -r), Vector3(r + w, w, r), white);    // right
+		if (a_frame) {
+			m.Box(Vector3(-r, -w, r - w), Vector3(r, w, r + w), white);    // top
+			m.Box(Vector3(-r, -w, -r - w), Vector3(r, w, -r + w), white);  // bottom
+			m.Box(Vector3(-r - w, -w, -r), Vector3(-r + w, w, r), white);  // left
+			m.Box(Vector3(r - w, -w, -r), Vector3(r + w, w, r), white);    // right
+		}
 		m.Box(Vector3(-0.35f, -0.6f, -1.7f), Vector3(0.35f, 0.6f, 1.7f), red);  // the keyhole
 		m.Box(Vector3(-0.2f, 0.0f, -0.2f), Vector3(0.2f, 12.0f, 0.2f), green);  // into the object
 		m.Box(Vector3(-0.3f, -w, r + w), Vector3(0.3f, w, r + 3.0f), blue);     // up
 		return m;
 	}
 
-	bool AddMarker(nifly::NifFile& a_nif, const vrlp::ObjectAnchor& a_anchor)
+	// The lock the mod draws (the vanilla lockpicking menu's), placed in the lock frame the way the
+	// plugin places it (MeshFit from its parts' bounds), without its screwdriver.
+	struct LockModel
+	{
+		nifly::NifFile                                    nif;
+		std::vector<std::pair<nifly::NiShape*, nifly::MatTransform>> shapes;  // each shape -> its place in the lock frame
+		bool                                              ok{ false };
+	};
+
+	bool NameHas(const nifly::NiObjectNET* a_obj, const char* a_needle) { return Lower(a_obj->name.get()).find(a_needle) != std::string::npos; }
+
+	void LoadLock(LockModel& a_lock, Sources& a_sources)
+	{
+		const vrlp::Config cfg;
+		const std::string  key = vrlp::NormalizeModelPath(cfg.lockMesh);
+		std::string        from;
+		const auto         file = a_sources.Get(key, from);
+		std::istringstream in(file ? *file : std::string());
+		if (!file || a_lock.nif.Load(in) != 0) {
+			std::printf("note     the lock model (%s) isn't in the data: markers show only a frame\n", key.c_str());
+			return;
+		}
+		struct Found
+		{
+			nifly::NiShape*     shape;
+			nifly::MatTransform model;  // shape -> model space
+			bool                shiv;
+		};
+		std::vector<Found>           found;
+		std::vector<vrlp::MeshPart>  parts;
+		vrlp::Vec3                   shivSum;
+		int                          shivCount = 0;
+		std::function<void(nifly::NiNode*, const nifly::MatTransform&, bool, bool, int)> walk =
+			[&](nifly::NiNode* a_node, const nifly::MatTransform& a_xf, bool a_shiv, bool a_cyl, int a_depth) {
+				for (auto* child : a_lock.nif.GetChildren<nifly::NiAVObject>(a_node)) {
+					const nifly::MatTransform xf = a_xf.ComposeTransforms(child->GetTransformToParent());
+					const bool                shiv = a_shiv || NameHas(child, "shiv") || NameHas(child, "screwdriver");
+					if (auto* node = dynamic_cast<nifly::NiNode*>(child)) {
+						bool cyl = a_cyl;
+						for (const char* n : { "tumble", "cylinder", "keyhole", "inner", "plug" }) {
+							cyl = cyl || NameHas(node, n);
+						}
+						if (a_depth < 32) {
+							walk(node, xf, shiv, cyl, a_depth + 1);
+						}
+					} else if (auto* shape = dynamic_cast<nifly::NiShape*>(child)) {
+						std::vector<Vector3> verts;
+						if (!a_lock.nif.GetVertsForShape(shape, verts) || verts.empty()) {
+							continue;
+						}
+						Vector3 lo = verts.front(), hi = lo;
+						for (const auto& v : verts) {
+							lo = Vector3(std::min(lo.x, v.x), std::min(lo.y, v.y), std::min(lo.z, v.z));
+							hi = Vector3(std::max(hi.x, v.x), std::max(hi.y, v.y), std::max(hi.z, v.z));
+						}
+						vrlp::MeshPart part;
+						part.cylinder = a_cyl;
+						vrlp::Vec3 sum;
+						for (int i = 0; i < 8; ++i) {
+							const Vector3 q = xf.ApplyTransform(Vector3((i & 1) ? hi.x : lo.x, (i & 2) ? hi.y : lo.y, (i & 4) ? hi.z : lo.z));
+							part.corners.push_back({ q.x, q.y, q.z });
+							sum += part.corners.back();
+						}
+						part.centre = sum / 8.0f;
+						for (const auto& q : part.corners) {
+							part.radius = std::max(part.radius, vrlp::Distance(q, part.centre));
+						}
+						if (shiv) {
+							shivSum += part.centre;
+							++shivCount;
+						} else if (part.radius > 0.0f) {
+							parts.push_back(part);
+						}
+						found.push_back({ shape, xf, shiv });
+					}
+				}
+			};
+		walk(nullptr, nifly::MatTransform(), false, false, 0);
+		const vrlp::Vec3    front = shivCount > 0 ? shivSum / static_cast<float>(shivCount) : vrlp::Vec3{ 0.0f, -1000.0f, 0.0f };
+		const vrlp::LockFit fit = vrlp::FitLockParts(parts, front, cfg.lockMeshRadius * cfg.visualScale);
+		if (!fit.place.valid) {
+			std::printf("note     could not fit the lock model (%s): markers show only a frame\n", key.c_str());
+			return;
+		}
+		nifly::MatTransform place;
+		place.translation = Vector3(fit.place.offset.x, fit.place.offset.y, fit.place.offset.z);
+		for (int i = 0; i < 3; ++i) {
+			for (int j = 0; j < 3; ++j) {
+				place.rotation[i][j] = fit.place.rot.m[i][j];
+			}
+		}
+		place.scale = fit.place.scale;
+		for (const auto& f : found) {
+			if (!f.shiv) {
+				a_lock.shapes.emplace_back(f.shape, place.ComposeTransforms(f.model));
+			}
+		}
+		a_lock.ok = !a_lock.shapes.empty();
+		std::printf("lock     %s from %s: %zu part(s) shown on the markers\n", key.c_str(), from.c_str(), a_lock.shapes.size());
+	}
+
+	bool AddMarker(nifly::NifFile& a_nif, const vrlp::ObjectAnchor& a_anchor, LockModel* a_lock = nullptr)
 	{
 		auto* root = a_nif.GetRootNode();
 		if (!root) {
 			return false;
 		}
 		auto* node = a_nif.AddNode(kMarker, ToNif(a_anchor), root);
-		Mesh  m = MarkerMesh();
+		Mesh  m = MarkerMesh(!a_lock || !a_lock->ok);
 		auto* shape = a_nif.CreateShapeFromData("VRLP_LockMarker", &m.v, &m.t, &m.uv, &m.n);
 		if (!node || !shape) {
 			return false;
@@ -291,6 +398,16 @@ namespace
 			shader->emissiveColor = Vector3(0.6f, 0.6f, 0.6f);
 		}
 		a_nif.SetParentNode(shape, node);
+		if (a_lock && a_lock->ok) {
+			int i = 0;
+			for (auto& [src, place] : a_lock->shapes) {
+				auto* copy = a_nif.CloneShape(src, std::format("VRLP_Lock{}", i++), &a_lock->nif);
+				if (copy) {
+					copy->SetTransformToParent(place);
+					a_nif.SetParentNode(copy, node);
+				}
+			}
+		}
 		return true;
 	}
 
@@ -298,14 +415,20 @@ namespace
 	{
 		const auto saved = a_ini.empty() ? std::map<std::string, vrlp::ObjectAnchor>{} : vrlp::ParseObjectAnchors(ReadText(a_ini));
 		int        placed = 0, kept = 0, missing = 0, failed = 0;
+		LockModel  lock;
+		LoadLock(lock, a_sources);
 		for (const auto& m : a_list) {
 			const std::string key = vrlp::NormalizeModelPath(m.model);
 			const fs::path    out = OutPath(a_out, key);
+			// a copy made before keeps where its marker is now (you may have moved it); the copy
+			// itself is made again, so it gets the current marker
+			std::optional<vrlp::ObjectAnchor> moved;
 			if (fs::exists(out)) {
 				nifly::NifFile existing;
-				if (existing.Load(out) == 0 && existing.FindBlockByName<nifly::NiNode>(kMarker)) {
-					++kept;
-					continue;
+				if (existing.Load(out) == 0) {
+					if (auto* node = existing.FindBlockByName<nifly::NiNode>(kMarker)) {
+						moved = FromNif(node->GetTransformToParent());
+					}
 				}
 			}
 			std::string source;
@@ -324,7 +447,11 @@ namespace
 			}
 			const char*        from = "saved";
 			vrlp::ObjectAnchor anchor;
-			if (auto it = saved.find(key); it != saved.end()) {
+			if (moved) {
+				anchor = *moved;
+				from = "kept";
+				++kept;
+			} else if (auto it = saved.find(key); it != saved.end()) {
 				anchor = it->second;
 			} else if (auto def = vrlp::DefaultObjectAnchors().find(key); def != vrlp::DefaultObjectAnchors().end()) {
 				anchor = def->second;
@@ -334,7 +461,7 @@ namespace
 				from = "guessed";
 			}
 			fs::create_directories(out.parent_path());
-			if (!AddMarker(nif, anchor) || nif.Save(out) != 0) {
+			if (!AddMarker(nif, anchor, &lock) || nif.Save(out) != 0) {
 				std::printf("failed   %s (could not write it)\n", key.c_str());
 				++failed;
 				continue;
@@ -348,11 +475,11 @@ namespace
 			nif.Create(nifly::NiVersion::getSSE());
 			vrlp::ObjectAnchor origin;
 			origin.valid = true;
-			AddMarker(nif, origin);
+			AddMarker(nif, origin, &lock);
 			fs::create_directories(a_out);
 			nif.Save(a_out / "VRLP_LockMarker.nif");
 		}
-		std::printf("\n%d placed, %d kept as they were, %d missing, %d failed. Open them in NifSkope from %s\n", placed, kept, missing, failed,
+		std::printf("\n%d placed (%d of them where their marker already was), %d missing, %d failed. Open them in NifSkope from %s\n", placed, kept, missing, failed,
 			(a_out / "meshes").string().c_str());
 		return failed > 0 ? 1 : 0;
 	}

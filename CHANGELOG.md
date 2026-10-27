@@ -2,6 +2,7 @@
 
 ## 1.0.1
 
+- The settings menu and the mod's messages in English, French, German, Italian, Spanish, Polish, Russian, Japanese and Chinese (the game's language).
 - Fixed: installing with Mod Organizer 2 could crash it. The archive no longer has an installer; it is laid out as the `Data` folder, so mod managers install it directly.
 - `VRLockpicking.esp` is now flagged as light (ESPFE). With Skyrim VR ESL Support it takes no load order slot; without it, it loads as a normal plugin as before.
 
@@ -16,5 +17,4 @@ First release.
 - A lockpick counter over the lock shows how many picks you have left (hidden while picks can't break).
 - Lock Variations support: its lock and lockpick models and sounds per lock.
 - Settings menu (MCM Helper) with General, Vibration and Debug pages; every setting also in the INI.
-- The settings menu and the mod's messages in English, French, German, Italian, Spanish, Polish, Russian, Japanese and Chinese (the game's language).
 - Debug tools: debug view, keyhole target, assist ring, model markup tool, test chests and doors.

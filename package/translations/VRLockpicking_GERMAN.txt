@@ -10,6 +10,8 @@ $VRLP_LeftHandedPick	Dietrich in linker Hand
 $VRLP_LeftHandedPick_Help	Spiegelt die Werkzeuge in deinen Händen: den Dietrich in der linken, den Spanner in der rechten.
 $VRLP_FullPause	Pause beim Schlossknacken
 $VRLP_FullPause_Help	Pausiert das Spiel, während du ein Schloss knackst.
+$VRLP_LockOnObject	Schloss an Tür oder Truhe
+$VRLP_LockOnObject_Help	Das Schloss sitzt an der Tür oder Truhe selbst, statt vor dir zu erscheinen. Eventuell musst du hingehen. Wo es an jedem Modell sitzt, lässt sich mit dem Modell-Markierungswerkzeug ausrichten.
 $VRLP_ActivateContainerAfterUnlock	Behälter danach öffnen
 $VRLP_ActivateContainerAfterUnlock_Help	Öffnet einen Behälter automatisch, sobald sein Schloss geknackt ist.
 $VRLP_HeaderDifficulty	Schwierigkeit
@@ -62,12 +64,12 @@ $VRLP_CrimeCheck	Verbrechenserkennung
 $VRLP_CrimeCheck_Help	Beim Knacken eines fremden Schlosses gesehen zu werden ist ein Verbrechen, wie in Vanilla.
 $VRLP_HeaderModelMarkup	Modell-Markierung
 $VRLP_MarkupMode	Modell-Markierungswerkzeug
-$VRLP_MarkupMode_Help	Beim Schlossknacken: 1) setze die Spitze des Dietrichs auf die Mitte des Schlüssellochs, dann auf seine Oberkante, jeweils mit dem linken Trigger - das Schlossmodell passt sich an; 2) und 3) richte Dietrich und Spanner in deinen Händen aus: halte den linken Trigger, damit das Modell stillsteht, während du deine Hand bewegst. A / X geht zum nächsten Teil. Wird pro Modell gespeichert.
+$VRLP_MarkupMode_Help	Beim Schlossknacken: 0) mit dem Schloss an Tür oder Truhe: setze es dorthin - halte den linken Trigger, um es mit der Hand zu tragen; 1) setze die Spitze des Dietrichs auf die Mitte des Schlüssellochs, dann auf seine Oberkante, jeweils mit dem linken Trigger - das Schlossmodell passt sich an; 2) und 3) richte Dietrich und Spanner in deinen Händen aus: halte den linken Trigger, damit das Modell stillsteht, während du deine Hand bewegst. A / X geht zum nächsten Teil. Der Ziffernblock justiert jeden Teil fein. Wird pro Modell gespeichert.
 $VRLP_ResetMarkup	Markierung zurücksetzen
 $VRLP_ResetMarkup_Help	Vergisst alle Schlüssellöcher und Werkzeuggriffe, die du mit dem Markierungswerkzeug gespeichert hast: Die eingebauten Ausrichtungen und die automatische Anpassung gelten wieder.
 $VRLP_HeaderTestLocks	Testschlösser
 $VRLP_SpawnTestLocks	Testschlösser erzeugen
-$VRLP_SpawnTestLocks_Help	Platziert verschlossene Truhen und Türen um dich herum: eine pro Truhen- / Türmodell deines Spiels und deiner Mods, mit Novizen- bis Meisterschlössern (und einigen, die einen Schlüssel brauchen), dazu eine Novizentür direkt vor dir, zu der es einen Schlüssel gibt, um das Talent Wachsschlüssel auszuprobieren. Schließe das Menü, um sie zu sehen. Die Liste steht im Log.
+$VRLP_SpawnTestLocks_Help	Platziert verschlossene Truhen und Türen um dich herum, Novize bis Meister: jedes Truhen- und Türmodell deines Spiels und deiner Mods, eine Gruppe nach der anderen. Drücke erneut für die nächste Gruppe (sie ersetzt diese). Die erste Tür jeder Gruppe hat einen Schlüssel, um das Talent Wachsschlüssel auszuprobieren. Schließe das Menü, um sie zu sehen. Die Liste steht im Log. Tipp: der Konsolenbefehl coc qasmoke bringt dich in eine große Testhalle.
 $VRLP_RemoveTestLocks	Testschlösser entfernen
 $VRLP_RemoveTestLocks_Help	Entfernt die Truhen und Türen, die mit 'Testschlösser erzeugen' platziert wurden.
 $VRLP_HeaderTestSetup	Testaufbau
@@ -107,6 +109,9 @@ $VRLP_Msg_MarkupLock2	Markierung Schloss 2/3: Setze die Spitze des Dietrichs auf
 $VRLP_Msg_MarkupLock3	Markierung Schloss 3/3: linker Trigger = für dieses Schlossmodell speichern, Stick-Klick = zurück. A: weiter zum Dietrich.
 $VRLP_Msg_MarkupPick	Richte den Dietrich aus ({}), außerhalb des Schlüssellochs: Halte den LINKEN Trigger - das Modell steht still, während du deine Hand bewegst, bis der Spitzenwürfel dort sitzt, wo die Spitze sein soll; lass los, und es bewegt sich wieder mit deiner Hand (gespeichert). Fein: rechter Stick schwenkt es, linker Stick rollt es, rechter Trigger + rechter Stick ändert die Größe. Stick-Klick: wieder automatisch. A: weiter zum Spanner.
 $VRLP_Msg_MarkupWrench	Richte den Spanner aus ({}), außerhalb des Schlüssellochs: Halte den LINKEN Trigger - das Modell steht still, während du deine Hand bewegst, bis der Spitzenwürfel dort sitzt, wo die Spitze sein soll; lass los, und es bewegt sich wieder mit deiner Hand (gespeichert). Fein: rechter Stick schwenkt es, linker Stick rollt es, rechter Trigger + rechter Stick ändert die Größe. Stick-Klick: wieder automatisch. A: weiter zum Schloss.
+$VRLP_Msg_MarkupObject	Markierung: wo das Schloss an dieser Tür oder Truhe sitzt. Halte den LINKEN Trigger, um es mit der Hand zu tragen; lass los, und es bleibt dort (gespeichert). Ziffernblock zum Feinjustieren. Stick-Klick: zurück zur geschätzten Stelle. A: weiter zum Schlüsselloch.
+$VRLP_Msg_MarkupNumpad	Ziffernblock (Num-Taste an): 4 / 6 links / rechts, 8 / 2 hoch / runter, + / - hinein / heraus, 7 / 9 drehen, 1 / 3 rollen, / und * kippen, 0 / . Größe, 5 Schrittweite.
+$VRLP_Msg_MarkupStep	Schrittweite des Ziffernblocks: {} Einheiten, {} Grad.
 $VRLP_Msg_RightHand	rechte Hand
 $VRLP_Msg_LeftHand	linke Hand
 $VRLP_Msg_MarkupNoPickHand	Markierung: Die Dietrich-Hand ist nicht zu sehen - versuche es erneut.
@@ -114,11 +119,13 @@ $VRLP_Msg_MarkupNoLockModel	Markierung: kein Schlossmodell, für das gespeichert
 $VRLP_Msg_MarkupLockSaved	Markierung für dieses Schlossmodell gespeichert: Sein Schlüsselloch liegt jetzt im grünen Ziel.
 $VRLP_Msg_MarkupPickSaved	Dietrich gespeichert.
 $VRLP_Msg_MarkupWrenchSaved	Spanner gespeichert.
+$VRLP_Msg_MarkupObjectSaved	Stelle des Schlosses für dieses Modell gespeichert.
+$VRLP_Msg_MarkupObjectGuess	Zurück zur geschätzten Stelle.
 $VRLP_Msg_MarkupAutomaticFit	Zurück zur automatischen Anpassung.
 $VRLP_Msg_MarkupCouldNotSave	Markierung: Speichern fehlgeschlagen.
 $VRLP_Msg_MarkupReset	Modell-Markierung zurückgesetzt.
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: Testschlösser brauchen eine neuere VR Address Library.
-$VRLP_Msg_TestLocksPlaced	VR Lockpicking: {} Testtruhen und {} Testtüren platziert (ihre Schlossstufen stehen im Log).
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: Testgruppe {} von {}: {} Truhen und {} Türen (die Liste steht im Log). Erneut drücken für die nächste Gruppe.
 $VRLP_Msg_LockpicksAdded	50 Dietriche hinzugefügt (jetzt {}).
 $VRLP_Msg_SkeletonKeyAdded	Skelettschlüssel hinzugefügt.
 $VRLP_Msg_SkeletonKeyRemoved	Skelettschlüssel entfernt.

@@ -10,6 +10,8 @@ $VRLP_LeftHandedPick	Ganzúa en mano izquierda
 $VRLP_LeftHandedPick_Help	Intercambia las herramientas de mano: la ganzúa en la izquierda, la llave de tensión en la derecha.
 $VRLP_FullPause	Pausa al forzar cerraduras
 $VRLP_FullPause_Help	Pausa el juego mientras fuerzas una cerradura.
+$VRLP_LockOnObject	Cerradura en la puerta o el cofre
+$VRLP_LockOnObject_Help	La cerradura está en la propia puerta o cofre en vez de aparecer delante de ti. Puede que tengas que acercarte. Su sitio en cada modelo se ajusta con la herramienta de ajuste de modelos.
 $VRLP_ActivateContainerAfterUnlock	Abrir contenedor al forzarlo
 $VRLP_ActivateContainerAfterUnlock_Help	Abre un contenedor automáticamente en cuanto fuerzas su cerradura.
 $VRLP_HeaderDifficulty	Dificultad
@@ -62,12 +64,12 @@ $VRLP_CrimeCheck	Detección de delitos
 $VRLP_CrimeCheck_Help	Que te vean forzar una cerradura ajena es un delito, como en el juego original.
 $VRLP_HeaderModelMarkup	Ajuste de modelos
 $VRLP_MarkupMode	Herramienta de ajuste
-$VRLP_MarkupMode_Help	Al forzar: 1) pon la punta de la ganzúa en el centro de la cerradura y luego arriba, con el gatillo izquierdo - el modelo de la cerradura se ajusta; 2) y 3) alinea la ganzúa y la llave de tensión en tus manos: mantén el gatillo izquierdo para dejar quieto el modelo mientras mueves la mano. A / X pasa a la siguiente parte. Se guarda por modelo.
+$VRLP_MarkupMode_Help	Al forzar: 0) con la cerradura en la puerta o el cofre, ponla en su sitio: mantén el gatillo izquierdo para llevarla con la mano; 1) pon la punta de la ganzúa en el centro de la cerradura y luego arriba, con el gatillo izquierdo - el modelo de la cerradura se ajusta; 2) y 3) alinea la ganzúa y la llave de tensión en tus manos: mantén el gatillo izquierdo para dejar quieto el modelo mientras mueves la mano. A / X pasa a la siguiente parte. El teclado numérico afina cada parte. Se guarda por modelo.
 $VRLP_ResetMarkup	Reiniciar ajuste de modelos
 $VRLP_ResetMarkup_Help	Olvida todas las cerraduras y agarres de herramientas guardados con la herramienta de ajuste: se vuelven a usar las alineaciones integradas y el ajuste automático.
 $VRLP_HeaderTestLocks	Cerraduras de prueba
 $VRLP_SpawnTestLocks	Crear cerraduras de prueba
-$VRLP_SpawnTestLocks_Help	Coloca cofres y puertas cerrados a tu alrededor: uno por cada modelo de cofre / puerta de tu juego y tus mods, con cerraduras de novato a maestro (y algunas que necesitan llave), más una puerta de novato justo delante con llave, para probar la mejora Llave de cera. Cierra el menú para verlos. La lista está en el registro.
+$VRLP_SpawnTestLocks_Help	Coloca cofres y puertas cerrados a tu alrededor, de novato a maestro: todos los modelos de cofre y puerta de tu juego y tus mods, por tandas. Pulsa de nuevo para la siguiente tanda (sustituye a esta). La primera puerta de cada tanda tiene llave, para probar la mejora Llave de cera. Cierra el menú para verlos. La lista está en el registro. Consejo: el comando de consola coc qasmoke te lleva a una gran sala de pruebas.
 $VRLP_RemoveTestLocks	Quitar cerraduras de prueba
 $VRLP_RemoveTestLocks_Help	Quita los cofres y puertas colocados con Crear cerraduras de prueba.
 $VRLP_HeaderTestSetup	Preparación de pruebas
@@ -107,6 +109,9 @@ $VRLP_Msg_MarkupLock2	Ajuste de cerradura 2/3: pon la punta de la ganzúa en la 
 $VRLP_Msg_MarkupLock3	Ajuste de cerradura 3/3: gatillo izquierdo = guardar para este modelo de cerradura, clic en stick = atrás. A: pasar a la ganzúa.
 $VRLP_Msg_MarkupPick	Alinea la ganzúa ({}), fuera de la cerradura: mantén el gatillo IZQUIERDO - el modelo se queda quieto mientras mueves la mano hasta que el cubo de la punta esté donde debe ir la punta; suelta y vuelve a moverse con tu mano (guardado). Ajuste fino: el stick derecho la inclina, el izquierdo la gira, gatillo derecho + stick derecho cambia su tamaño. Clic en stick: de nuevo automático. A: pasar a la llave de tensión.
 $VRLP_Msg_MarkupWrench	Alinea la llave de tensión ({}), fuera de la cerradura: mantén el gatillo IZQUIERDO - el modelo se queda quieto mientras mueves la mano hasta que el cubo de la punta esté donde debe ir la punta; suelta y vuelve a moverse con tu mano (guardado). Ajuste fino: el stick derecho la inclina, el izquierdo la gira, gatillo derecho + stick derecho cambia su tamaño. Clic en stick: de nuevo automático. A: pasar a la cerradura.
+$VRLP_Msg_MarkupObject	Ajuste: dónde está la cerradura en esta puerta o cofre. Mantén el gatillo IZQUIERDO para llevarla con la mano; suelta para dejarla ahí (guardado). Teclado numérico para el ajuste fino. Clic en stick: volver al sitio estimado. A: pasar al ojo de la cerradura.
+$VRLP_Msg_MarkupNumpad	Teclado numérico (Bloq Num activado): 4 / 6 izquierda / derecha, 8 / 2 arriba / abajo, + / - dentro / fuera, 7 / 9 girar, 1 / 3 rodar, / y * inclinar, 0 / . tamaño, 5 paso.
+$VRLP_Msg_MarkupStep	Paso del teclado numérico: {} unidades, {} grados.
 $VRLP_Msg_RightHand	mano derecha
 $VRLP_Msg_LeftHand	mano izquierda
 $VRLP_Msg_MarkupNoPickHand	Ajuste: no se ve la mano de la ganzúa - inténtalo de nuevo.
@@ -114,11 +119,13 @@ $VRLP_Msg_MarkupNoLockModel	Ajuste: no hay modelo de cerradura para el que guard
 $VRLP_Msg_MarkupLockSaved	Ajuste guardado para este modelo de cerradura: su ojo de cerradura está ahora en el objetivo verde.
 $VRLP_Msg_MarkupPickSaved	Ganzúa guardada.
 $VRLP_Msg_MarkupWrenchSaved	Llave de tensión guardada.
+$VRLP_Msg_MarkupObjectSaved	Sitio de la cerradura guardado para este modelo.
+$VRLP_Msg_MarkupObjectGuess	De vuelta al sitio estimado.
 $VRLP_Msg_MarkupAutomaticFit	De vuelta al ajuste automático.
 $VRLP_Msg_MarkupCouldNotSave	Ajuste: no se pudo guardar.
 $VRLP_Msg_MarkupReset	Ajuste de modelos restablecido.
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: las cerraduras de prueba necesitan una VR Address Library más reciente.
-$VRLP_Msg_TestLocksPlaced	VR Lockpicking: colocados {} cofres y {} puertas de prueba (sus niveles de cerradura están en el registro).
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: tanda de prueba {} de {}: {} cofres y {} puertas (la lista está en el registro). Pulsa de nuevo para la siguiente tanda.
 $VRLP_Msg_LockpicksAdded	50 ganzúas añadidas (ahora {}).
 $VRLP_Msg_SkeletonKeyAdded	Llave Esqueleto añadida.
 $VRLP_Msg_SkeletonKeyRemoved	Llave Esqueleto quitada.

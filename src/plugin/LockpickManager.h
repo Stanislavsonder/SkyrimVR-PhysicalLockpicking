@@ -11,6 +11,7 @@
 #include "LockProfile.h"
 #include "LockVariations.h"
 #include "Markup.h"
+#include "Numpad.h"
 #include "Visuals.h"
 
 namespace vrlp
@@ -60,7 +61,13 @@ namespace vrlp
 		void LockControls(bool a_lock);
 		void RecordGripSample(RE::VR_NODE_DATA* a_nodes);
 		void UpdateMarkup(const FrameInput& a_in, float a_dt);
-		void UpdateAlignment(bool a_wrench, const Pose* a_tool, const ButtonSnapshot& a_left, const ButtonSnapshot& a_right, bool a_reset, float a_dt);
+		void UpdateAlignment(bool a_wrench, const Pose* a_tool, const ButtonSnapshot& a_left, const ButtonSnapshot& a_right, bool a_reset,
+			const Numpad::Input& a_pad, float a_dt);
+		void UpdateObjectPlacement(const HandInput& a_leftHand, const ButtonSnapshot& a_left, bool a_reset, const Numpad::Input& a_pad, float a_dt);
+		void NudgeKeyhole(const Numpad::Input& a_pad, float a_dt);
+		bool LockOnObject(RE::TESObjectREFR* a_target, const Vec3& a_head);
+		Pose ObjectLockWorld() const;
+		void SaveObjectPlacement();
 		void EndGrab(bool a_save);
 		void SaveAlignment();
 		void SaveLockProfile(const LockProfile& a_profile, const std::string& a_modelPath);
@@ -77,6 +84,30 @@ namespace vrlp
 		std::map<std::string, LockProfile> _profiles;  // measured keyholes, by lock model path
 		std::map<std::string, ToolProfile> _pickProfiles;  // measured tools, by model path
 		std::map<std::string, ToolProfile> _shivProfiles;
+		std::map<std::string, ObjectAnchor> _objectAnchors;  // where the lock sits, by door / chest model path
+		// bLockOnObject: the door or chest the lock sits on this session
+		struct OnObject
+		{
+			std::string  model;
+			ObjectAnchor anchor;  // as saved (a door: the side it was marked on)
+			Vec3         boundMin, boundMax;
+			Pose         object;  // its world pose (it doesn't move while you pick)
+			float        scale{ 1.0f };
+			bool         door{ false };
+			bool         otherSide{ false };  // you stand on the door's other side
+		};
+		std::optional<OnObject>    _onObject;
+		struct LockGrab
+		{
+			Pose hand;  // room space, when the trigger went down
+			Pose lock;
+		};
+		std::optional<LockGrab>    _lockGrab;  // markup: the lock carried with the left hand
+		bool                       _objectDirty{ false };
+		float                      _objectIdle{ 0.0f };
+		bool                       _keyholeDirty{ false };
+		float                      _keyholeIdle{ 0.0f };
+		float                      _cancelDistance{ 90.0f };
 		bool                       _nextHeld{ true };
 		bool                       _resetHeld{ true };
 		bool                       _alignDirty{ false };

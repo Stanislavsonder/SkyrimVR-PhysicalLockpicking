@@ -1283,6 +1283,71 @@ TEST(RegripKeepsTheModelStill)
 	}
 }
 
+TEST(ObjectAnchorGuessAndOtherSide)
+{
+	// a chest: on its front (-Y) face, in the middle, below the lid, facing into the chest
+	const ObjectAnchor chest = GuessObjectAnchor({ -40, -25, 0 }, { 40, 25, 50 }, false);
+	CHECK(chest.valid);
+	CHECK_NEAR(chest.keyhole.x, 0.0, 1e-4);
+	CHECK(chest.keyhole.y < -25.0f && chest.keyhole.y > -27.0f);
+	CHECK(chest.keyhole.z > 25.0f && chest.keyhole.z < 40.0f);
+	CHECK_NEAR(Dot(chest.rot.Column(1), Vec3{ 0, 1, 0 }), 1.0, 1e-4);
+	CHECK_NEAR(Dot(chest.rot.Column(0), Vec3{ 1, 0, 0 }), 1.0, 1e-4);  // right, as MakeLockFrame
+	// a door hinged at its origin, thin along Y: at handle height, near its free edge
+	const ObjectAnchor door = GuessObjectAnchor({ 0, -4, 0 }, { 90, 4, 180 }, true);
+	CHECK(door.keyhole.x > 70.0f && door.keyhole.x < 90.0f);
+	CHECK_NEAR(door.keyhole.z, 64.0, 1e-3);
+	CHECK_NEAR(Dot(door.rot.Column(1), Vec3{ 0, 1, 0 }), 1.0, 1e-4);
+	// thin along X instead, free edge at -Y
+	const ObjectAnchor side = GuessObjectAnchor({ -3, -100, 0 }, { 3, 0, 150 }, true);
+	CHECK_NEAR(Dot(side.rot.Column(1), Vec3{ 1, 0, 0 }), 1.0, 1e-4);
+	CHECK(side.keyhole.y < -80.0f);
+	CHECK(side.keyhole.x < -3.0f);
+	// the other side: through the door, facing back; twice = the same
+	const ObjectAnchor back = OtherSide(door, { 0, -4, 0 }, { 90, 4, 180 });
+	CHECK_NEAR(back.keyhole.x, door.keyhole.x, 1e-4);
+	CHECK_NEAR(back.keyhole.y, -door.keyhole.y, 1e-4);
+	CHECK_NEAR(Dot(back.rot.Column(1), Vec3{ 0, -1, 0 }), 1.0, 1e-4);
+	CHECK_NEAR(Dot(Cross(back.rot.Column(0), back.rot.Column(1)), back.rot.Column(2)), 1.0, 1e-4);  // still a rotation
+	const ObjectAnchor again = OtherSide(back, { 0, -4, 0 }, { 90, 4, 180 });
+	CHECK_NEAR(Distance(again.keyhole, door.keyhole), 0.0, 1e-4);
+	CHECK_NEAR(Dot(again.rot.Column(0), door.rot.Column(0)), 1.0, 1e-4);
+}
+
+TEST(ObjectAnchorPlacementRoundTrip)
+{
+	ObjectAnchor a;
+	a.keyhole = { 12, -30, 41 };
+	a.rot = AxisAngle({ 0, 0, 1 }, 0.3f) * AxisAngle({ 1, 0, 0 }, -0.2f);
+	a.valid = true;
+	Pose object;
+	object.rot = AxisAngle({ 0, 0, 1 }, 2.1f);
+	object.pos = { 1000, -2000, 50 };
+	const Pose lock = PlaceOnObject(a, object, 1.5f);
+	CHECK_NEAR(Distance(lock.pos, object.pos + object.rot * (a.keyhole * 1.5f)), 0.0, 1e-3);
+	const ObjectAnchor b = ObjectAnchorFromPose(lock, object, 1.5f);
+	CHECK_NEAR(Distance(b.keyhole, a.keyhole), 0.0, 1e-3);
+	CHECK_NEAR(Dot(b.rot.Column(1), a.rot.Column(1)), 1.0, 1e-4);
+	CHECK_NEAR(Dot(b.rot.Column(2), a.rot.Column(2)), 1.0, 1e-4);
+	// saved and read back, next to a lock profile, under the object's model
+	std::string text = WriteLockProfile("", "Interface\\Lockpicking\\LockPickShiv01.nif", LockProfile{ { 1, 2, 3 }, 0, 0, true });
+	text = WriteObjectAnchor(text, "Meshes\\Clutter\\Containers\\Chest01.NIF", a);
+	const auto all = ParseObjectAnchors(text);
+	CHECK(all.size() == 1);
+	CHECK(ParseLockProfiles(text).size() == 1);
+	const auto it = all.find("clutter\\containers\\chest01.nif");
+	CHECK(it != all.end());
+	if (it != all.end()) {
+		CHECK_NEAR(Distance(it->second.keyhole, a.keyhole), 0.0, 2e-3);
+		CHECK_NEAR(Dot(it->second.rot.Column(0), a.rot.Column(0)), 1.0, 1e-4);
+	}
+	CHECK(ObjectAnchorText(a).find("vObjectKeyhole = 12.000, -30.000, 41.000") != std::string::npos);
+	for (const auto& [model, d] : DefaultObjectAnchors()) {
+		CHECK(d.valid);
+		CHECK_NEAR(Dot(Cross(d.rot.Column(0), d.rot.Column(1)), d.rot.Column(2)), 1.0, 1e-4);
+	}
+}
+
 TEST(LockVariationsDescribesItsSections)
 {
 	LockVariations lv;

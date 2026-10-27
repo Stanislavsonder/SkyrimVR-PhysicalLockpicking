@@ -10,6 +10,8 @@ $VRLP_LeftHandedPick	Wytrych w lewej ręce
 $VRLP_LeftHandedPick_Help	Zamienia narzędzia w dłoniach: wytrych w lewej, napinacz w prawej.
 $VRLP_FullPause	Pauza podczas otwierania
 $VRLP_FullPause_Help	Wstrzymuje grę, gdy otwierasz zamek.
+$VRLP_LockOnObject	Zamek na drzwiach lub skrzyni
+$VRLP_LockOnObject_Help	Zamek jest na samych drzwiach lub skrzyni, zamiast pojawiać się przed tobą. Być może trzeba będzie podejść. Jego miejsce na każdym modelu można ustawić narzędziem oznaczania modeli.
 $VRLP_ActivateContainerAfterUnlock	Auto-otwieranie pojemnika
 $VRLP_ActivateContainerAfterUnlock_Help	Automatycznie otwiera pojemnik, gdy jego zamek zostanie otwarty.
 $VRLP_HeaderDifficulty	Trudność
@@ -62,12 +64,12 @@ $VRLP_CrimeCheck	Wykrywanie przestępstw
 $VRLP_CrimeCheck_Help	Gdy ktoś zobaczy, jak otwierasz cudzy zamek, to przestępstwo, jak w oryginale.
 $VRLP_HeaderModelMarkup	Oznaczanie modeli
 $VRLP_MarkupMode	Narzędzie oznaczania
-$VRLP_MarkupMode_Help	Podczas otwierania zamka: 1) przyłóż końcówkę wytrycha do środka dziurki, a potem do jej góry, lewym spustem - model zamka dopasuje się; 2) i 3) ustaw wytrych i napinacz w dłoniach: trzymaj lewy spust, by model stał w miejscu, gdy ruszasz dłonią. A / X przechodzi do następnej części. Zapisywane dla każdego modelu.
+$VRLP_MarkupMode_Help	Podczas otwierania zamka: 0) gdy zamek jest na drzwiach lub skrzyni, ustaw go tam: trzymaj lewy spust, by nieść go dłonią; 1) przyłóż końcówkę wytrycha do środka dziurki, a potem do jej góry, lewym spustem - model zamka dopasuje się; 2) i 3) ustaw wytrych i napinacz w dłoniach: trzymaj lewy spust, by model stał w miejscu, gdy ruszasz dłonią. A / X przechodzi do następnej części. Klawiatura numeryczna dokładnie ustawia każdą część. Zapisywane dla każdego modelu.
 $VRLP_ResetMarkup	Zresetuj oznaczenia
 $VRLP_ResetMarkup_Help	Zapomina wszystkie dziurki zamków i chwyty narzędzi zapisane narzędziem oznaczania: znów używane są wbudowane ustawienia i automatyczne dopasowanie.
 $VRLP_HeaderTestLocks	Zamki testowe
 $VRLP_SpawnTestLocks	Utwórz zamki testowe
-$VRLP_SpawnTestLocks_Help	Stawia wokół ciebie zamknięte skrzynie i drzwi: po jednym na każdy model skrzyni / drzwi z gry i modów, z zamkami od Nowicjusza do Mistrza (i kilka wymagających klucza), plus drzwi poziomu Nowicjusz prosto przed tobą, do których istnieje klucz, by wypróbować atut Woskowy klucz. Zamknij menu, by je zobaczyć. Lista jest w dzienniku.
+$VRLP_SpawnTestLocks_Help	Stawia wokół ciebie zamknięte skrzynie i drzwi, od Nowicjusza do Mistrza: każdy model skrzyni i drzwi z gry i modów, partiami. Naciśnij ponownie, by postawić następną partię (zastąpi tę). Pierwsze drzwi każdej partii mają klucz, by wypróbować atut Woskowy klucz. Zamknij menu, by je zobaczyć. Lista jest w dzienniku. Wskazówka: polecenie konsoli coc qasmoke przenosi do dużej sali testowej.
 $VRLP_RemoveTestLocks	Usuń zamki testowe
 $VRLP_RemoveTestLocks_Help	Usuwa skrzynie i drzwi postawione przez „Utwórz zamki testowe”.
 $VRLP_HeaderTestSetup	Przygotowanie testu
@@ -107,6 +109,9 @@ $VRLP_Msg_MarkupLock2	Oznaczanie zamka 2/3: przyłóż końcówkę wytrycha do G
 $VRLP_Msg_MarkupLock3	Oznaczanie zamka 3/3: lewy spust = zapisz dla tego modelu zamka, kliknięcie gałki = wstecz. A: przejdź do wytrycha.
 $VRLP_Msg_MarkupPick	Ustaw wytrych ({}), poza dziurką: trzymaj LEWY spust - model stoi w miejscu, a ty ruszasz dłonią, aż sześcian znajdzie się tam, gdzie powinna być końcówka; puść, a znów porusza się z dłonią (zapisane). Dokładnie: prawa gałka go obraca, lewa gałka przechyla, prawy spust + prawa gałka zmieniają rozmiar. Kliknięcie gałki: znów automatycznie. A: przejdź do napinacza.
 $VRLP_Msg_MarkupWrench	Ustaw napinacz ({}), poza dziurką: trzymaj LEWY spust - model stoi w miejscu, a ty ruszasz dłonią, aż sześcian znajdzie się tam, gdzie powinna być końcówka; puść, a znów porusza się z dłonią (zapisane). Dokładnie: prawa gałka go obraca, lewa gałka przechyla, prawy spust + prawa gałka zmieniają rozmiar. Kliknięcie gałki: znów automatycznie. A: przejdź do zamka.
+$VRLP_Msg_MarkupObject	Oznaczanie: gdzie jest zamek na tych drzwiach lub skrzyni. Trzymaj LEWY spust, by nieść go dłonią; puść, a zostanie tam (zapisane). Klawiatura numeryczna do dokładnego ustawienia. Kliknięcie gałki: z powrotem do szacowanego miejsca. A: przejdź do dziurki.
+$VRLP_Msg_MarkupNumpad	Klawiatura numeryczna (Num Lock włączony): 4 / 6 w lewo / w prawo, 8 / 2 w górę / w dół, + / - w głąb / na zewnątrz, 7 / 9 obrót, 1 / 3 przechył, / i * pochylenie, 0 / . rozmiar, 5 krok.
+$VRLP_Msg_MarkupStep	Krok klawiatury numerycznej: {} jedn., {} stopni.
 $VRLP_Msg_RightHand	prawa ręka
 $VRLP_Msg_LeftHand	lewa ręka
 $VRLP_Msg_MarkupNoPickHand	Oznaczanie: nie widać dłoni z wytrychem - spróbuj ponownie.
@@ -114,11 +119,13 @@ $VRLP_Msg_MarkupNoLockModel	Oznaczanie: brak modelu zamka, dla którego można z
 $VRLP_Msg_MarkupLockSaved	Oznaczenie zapisane dla tego modelu zamka: jego dziurka jest teraz w zielonym celu.
 $VRLP_Msg_MarkupPickSaved	Wytrych zapisany.
 $VRLP_Msg_MarkupWrenchSaved	Napinacz zapisany.
+$VRLP_Msg_MarkupObjectSaved	Zapisano miejsce zamka dla tego modelu.
+$VRLP_Msg_MarkupObjectGuess	Z powrotem w szacowanym miejscu.
 $VRLP_Msg_MarkupAutomaticFit	Znów automatyczne dopasowanie.
 $VRLP_Msg_MarkupCouldNotSave	Oznaczanie: nie udało się zapisać.
 $VRLP_Msg_MarkupReset	Oznaczenia modeli zresetowane.
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: zamki testowe wymagają nowszej VR Address Library.
-$VRLP_Msg_TestLocksPlaced	VR Lockpicking: postawiono skrzynie testowe: {}, drzwi: {} (poziomy zamków są w dzienniku).
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: partia testowa {} z {}: skrzynie: {}, drzwi: {} (lista jest w dzienniku). Naciśnij ponownie, by postawić następną partię.
 $VRLP_Msg_LockpicksAdded	Dodano 50 wytrychów (teraz {}).
 $VRLP_Msg_SkeletonKeyAdded	Dodano Klucz Szkieletowy.
 $VRLP_Msg_SkeletonKeyRemoved	Usunięto Klucz Szkieletowy.

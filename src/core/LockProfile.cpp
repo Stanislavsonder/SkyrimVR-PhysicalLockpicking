@@ -245,3 +245,150 @@ fShivHoldScale = 1.0000
 		return m;
 	}
 }
+
+namespace vrlp
+{
+	namespace
+	{
+		float& Axis(Vec3& a_v, int a_i) { return a_i == 0 ? a_v.x : (a_i == 1 ? a_v.y : a_v.z); }
+		float  Axis(const Vec3& a_v, int a_i) { return a_i == 0 ? a_v.x : (a_i == 1 ? a_v.y : a_v.z); }
+
+		// a clean rotation from the two axes that matter (into the lock, then up)
+		Mat3 LockAxes(const Vec3& a_into, const Vec3& a_up)
+		{
+			const Vec3 into = Normalize(a_into, { 0, 1, 0 });
+			Vec3       up = a_up - into * Dot(a_up, into);
+			up = Normalize(up, std::fabs(into.z) < 0.9f ? Vec3{ 0, 0, 1 } : Vec3{ 0, -1, 0 });
+			return Mat3::FromColumns(Cross(into, up), into, up);
+		}
+
+		std::string AnchorVecText(const Vec3& a_v) { return std::format("{:.3f}, {:.3f}, {:.3f}", a_v.x, a_v.y, a_v.z); }
+
+		std::vector<IniValue> AnchorValues(const std::string& a_section, const ObjectAnchor& a_a)
+		{
+			return {
+				{ a_section, "vObjectKeyhole", AnchorVecText(a_a.keyhole) },
+				{ a_section, "vObjectInto", AnchorVecText(a_a.rot.Column(1)) },
+				{ a_section, "vObjectUp", AnchorVecText(a_a.rot.Column(2)) },
+			};
+		}
+	}
+
+	ObjectAnchor GuessObjectAnchor(const Vec3& a_min, const Vec3& a_max, bool a_door)
+	{
+		ObjectAnchor a;
+		const Vec3   size = a_max - a_min;
+		const Vec3   mid = (a_min + a_max) * 0.5f;
+		if (!a_door) {
+			// the lock just under the lid, a little in front of the face so it isn't inside it
+			a.keyhole = { mid.x, a_min.y - 0.5f, a_min.z + size.z * 0.6f };
+			a.rot = LockAxes({ 0, 1, 0 }, { 0, 0, 1 });
+			a.valid = true;
+			return a;
+		}
+		// the door's thickness is its thinner horizontal side; its lock is on that face
+		const int   through = size.y <= size.x ? 1 : 0;
+		const int   along = 1 - through;
+		const float width = Axis(size, along);
+		const float inset = std::clamp(width * 0.12f, 4.0f, 14.0f);
+		Vec3        into;
+		Axis(into, through) = 1.0f;
+		Axis(a.keyhole, through) = Axis(a_min, through) - 0.5f;
+		// the edge away from the hinge, taken to be the model's origin
+		const bool awayEdge = std::fabs(Axis(a_max, along)) >= std::fabs(Axis(a_min, along));
+		Axis(a.keyhole, along) = awayEdge ? Axis(a_max, along) - inset : Axis(a_min, along) + inset;
+		a.keyhole.z = a_min.z + std::min(64.0f, size.z * 0.45f);
+		a.rot = LockAxes(into, { 0, 0, 1 });
+		a.valid = true;
+		return a;
+	}
+
+	ObjectAnchor OtherSide(const ObjectAnchor& a_anchor, const Vec3& a_min, const Vec3& a_max)
+	{
+		ObjectAnchor a = a_anchor;
+		const Vec3   into = a_anchor.rot.Column(1);
+		const int    i = std::fabs(into.x) >= std::fabs(into.y) ? (std::fabs(into.x) >= std::fabs(into.z) ? 0 : 2) :
+		                                                          (std::fabs(into.y) >= std::fabs(into.z) ? 1 : 2);
+		Axis(a.keyhole, i) = Axis(a_min, i) + Axis(a_max, i) - Axis(a_anchor.keyhole, i);
+		// turned about the up axis: right and into the lock reversed
+		a.rot = Mat3::FromColumns(-a_anchor.rot.Column(0), -into, a_anchor.rot.Column(2));
+		return a;
+	}
+
+	std::map<std::string, ObjectAnchor> ParseObjectAnchors(const std::string& a_text)
+	{
+		struct Raw
+		{
+			Vec3 keyhole, into{ 0, 1, 0 }, up{ 0, 0, 1 };
+			bool valid{ false };
+		};
+		std::map<std::string, Raw> raw;
+		for (const auto& [key, value] : ParseIni(a_text)) {
+			const auto dot = key.rfind('.');
+			if (dot == std::string::npos) {
+				continue;
+			}
+			const std::string name = key.substr(dot + 1);
+			if (name != "vobjectkeyhole" && name != "vobjectinto" && name != "vobjectup") {
+				continue;
+			}
+			Raw& r = raw[NormalizeModelPath(key.substr(0, dot))];
+			if (name == "vobjectkeyhole") {
+				r.valid = ParseVec(value, r.keyhole);
+			} else if (name == "vobjectinto") {
+				ParseVec(value, r.into);
+			} else {
+				ParseVec(value, r.up);
+			}
+		}
+		std::map<std::string, ObjectAnchor> out;
+		for (const auto& [model, r] : raw) {
+			if (r.valid) {
+				out[model] = ObjectAnchor{ r.keyhole, LockAxes(r.into, r.up), true };
+			}
+		}
+		return out;
+	}
+
+	std::string WriteObjectAnchor(const std::string& a_text, const std::string& a_modelPath, const ObjectAnchor& a_anchor)
+	{
+		return SetIniValues(a_text, AnchorValues(NormalizeModelPath(a_modelPath), a_anchor));
+	}
+
+	std::string ObjectAnchorText(const ObjectAnchor& a_anchor)
+	{
+		std::string out;
+		for (const auto& v : AnchorValues("", a_anchor)) {
+			out += std::format("{}{} = {}", out.empty() ? "" : " | ", v.key, v.value);
+		}
+		return out;
+	}
+
+	const std::map<std::string, ObjectAnchor>& DefaultObjectAnchors()
+	{
+		// Measured in game with the markup tool (the "Lock on" lines of the log).
+		static const std::string                         kText = R"(
+)";
+		static const std::map<std::string, ObjectAnchor> kAnchors = ParseObjectAnchors(kText);
+		return kAnchors;
+	}
+
+	Pose PlaceOnObject(const ObjectAnchor& a_anchor, const Pose& a_object, float a_scale)
+	{
+		Pose p;
+		p.pos = a_object.rot * (a_anchor.keyhole * a_scale) + a_object.pos;
+		p.rot = a_object.rot * a_anchor.rot;
+		return p;
+	}
+
+	ObjectAnchor ObjectAnchorFromPose(const Pose& a_lock, const Pose& a_object, float a_scale)
+	{
+		const Mat3   back = a_object.rot.Transposed();
+		const Mat3   local = back * a_lock.rot;
+		ObjectAnchor a;
+		a.keyhole = (back * (a_lock.pos - a_object.pos)) / (a_scale > 1e-4f ? a_scale : 1.0f);
+		a.rot = LockAxes(local.Column(1), local.Column(2));
+		a.valid = true;
+		return a;
+	}
+}

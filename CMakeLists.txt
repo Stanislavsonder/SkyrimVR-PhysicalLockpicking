@@ -56,6 +56,7 @@ add_library(VRLockpicking SHARED
 	src/plugin/Visuals.cpp
 	src/plugin/DebugView.cpp
 	src/plugin/Markup.cpp
+	src/plugin/Numpad.cpp
 	src/plugin/TestLocks.cpp
 	src/plugin/DebugCheats.cpp
 	src/plugin/FrameHook.cpp

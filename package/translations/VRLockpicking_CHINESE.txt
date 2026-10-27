@@ -10,6 +10,8 @@ $VRLP_LeftHandedPick	開鎖器拿在左手
 $VRLP_LeftHandedPick_Help	對調雙手的工具: 開鎖器在左手，張力扳手在右手。
 $VRLP_FullPause	開鎖時暫停
 $VRLP_FullPause_Help	開鎖時暫停遊戲。
+$VRLP_LockOnObject	鎖在門或箱子上
+$VRLP_LockOnObject_Help	鎖位於門或箱子本身上，而不是出現在你面前。你可能需要走近它。它在每個模型上的位置可用模型標定工具對齊。
 $VRLP_ActivateContainerAfterUnlock	開鎖後打開容器
 $VRLP_ActivateContainerAfterUnlock_Help	鎖被撬開後自動打開容器。
 $VRLP_HeaderDifficulty	難度
@@ -62,12 +64,12 @@ $VRLP_CrimeCheck	犯罪偵測
 $VRLP_CrimeCheck_Help	被人看到撬有主的鎖算是犯罪，與原版相同。
 $VRLP_HeaderModelMarkup	模型標定
 $VRLP_MarkupMode	模型標定工具
-$VRLP_MarkupMode_Help	開鎖時: 1) 用左扳機將開鎖器尖端先對準鑰匙孔中心，再對準其上端，鎖的模型會隨之調整；2) 和 3) 對齊手中的開鎖器和張力扳手: 按住左扳機讓模型保持不動，同時移動你的手。A / X 進入下一部分。每個模型分別儲存。
+$VRLP_MarkupMode_Help	開鎖時: 0) 鎖在門或箱子上時，把它放到位: 按住左扳機用手移動它；1) 用左扳機將開鎖器尖端先對準鑰匙孔中心，再對準其上端，鎖的模型會隨之調整；2) 和 3) 對齊手中的開鎖器和張力扳手: 按住左扳機讓模型保持不動，同時移動你的手。A / X 進入下一部分。數字鍵盤可微調每個部分。每個模型分別儲存。
 $VRLP_ResetMarkup	重設模型標定
 $VRLP_ResetMarkup_Help	清除你用模型標定工具儲存的所有鑰匙孔與工具握法: 改回使用內建對齊與自動調整。
 $VRLP_HeaderTestLocks	測試用鎖
 $VRLP_SpawnTestLocks	產生測試用鎖
-$VRLP_SpawnTestLocks_Help	在你周圍放置上鎖的箱子和門: 遊戲與模組中每種箱子 / 門模型各一個，鎖從新手到大師 (還有一些需要鑰匙的)，另外正前方有一扇附鑰匙的新手門，可用來試用蠟製鑰匙天賦。關閉選單即可看到。清單在記錄中。
+$VRLP_SpawnTestLocks_Help	在你周圍放置上鎖的箱子和門，從新手到大師: 遊戲與模組中的所有箱子和門模型，一次一批。再按一次放置下一批 (取代這一批)。每批的第一扇門附有鑰匙，可用來試用蠟製鑰匙天賦。關閉選單即可看到。清單在記錄中。提示: 主控台指令 coc qasmoke 可帶你到一個大型測試大廳。
 $VRLP_RemoveTestLocks	移除測試用鎖
 $VRLP_RemoveTestLocks_Help	移除「產生測試用鎖」放置的箱子和門。
 $VRLP_HeaderTestSetup	測試準備
@@ -107,6 +109,9 @@ $VRLP_Msg_MarkupLock2	標定鎖 2/3: 將開鎖器尖端放在鑰匙孔的「上�
 $VRLP_Msg_MarkupLock3	標定鎖 3/3: 左扳機 = 為此鎖模型儲存，按下搖桿 = 返回。A: 前往開鎖器。
 $VRLP_Msg_MarkupPick	在鑰匙孔外對齊開鎖器 ({}): 按住「左」扳機 - 模型保持不動，移動你的手直到尖端方塊位於尖端應在的位置；放開後模型再次隨手移動 (已儲存)。微調: 右搖桿擺動，左搖桿翻轉，右扳機 + 右搖桿調整大小。按下搖桿: 改回自動。A: 前往張力扳手。
 $VRLP_Msg_MarkupWrench	在鑰匙孔外對齊張力扳手 ({}): 按住「左」扳機 - 模型保持不動，移動你的手直到尖端方塊位於尖端應在的位置；放開後模型再次隨手移動 (已儲存)。微調: 右搖桿擺動，左搖桿翻轉，右扳機 + 右搖桿調整大小。按下搖桿: 改回自動。A: 前往鎖。
+$VRLP_Msg_MarkupObject	標定: 鎖在這扇門或箱子上的位置。按住「左」扳機可用手移動它；放開後它留在那裡 (已儲存)。數字鍵盤用於微調。按下搖桿: 回到估計位置。A: 前往鑰匙孔。
+$VRLP_Msg_MarkupNumpad	數字鍵盤 (開啟 Num Lock): 4 / 6 左 / 右，8 / 2 上 / 下，+ / - 向內 / 向外，7 / 9 轉向，1 / 3 翻轉，/ 和 * 傾斜，0 / . 大小，5 步長。
+$VRLP_Msg_MarkupStep	數字鍵盤步長: {} 單位，{} 度。
 $VRLP_Msg_RightHand	右手
 $VRLP_Msg_LeftHand	左手
 $VRLP_Msg_MarkupNoPickHand	標定: 看不到拿開鎖器的手 - 請再試一次。
@@ -114,11 +119,13 @@ $VRLP_Msg_MarkupNoLockModel	標定: 沒有可儲存的鎖模型。
 $VRLP_Msg_MarkupLockSaved	已為此鎖模型儲存標定: 鑰匙孔現在位於綠色目標內。
 $VRLP_Msg_MarkupPickSaved	已儲存開鎖器。
 $VRLP_Msg_MarkupWrenchSaved	已儲存張力扳手。
+$VRLP_Msg_MarkupObjectSaved	已儲存此模型上鎖的位置。
+$VRLP_Msg_MarkupObjectGuess	已回到估計位置。
 $VRLP_Msg_MarkupAutomaticFit	已改回自動調整。
 $VRLP_Msg_MarkupCouldNotSave	標定: 無法儲存。
 $VRLP_Msg_MarkupReset	已重設模型標定。
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: 測試用鎖需要較新的 VR Address Library。
-$VRLP_Msg_TestLocksPlaced	VR Lockpicking: 已放置 {} 個測試箱子和 {} 扇門 (鎖的等級在記錄中)。
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: 測試批次 {} / {}: {} 個箱子和 {} 扇門 (清單在記錄中)。再按一次放置下一批。
 $VRLP_Msg_LockpicksAdded	已增加 50 個開鎖器 (目前 {} 個)。
 $VRLP_Msg_SkeletonKeyAdded	已加入骷髏鑰匙。
 $VRLP_Msg_SkeletonKeyRemoved	已移除骷髏鑰匙。

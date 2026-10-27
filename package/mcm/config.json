@@ -59,6 +59,15 @@
           }
         },
         {
+          "id": "bLockOnObject:Placement",
+          "text": "$VRLP_LockOnObject",
+          "type": "toggle",
+          "help": "$VRLP_LockOnObject_Help",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
           "id": "bActivateContainerAfterUnlock:General",
           "text": "$VRLP_ActivateContainerAfterUnlock",
           "type": "toggle",

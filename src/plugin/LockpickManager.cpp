@@ -108,6 +108,25 @@ namespace vrlp
 			return p;
 		}
 
+		Pose FromRoom(const Pose& a_anchor, const Pose& a_room)
+		{
+			Pose p;
+			p.rot = a_anchor.rot * a_room.rot;
+			p.pos = a_anchor.rot * a_room.pos + a_anchor.pos;
+			return p;
+		}
+
+		// the lock frame of a pose (position = keyhole, rotation columns = right, into the lock, up)
+		LockFrame FrameOfPose(const Pose& a_p)
+		{
+			LockFrame f;
+			f.keyhole = a_p.pos;
+			f.right = a_p.rot.Column(0);
+			f.forward = a_p.rot.Column(1);
+			f.up = a_p.rot.Column(2);
+			return f;
+		}
+
 		HandInput ReadHand(RE::NiNode* a_node, Hand a_hand, const Pose& a_anchor)
 		{
 			HandInput in;
@@ -200,9 +219,10 @@ namespace vrlp
 		_profiles = ParseLockProfiles(profilesText);
 		_pickProfiles = ParseToolProfiles(profilesText, "pick");
 		_shivProfiles = ParseToolProfiles(profilesText, "shiv");
-		if (!_profiles.empty() || !_pickProfiles.empty() || !_shivProfiles.empty()) {
-			logger::info("Model profiles ({}): {} lock(s), {} pick(s), {} screwdriver(s) measured", kProfilesPath, _profiles.size(),
-				_pickProfiles.size(), _shivProfiles.size());
+		_objectAnchors = ParseObjectAnchors(profilesText);
+		if (!_profiles.empty() || !_pickProfiles.empty() || !_shivProfiles.empty() || !_objectAnchors.empty()) {
+			logger::info("Model profiles ({}): {} lock(s), {} pick(s), {} screwdriver(s), {} door(s) / chest(s) measured", kProfilesPath,
+				_profiles.size(), _pickProfiles.size(), _shivProfiles.size(), _objectAnchors.size());
 		}
 		if (_cfg.lockVariations) {
 			LockMods::Load();
@@ -359,7 +379,18 @@ namespace vrlp
 		params.startArc = std::max(0.0f, EntryPointFloat(RE::BGSEntryPoint::ENTRY_POINT::kSetLockpickStartingArc, player, ref.get(), 0.0f));
 		params.startRandom01 = uni(_rng);
 		_anchor = RoomAnchor(vrNodes);
-		const LockFrame  frame = MakeLockFrame(ToRoom(_anchor, ToPose(hmdNode->world)), _cfg);
+		const Pose head = ToPose(hmdNode->world);
+		LockFrame  frame = MakeLockFrame(ToRoom(_anchor, head), _cfg);
+		_onObject.reset();
+		_cancelDistance = _cfg.cancelDistance;
+		if (_cfg.lockOnObject && LockOnObject(ref.get(), head.pos)) {
+			const Pose lock = ObjectLockWorld();
+			frame = FrameOfPose(ToRoom(_anchor, lock));
+			// you may have activated it from further away than that: walking away counts from there
+			Vec3 away = lock.pos - head.pos;
+			away.z = 0.0f;
+			_cancelDistance = std::max(_cfg.cancelDistance, Length(away) + 30.0f);
+		}
 
 		logger::info("Session start: level {} skill {:.0f} perkMult {:.2f} -> sweet {:.1f} +/- {:.1f} deg, break {:.2f}s{}{}",
 			static_cast<int>(_level), skill, perkMult, params.sweetCenter, params.sweetHalfWidth, params.breakSeconds,
@@ -382,6 +413,9 @@ namespace vrlp
 			sessionCfg.swapGripMirror ? "" : "no ");
 		_session.emplace(params, frame, sessionCfg, pickRef, wrenchRef);
 		_keyholeWorld = _anchor.rot * frame.keyhole + _anchor.pos;
+		Numpad::Reset();
+		_lockGrab.reset();
+		_objectDirty = _keyholeDirty = false;
 		_target = a_target;
 		_lastUpdate = std::chrono::steady_clock::now();
 		_shakeTime = 0.0f;
@@ -421,7 +455,7 @@ namespace vrlp
 				_debug.Create(_cfg, ref.get(), true);
 			}
 			if (_cfg.markupMode) {
-				_markup.Create(ref.get(), !_cfg.leftHandedPick);
+				_markup.Create(ref.get(), !_cfg.leftHandedPick, _onObject.has_value());
 			}
 		}
 		// the assist ring, unless the debug view (which shows all of it) or the markup tool is on
@@ -605,13 +639,18 @@ namespace vrlp
 		{
 			Vec3 away = ToPose(hmdNode->world).pos - _keyholeWorld;
 			away.z = 0.0f;
-			if (Length(away) > _cfg.cancelDistance) {
+			if (Length(away) > _cancelDistance) {
 				Abort("walked away from the lock");
 				return;
 			}
 		}
 		in.pickHand = ReadHand(pickNode, pickSide, _anchor);
 		in.tensionHand = ReadHand(tensionNode, tensionSide, _anchor);
+		// on its door or chest: kept there in the room (the markup tool may move it)
+		if (_onObject) {
+			_session->SetFrame(FrameOfPose(ToRoom(_anchor, ObjectLockWorld())));
+			_keyholeWorld = ObjectLockWorld().pos;
+		}
 		if (_fullPaused) {
 			CheckHandsWhilePaused(vrNodes, dt);
 		}
@@ -1006,10 +1045,13 @@ namespace vrlp
 		VRInput::Get().Haptic(Hand::kRight, 0.8f);
 	}
 
-	// Markup tool. Lock part: the pick's tip marks the keyhole (left trigger), a stick click goes
-	// back. Pick / wrench parts: the model is lined up in the hand (UpdateAlignment).
+	// Markup tool. Object part: where the lock sits on its door or chest (UpdateObjectPlacement).
+	// Lock part: the pick's tip marks the keyhole (left trigger), a stick click goes back. Pick /
+	// wrench parts: the model is lined up in the hand (UpdateAlignment). The number pad fine-tunes
+	// each of them.
 	void LockpickManager::UpdateMarkup(const FrameInput& a_in, float a_dt)
 	{
+		const Numpad::Input pad = Numpad::Read(a_dt);
 		const auto left = VRInput::Get().Snapshot(Hand::kLeft);
 		const auto right = VRInput::Get().Snapshot(Hand::kRight);
 		auto       edge = [](float a_value, bool& a_held) {
@@ -1029,13 +1071,28 @@ namespace vrlp
 		if (next) {
 			EndGrab(true);
 			SaveAlignment();
+			_lockGrab.reset();
+			SaveObjectPlacement();
+			if (_keyholeDirty) {
+				_keyholeIdle = 1.0f;
+				NudgeKeyhole({}, 0.0f);  // saves it
+			}
 			_markup.NextPart();
-			if (_markup.CurrentPart() != Markup::Part::kLock) {
+			if (_markup.CurrentPart() == Markup::Part::kObject) {
+				logger::info("Markup: placing the lock on '{}' now", _onObject ? _onObject->model : std::string());
+			} else if (_markup.CurrentPart() != Markup::Part::kLock) {
 				const bool wrench = _markup.CurrentPart() == Markup::Part::kWrench;
 				logger::info("Markup: lining up the {} '{}' now", wrench ? "wrench" : "pick", _visuals.ToolModelPath(wrench));
 			} else {
 				logger::info("Markup: marking the keyhole of '{}' now", _visuals.LockModelPath());
 			}
+		}
+
+		if (_markup.CurrentPart() == Markup::Part::kObject) {
+			_markup.Update(*_session, _anchor, nullptr, false, false);
+			const bool leftIsPick = (_cfg.leftHandedPick ? Hand::kLeft : Hand::kRight) == Hand::kLeft;
+			UpdateObjectPlacement(leftIsPick ? a_in.pickHand : a_in.tensionHand, left, reset, pad, a_dt);
+			return;
 		}
 
 		if (_markup.CurrentPart() != Markup::Part::kLock) {
@@ -1046,9 +1103,12 @@ namespace vrlp
 			if (hand.valid) {
 				tool = wrench ? _session->WrenchVisual(hand.pose) : _session->PickVisual(hand.pose);
 			}
-			UpdateAlignment(wrench, tool ? &*tool : nullptr, left, right, reset, a_dt);
+			UpdateAlignment(wrench, tool ? &*tool : nullptr, left, right, reset, pad, a_dt);
 			return;
 		}
+
+		// lock: the number pad moves the model about the target (and turns it about the keyhole)
+		NudgeKeyhole(pad, a_dt);
 
 		// lock: the pick's tip (the same point its tip cube shows) marks the keyhole
 		std::optional<Vec3> tip;
@@ -1074,7 +1134,10 @@ namespace vrlp
 	//   sticks (fine):     right stick swings it about its tip, left stick left / right rolls it;
 	//                      right trigger held + right stick up / down sizes it.
 	//   stick click:       back to the automatic fit.
-	void LockpickManager::UpdateAlignment(bool a_wrench, const Pose* a_tool, const ButtonSnapshot& a_left, const ButtonSnapshot& a_right, bool a_reset, float a_dt)
+	//   number pad:        moves it (tool frame: 4 / 6 sideways, + / - towards the tip, 8 / 2 off
+	//                      its flat side), turns it about its tip, 0 / . sizes it.
+	void LockpickManager::UpdateAlignment(bool a_wrench, const Pose* a_tool, const ButtonSnapshot& a_left, const ButtonSnapshot& a_right, bool a_reset,
+		const Numpad::Input& a_pad, float a_dt)
 	{
 		if (!_visuals.HasTool(a_wrench)) {
 			return;
@@ -1117,6 +1180,13 @@ namespace vrlp
 			// about the model's tip (wherever it has been moved), on the tool frame's axes
 			const float rate = 30.0f * kDegToRad * a_dt;
 			p.rot = AxisAngle({ 0, 0, 1 }, -rx * rate) * AxisAngle({ 1, 0, 0 }, ry * rate) * AxisAngle({ 0, 1, 0 }, lx * rate) * p.rot;
+			changed = true;
+		}
+		if (a_pad.any) {
+			const Vec3& t = a_pad.turnDeg;
+			p.rot = AxisAngle({ 0, 0, 1 }, t.z * kDegToRad) * AxisAngle({ 1, 0, 0 }, t.x * kDegToRad) * AxisAngle({ 0, 1, 0 }, t.y * kDegToRad) * p.rot;
+			p.offset = p.offset + a_pad.move;
+			p.scale = std::clamp(p.scale * a_pad.scale, 0.1f, 10.0f);
 			changed = true;
 		}
 		if (changed) {
@@ -1209,6 +1279,180 @@ namespace vrlp
 		Text::Show("$VRLP_Msg_MarkupLockSaved");
 	}
 
+	// bLockOnObject: where the lock goes on the door or chest being picked. Its placement for the
+	// model: the player's own (markup tool), else a built-in one, else a guess from the model's
+	// bounds. A door's lock is on the side you stand.
+	bool LockpickManager::LockOnObject(RE::TESObjectREFR* a_target, const Vec3& a_head)
+	{
+		auto*       base = a_target ? a_target->GetBaseObject() : nullptr;
+		auto*       model = base ? base->As<RE::TESModel>() : nullptr;
+		const char* path = model ? model->GetModel() : nullptr;
+		auto*       obj = a_target ? a_target->Get3D() : nullptr;
+		if (!base || !path || !*path || !obj) {
+			logger::info("Lock on the object: no model or 3D for {:08X}; in front of you instead", a_target ? a_target->GetFormID() : 0);
+			return false;
+		}
+		OnObject o;
+		o.model = path;
+		o.door = base->Is(RE::FormType::Door);
+		const auto& b = base->boundData;
+		o.boundMin = { static_cast<float>(b.boundMin.x), static_cast<float>(b.boundMin.y), static_cast<float>(b.boundMin.z) };
+		o.boundMax = { static_cast<float>(b.boundMax.x), static_cast<float>(b.boundMax.y), static_cast<float>(b.boundMax.z) };
+		if (o.boundMax.x <= o.boundMin.x || o.boundMax.y <= o.boundMin.y || o.boundMax.z <= o.boundMin.z) {
+			// no object bounds in its record: those of its 3D (a sphere) as a box
+			const RE::NiBound& wb = obj->worldBound;
+			const float        r = wb.radius / std::max(obj->world.scale, 0.01f);
+			o.boundMin = { -r, -r, -r };
+			o.boundMax = { r, r, r };
+		}
+		o.object = ToPose(obj->world);
+		o.scale = obj->world.scale > 0.0f ? obj->world.scale : 1.0f;
+
+		const std::string key = NormalizeModelPath(path);
+		const char*       source = "guessed from its size";
+		if (auto it = _objectAnchors.find(key); it != _objectAnchors.end()) {
+			o.anchor = it->second;
+			source = "lined up by you";
+		} else if (auto def = DefaultObjectAnchors().find(key); def != DefaultObjectAnchors().end()) {
+			o.anchor = def->second;
+			source = "built in";
+		} else {
+			o.anchor = GuessObjectAnchor(o.boundMin, o.boundMax, o.door);
+		}
+		if (o.door) {
+			// you face into the lock: if its "into the lock" points at you, you're on the other side
+			const Pose front = PlaceOnObject(o.anchor, o.object, o.scale);
+			o.otherSide = Dot(front.pos - a_head, front.rot.Column(1)) < 0.0f;
+		}
+		_onObject = o;
+		const Pose  lock = ObjectLockWorld();
+		const float dist = Distance(lock.pos, a_head);
+		logger::info("Lock on the {} [{}] ({}{}), {:.0f} from your head; bounds ({:.0f}, {:.0f}, {:.0f}) - ({:.0f}, {:.0f}, {:.0f}), scale {:.2f}",
+			o.door ? "door" : "container", key, source, o.otherSide ? ", the other side" : "", dist, o.boundMin.x, o.boundMin.y, o.boundMin.z,
+			o.boundMax.x, o.boundMax.y, o.boundMax.z, o.scale);
+		return true;
+	}
+
+	Pose LockpickManager::ObjectLockWorld() const
+	{
+		if (!_onObject) {
+			return {};
+		}
+		const auto&        o = *_onObject;
+		const ObjectAnchor a = o.otherSide ? OtherSide(o.anchor, o.boundMin, o.boundMax) : o.anchor;
+		return PlaceOnObject(a, o.object, o.scale);
+	}
+
+	// Markup, object part: where the lock sits on its door or chest.
+	//   left trigger held: the lock moves and turns with the left hand; let go and it stays (saved).
+	//   number pad:        moves it along its own axes (4 / 6 left / right, 8 / 2 up / down, + / -
+	//                      into the object / out), turns it about the keyhole.
+	//   stick click:       back to the built-in place or the guess.
+	void LockpickManager::UpdateObjectPlacement(const HandInput& a_leftHand, const ButtonSnapshot& a_left, bool a_reset, const Numpad::Input& a_pad, float a_dt)
+	{
+		if (!_onObject) {
+			return;
+		}
+		auto& o = *_onObject;
+		// a lock pose in the world -> the anchor as saved (a door: its marked side)
+		auto store = [&o](const Pose& a_world) {
+			const ObjectAnchor shown = ObjectAnchorFromPose(a_world, o.object, o.scale);
+			o.anchor = o.otherSide ? OtherSide(shown, o.boundMin, o.boundMax) : shown;
+		};
+		if (a_reset) {
+			_lockGrab.reset();
+			const auto def = DefaultObjectAnchors().find(NormalizeModelPath(o.model));
+			o.anchor = def != DefaultObjectAnchors().end() ? def->second : GuessObjectAnchor(o.boundMin, o.boundMax, o.door);
+			_objectDirty = true;
+			SaveObjectPlacement();
+			Text::Show("$VRLP_Msg_MarkupObjectGuess");
+			return;
+		}
+
+		const bool wasGrabbing = _lockGrab.has_value();
+		const bool grabbing = a_leftHand.valid && (wasGrabbing ? a_left.trigger > 0.3f : a_left.trigger > 0.8f);
+		if (grabbing) {
+			if (!wasGrabbing) {
+				_lockGrab = LockGrab{ a_leftHand.pose, ToRoom(_anchor, ObjectLockWorld()) };
+			}
+			// the lock keeps its place in the hand's grip
+			const Mat3 back = _lockGrab->hand.rot.Transposed();
+			Pose       room;
+			room.rot = a_leftHand.pose.rot * back * _lockGrab->lock.rot;
+			room.pos = a_leftHand.pose.rot * (back * (_lockGrab->lock.pos - _lockGrab->hand.pos)) + a_leftHand.pose.pos;
+			store(FromRoom(_anchor, room));
+			_objectDirty = true;
+			return;
+		}
+		if (wasGrabbing) {
+			_lockGrab.reset();
+			SaveObjectPlacement();
+			return;
+		}
+
+		if (a_pad.any) {
+			Pose        lock = ObjectLockWorld();
+			const Vec3& t = a_pad.turnDeg;
+			lock.pos = lock.pos + lock.rot * a_pad.move;
+			lock.rot = lock.rot * AxisAngle({ 0, 0, 1 }, t.z * kDegToRad) * AxisAngle({ 1, 0, 0 }, t.x * kDegToRad) * AxisAngle({ 0, 1, 0 }, t.y * kDegToRad);
+			store(lock);
+			_objectDirty = true;
+			_objectIdle = 0.0f;
+		} else if (_objectDirty) {
+			_objectIdle += a_dt;
+			if (_objectIdle >= 1.0f) {
+				SaveObjectPlacement();
+			}
+		}
+	}
+
+	void LockpickManager::SaveObjectPlacement()
+	{
+		if (!_objectDirty || !_onObject) {
+			_objectDirty = false;
+			return;
+		}
+		_objectDirty = false;
+		const auto& o = *_onObject;
+		if (!SaveProfilesText(WriteObjectAnchor(ReadText(kProfilesPath), o.model, o.anchor))) {
+			return;
+		}
+		_objectAnchors[NormalizeModelPath(o.model)] = o.anchor;
+		// everything needed to make this a built-in placement
+		logger::info("Lock on [{}] ({}): {} (bounds ({:.0f}, {:.0f}, {:.0f}) - ({:.0f}, {:.0f}, {:.0f}))", NormalizeModelPath(o.model),
+			o.door ? "door" : "container", ObjectAnchorText(o.anchor), o.boundMin.x, o.boundMin.y, o.boundMin.z, o.boundMax.x, o.boundMax.y,
+			o.boundMax.z);
+		Text::Show("$VRLP_Msg_MarkupObjectSaved");
+	}
+
+	// Markup, lock part: the number pad moves the lock model about the target (lock frame: 4 / 6
+	// left / right, 8 / 2 up / down, + / - deeper / out) and 1 / 3 turn it about the keyhole.
+	// Saved a moment after the last key.
+	void LockpickManager::NudgeKeyhole(const Numpad::Input& a_pad, float a_dt)
+	{
+		const MeshPlacement& place = _visuals.LockPlacement();
+		if (!place.valid || _visuals.LockModelPath().empty()) {
+			return;
+		}
+		if (a_pad.any) {
+			// the model point that is to come to the keyhole: the one now at -move
+			LockProfile p = ProfileFromMarks(-a_pad.move, -a_pad.move + Vec3{ 0, 0, 1 }, place, _visuals.LockRoll());
+			p.roll += a_pad.turnDeg.y;
+			_visuals.SetLockProfile(p);
+			_keyholeDirty = true;
+			_keyholeIdle = 0.0f;
+			return;
+		}
+		if (_keyholeDirty) {
+			_keyholeIdle += a_dt;
+			if (_keyholeIdle >= 1.0f) {
+				_keyholeDirty = false;
+				LockProfile p = ProfileFromMarks({}, { 0, 0, 1 }, place, _visuals.LockRoll());
+				SaveLockProfile(p, _visuals.LockModelPath());
+			}
+		}
+	}
+
 	// Keeps the player in place while picking: no walking, turning, sneaking, jumping or attacks.
 	void LockpickManager::LockControls(bool a_lock)
 	{
@@ -1242,6 +1486,13 @@ namespace vrlp
 		MuteGameRumble(false);
 		_grab.reset();  // whatever it shows now is saved
 		SaveAlignment();
+		_lockGrab.reset();
+		SaveObjectPlacement();
+		if (_keyholeDirty && _session) {
+			_keyholeIdle = 1.0f;
+			NudgeKeyhole({}, 0.0f);
+		}
+		_onObject.reset();
 		_visuals.Destroy();
 		_debug.Destroy();
 		_assist.Destroy();

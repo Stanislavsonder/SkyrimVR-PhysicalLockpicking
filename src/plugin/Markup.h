@@ -7,18 +7,23 @@
 
 namespace vrlp
 {
-	// Model markup tool (bMarkupMode). Three parts, one after another (A / X goes to the next):
+	// Model markup tool (bMarkupMode). Its parts, one after another (A / X goes to the next):
+	//   object: with the lock on its door or chest (bLockOnObject), where it sits there: hold the
+	//           left trigger to carry it with the hand, the number pad for fine moves; done by
+	//           LockpickManager, saved per door / chest model.
 	//   lock:   the pick's tip (its tip cube) marks the keyhole on the lock model: put it on the
 	//           keyhole's centre and press the left trigger, then on the keyhole's top (which way
 	//           is up), then press once more to save; a stick click goes a step back.
 	//   pick / wrench: the model is lined up in the hand (hold the left trigger to keep it still
 	//           while the hand moves; sticks for fine turns and size), done by LockpickManager;
 	//           this class only says what to do.
+	// The number pad fine-tunes every part (Numpad).
 	class Markup
 	{
 	public:
 		enum class Part
 		{
+			kObject,
 			kLock,
 			kPick,
 			kWrench
@@ -30,7 +35,8 @@ namespace vrlp
 			Vec3 top;
 		};
 
-		bool Create(RE::TESObjectREFR* a_target, bool a_pickRightHand);
+		// a_objectPart: the lock is on its door or chest, so the tool starts with where it sits.
+		bool Create(RE::TESObjectREFR* a_target, bool a_pickRightHand, bool a_objectPart);
 		void Destroy();
 		bool Active() const { return _root != nullptr; }
 		Part CurrentPart() const { return _part; }
@@ -50,6 +56,7 @@ namespace vrlp
 		Part _part{ Part::kLock };
 		int  _step{ 0 };  // lock: 0 centre, 1 top, 2 confirm
 		bool _pickRight{ true };
+		bool _objectPart{ false };
 		Vec3 _marks[2];
 	};
 }

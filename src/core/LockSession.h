@@ -144,6 +144,8 @@ namespace vrlp
 		[[nodiscard]] float PickDamage() const { return _pickDamage; }  // seconds of forcing so far
 		[[nodiscard]] const LockParams&   Params() const { return _params; }
 		[[nodiscard]] const LockFrame&    Frame() const { return _frame; }
+		// The lock moved (lined up on its door or chest with the markup tool).
+		void SetFrame(const LockFrame& a_frame) { _frame = a_frame; }
 		[[nodiscard]] const HapticOutput& Haptics() const { return _haptics; }
 		// Pose of the tool tip (pos) and tool orientation (rot; tool axis = rot * +Y, pointing
 		// into the lock) for a hand holding the pick / the wrench.

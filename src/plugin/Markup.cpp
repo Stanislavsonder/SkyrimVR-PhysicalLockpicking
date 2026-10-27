@@ -54,7 +54,7 @@ namespace vrlp
 		return clone;
 	}
 
-	bool Markup::Create(RE::TESObjectREFR* a_target, bool a_pickRightHand)
+	bool Markup::Create(RE::TESObjectREFR* a_target, bool a_pickRightHand, bool a_objectPart)
 	{
 		Destroy();
 		if (!AddressCheck::Has(Ids::kMeshes)) {
@@ -80,10 +80,12 @@ namespace vrlp
 		_centre.reset(Add("dbg_cyan"));  // not green: the target is green
 		_top.reset(Add("dbg_yellow"));
 		_parent->AttachChild(_root.get(), true);
-		_part = Part::kLock;
+		_objectPart = a_objectPart;
+		_part = a_objectPart ? Part::kObject : Part::kLock;
 		_step = 0;
 		_pickRight = a_pickRightHand;
 		Prompt();
+		Text::Show("$VRLP_Msg_MarkupNumpad");
 		logger::info("Markup mode on");
 		return true;
 	}
@@ -101,7 +103,20 @@ namespace vrlp
 
 	void Markup::NextPart()
 	{
-		_part = _part == Part::kLock ? Part::kPick : (_part == Part::kPick ? Part::kWrench : Part::kLock);
+		switch (_part) {
+		case Part::kObject:
+			_part = Part::kLock;
+			break;
+		case Part::kLock:
+			_part = Part::kPick;
+			break;
+		case Part::kPick:
+			_part = Part::kWrench;
+			break;
+		default:
+			_part = _objectPart ? Part::kObject : Part::kLock;
+			break;
+		}
 		_step = 0;
 		Prompt();
 	}
@@ -109,6 +124,10 @@ namespace vrlp
 	void Markup::Prompt() const
 	{
 		static constexpr const char* kLock[] = { "$VRLP_Msg_MarkupLock1", "$VRLP_Msg_MarkupLock2", "$VRLP_Msg_MarkupLock3" };
+		if (_part == Part::kObject) {
+			Text::Show("$VRLP_Msg_MarkupObject");
+			return;
+		}
 		if (_part == Part::kLock) {
 			Text::Show(kLock[std::clamp(_step, 0, 2)]);
 			return;

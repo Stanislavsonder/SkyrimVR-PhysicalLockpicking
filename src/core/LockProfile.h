@@ -65,4 +65,38 @@ namespace vrlp
 	// The placement (mesh -> tool frame) with the alignment applied on top.
 	MeshPlacement ApplyToolProfile(const MeshPlacement& a_place, const ToolProfile& a_profile);
 
+	// Where the lock sits on a door or chest (bLockOnObject), in the object's own model space
+	// (before the reference's scale): the keyhole, and the lock frame's axes (right, into the
+	// lock, up). Set with the markup tool's first step and saved under the object's model in the
+	// same file: vObjectKeyhole, vObjectInto, vObjectUp. For a door it is the side marked; the
+	// other side is its mirror through the door (OtherSide).
+	struct ObjectAnchor
+	{
+		Vec3 keyhole;
+		Mat3 rot;  // columns: right, into the lock, up
+		bool valid{ false };
+	};
+
+	// A first guess from the model's bounds (OBND, model space). Chest: on its front (-Y) face,
+	// in the middle, a little below the lid. Door: on the face of its thin side, at handle height,
+	// near the edge furthest from the model's origin (doors swing about their origin).
+	ObjectAnchor GuessObjectAnchor(const Vec3& a_boundMin, const Vec3& a_boundMax, bool a_door);
+	// The same lock seen from the other side of a door: mirrored through the middle of the door,
+	// facing the other way. Applying it twice gives the anchor back.
+	ObjectAnchor OtherSide(const ObjectAnchor& a_anchor, const Vec3& a_boundMin, const Vec3& a_boundMax);
+
+	std::map<std::string, ObjectAnchor> ParseObjectAnchors(const std::string& a_text);
+	std::string                         WriteObjectAnchor(const std::string& a_text, const std::string& a_modelPath, const ObjectAnchor& a_anchor);
+	// The INI lines WriteObjectAnchor writes, for the log.
+	std::string ObjectAnchorText(const ObjectAnchor& a_anchor);
+	// Built-in placements, lined up in game with the markup tool. A player's own for the same
+	// model wins.
+	const std::map<std::string, ObjectAnchor>& DefaultObjectAnchors();
+
+	// The lock frame's pose in the world for an anchor on an object placed at a_object (its
+	// world rotation and position) with scale a_scale: pos = keyhole, rot columns = right, into
+	// the lock, up. ObjectAnchorFromPose is the other way round.
+	Pose         PlaceOnObject(const ObjectAnchor& a_anchor, const Pose& a_object, float a_scale);
+	ObjectAnchor ObjectAnchorFromPose(const Pose& a_lock, const Pose& a_object, float a_scale);
+
 }

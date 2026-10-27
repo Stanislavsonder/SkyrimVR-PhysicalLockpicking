@@ -10,6 +10,8 @@ $VRLP_LeftHandedPick	Pick in left hand
 $VRLP_LeftHandedPick_Help	Mirrors the tools in your hands: the lockpick in the left, the tension wrench in the right.
 $VRLP_FullPause	Pause on lockpicking
 $VRLP_FullPause_Help	Pauses the game while you pick a lock.
+$VRLP_LockOnObject	Lock on the door or chest
+$VRLP_LockOnObject_Help	The lock sits on the door or chest itself instead of appearing in front of you. You may have to step up to it. Where it sits on each model can be lined up with the model markup tool.
 $VRLP_ActivateContainerAfterUnlock	Open container after unlocking
 $VRLP_ActivateContainerAfterUnlock_Help	Opens a container automatically once its lock is picked.
 $VRLP_HeaderDifficulty	Difficulty
@@ -62,12 +64,12 @@ $VRLP_CrimeCheck	Crime detection
 $VRLP_CrimeCheck_Help	Being seen picking an owned lock is a crime, like vanilla.
 $VRLP_HeaderModelMarkup	Model markup
 $VRLP_MarkupMode	Model markup tool
-$VRLP_MarkupMode_Help	While lockpicking: 1) put the pick's tip on the keyhole's centre, then its top, with the left trigger - the lock model moves to fit; 2) and 3) line up the pick and the tension wrench in your hands: hold the left trigger to keep the model still while you move your hand. A / X goes to the next part. Saved per model.
+$VRLP_MarkupMode_Help	While lockpicking: 0) with the lock on the door or chest, place it there: hold the left trigger to carry it with your hand; 1) put the pick's tip on the keyhole's centre, then its top, with the left trigger - the lock model moves to fit; 2) and 3) line up the pick and the tension wrench in your hands: hold the left trigger to keep the model still while you move your hand. A / X goes to the next part. The number pad fine-tunes each part. Saved per model.
 $VRLP_ResetMarkup	Reset model markup
 $VRLP_ResetMarkup_Help	Forgets every lock keyhole and tool grip you saved with the model markup tool: the built-in alignments and the automatic fit are used again.
 $VRLP_HeaderTestLocks	Test locks
 $VRLP_SpawnTestLocks	Spawn test locks
-$VRLP_SpawnTestLocks_Help	Places locked chests and doors around you: one per chest / door model of your game and mods, with Novice to Master locks (and some that need a key), plus a Novice door straight ahead that has a key, to try the Wax Key perk. Close the menu to see them. The list is in the log.
+$VRLP_SpawnTestLocks_Help	Places locked chests and doors around you, Novice to Master: every chest and door model of your game and mods, a batch at a time. Press again for the next batch (it replaces this one). The first door of each batch has a key, to try the Wax Key perk. Close the menu to see them. The list is in the log. Tip: the console command coc qasmoke takes you to a big test hall.
 $VRLP_RemoveTestLocks	Remove test locks
 $VRLP_RemoveTestLocks_Help	Removes the chests and doors placed by Spawn test locks.
 $VRLP_HeaderTestSetup	Test setup
@@ -107,6 +109,9 @@ $VRLP_Msg_MarkupLock2	Markup lock 2/3: put the pick's tip on the TOP of the keyh
 $VRLP_Msg_MarkupLock3	Markup lock 3/3: left trigger = save for this lock model, stick click = back. A: go to the pick.
 $VRLP_Msg_MarkupPick	Line up the pick ({}), out of the keyhole: hold the LEFT trigger - the model stays still while you move your hand until the tip cube sits where its tip should be; let go and it moves with your hand again (saved). Fine: right stick swings it, left stick rolls it, right trigger + right stick sizes it. Stick click: automatic again. A: go to the tension wrench.
 $VRLP_Msg_MarkupWrench	Line up the tension wrench ({}), out of the keyhole: hold the LEFT trigger - the model stays still while you move your hand until the tip cube sits where its tip should be; let go and it moves with your hand again (saved). Fine: right stick swings it, left stick rolls it, right trigger + right stick sizes it. Stick click: automatic again. A: go to the lock.
+$VRLP_Msg_MarkupObject	Markup: where the lock sits on this door or chest. Hold the LEFT trigger to carry it with your hand; let go to leave it there (saved). Number pad for fine moves. Stick click: back to the guess. A: go to the keyhole.
+$VRLP_Msg_MarkupNumpad	Number pad (Num Lock on): 4 / 6 left / right, 8 / 2 up / down, + / - in / out, 7 / 9 turn, 1 / 3 roll, / and * tilt, 0 / . size, 5 step size.
+$VRLP_Msg_MarkupStep	Number pad step: {} units, {} degrees.
 $VRLP_Msg_RightHand	right hand
 $VRLP_Msg_LeftHand	left hand
 $VRLP_Msg_MarkupNoPickHand	Markup: can't see the pick hand - try again.
@@ -114,11 +119,13 @@ $VRLP_Msg_MarkupNoLockModel	Markup: no lock model to save it for.
 $VRLP_Msg_MarkupLockSaved	Markup saved for this lock model: its keyhole is now in the green target.
 $VRLP_Msg_MarkupPickSaved	Pick saved.
 $VRLP_Msg_MarkupWrenchSaved	Tension wrench saved.
+$VRLP_Msg_MarkupObjectSaved	Saved where the lock sits on this model.
+$VRLP_Msg_MarkupObjectGuess	Back to the guessed place.
 $VRLP_Msg_MarkupAutomaticFit	Back to the automatic fit.
 $VRLP_Msg_MarkupCouldNotSave	Markup: could not save.
 $VRLP_Msg_MarkupReset	Model markup reset.
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: test locks need a newer VR Address Library.
-$VRLP_Msg_TestLocksPlaced	VR Lockpicking: {} test chests and {} doors placed (their lock levels are in the log).
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: test batch {} of {}: {} chests and {} doors (the list is in the log). Spawn again for the next batch.
 $VRLP_Msg_LockpicksAdded	50 lockpicks added ({} now).
 $VRLP_Msg_SkeletonKeyAdded	Skeleton Key added.
 $VRLP_Msg_SkeletonKeyRemoved	Skeleton Key removed.

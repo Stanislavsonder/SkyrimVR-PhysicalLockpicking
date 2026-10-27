@@ -8,12 +8,15 @@ namespace vrlp::TestLocks
 {
 	namespace
 	{
-		constexpr std::size_t kMaxChests = 12;
-		constexpr std::size_t kMaxDoors = 6;
+		// Each press of the button places the next batch: as many as fit on an arc around you.
+		constexpr float       kRadius = 300.0f;   // from you to the objects' middles
+		constexpr float       kArcDeg = 300.0f;   // the arc they stand on (the gap is behind you)
+		constexpr float       kGap = 60.0f;       // between neighbours
+		constexpr std::size_t kMaxPerBatch = 16;
 
-		// Raw lock levels as stored on a reference: Novice ... Master, then "requires a key".
-		constexpr std::int8_t kLevels[] = { 1, 25, 50, 75, 100, -1 };
-		constexpr const char* kLevelNames[] = { "Novice", "Apprentice", "Adept", "Expert", "Master", "Key" };
+		// Raw lock levels as stored on a reference: Novice ... Master.
+		constexpr std::int8_t kLevels[] = { 1, 25, 50, 75, 100 };
+		constexpr const char* kLevelNames[] = { "Novice", "Apprentice", "Adept", "Expert", "Master" };
 
 		std::vector<RE::ObjectRefHandle> g_spawned;
 
@@ -32,33 +35,53 @@ namespace vrlp::TestLocks
 		{
 			RE::TESBoundObject* form;
 			std::string         model;
+			bool                door;
+			RE::NiPoint3        min, max;  // its bounds (OBND), model space
 		};
 
-		// One form per distinct model (a_byFolder: per model folder, for more variety), in load order.
+		// Every door and chest model of the loaded game and mods, one form each: containers
+		// first, then doors, each by model path.
+		std::vector<Pick> g_all;
+		std::size_t       g_next = 0;  // first of the next batch
+
 		template <class T>
-		std::vector<Pick> Collect(std::initializer_list<const char*> a_words, std::initializer_list<const char*> a_skip, bool a_byFolder, std::size_t a_max)
+		void Collect(std::vector<Pick>& a_out, bool a_door, std::initializer_list<const char*> a_skip)
 		{
-			std::vector<Pick>     out;
 			std::set<std::string> seen;
+			std::vector<Pick>     found;
 			for (auto* form : RE::TESDataHandler::GetSingleton()->GetFormArray<T>()) {
-				if (!form || out.size() >= a_max) {
-					continue;
-				}
-				const char* path = form->GetModel();
+				const char* path = form ? form->GetModel() : nullptr;
 				if (!path || !*path) {
 					continue;
 				}
 				const std::string model = Lower(path);
-				if (!Contains(model, a_words) || Contains(model, a_skip)) {
+				if (Contains(model, a_skip) || !seen.insert(model).second) {
 					continue;
 				}
-				const auto        slash = model.find_last_of('\\');
-				const std::string key = a_byFolder && slash != std::string::npos ? model.substr(0, slash) : model;
-				if (seen.insert(key).second) {
-					out.push_back({ form, path });
-				}
+				const auto& b = form->boundData;
+				found.push_back({ form, path, a_door, { static_cast<float>(b.boundMin.x), static_cast<float>(b.boundMin.y), static_cast<float>(b.boundMin.z) },
+					{ static_cast<float>(b.boundMax.x), static_cast<float>(b.boundMax.y), static_cast<float>(b.boundMax.z) } });
 			}
-			return out;
+			std::ranges::sort(found, [](const Pick& a_l, const Pick& a_r) { return Lower(a_l.model) < Lower(a_r.model); });
+			a_out.insert(a_out.end(), found.begin(), found.end());
+		}
+
+		void CollectAll()
+		{
+			g_all.clear();
+			g_next = 0;
+			// not containers anyone locks: bodies, sacks, barrels, plants...
+			Collect<RE::TESObjectCONT>(g_all, false,
+				{ "actors\\", "corpse", "skeleton", "sack", "barrel", "\\urn", "basket", "plants\\", "flora", "nest", "markers\\" });
+			Collect<RE::TESObjectDOOR>(g_all, true, { "markers\\" });
+			const auto doors = static_cast<std::size_t>(std::ranges::count_if(g_all, [](const Pick& a_p) { return a_p.door; }));
+			logger::info("Test locks: {} container and {} door models in this game", g_all.size() - doors, doors);
+		}
+
+		// how wide it stands on the arc
+		float Width(const Pick& a_p)
+		{
+			return std::max({ a_p.max.x - a_p.min.x, a_p.max.y - a_p.min.y, 20.0f });
 		}
 
 		// A key the player doesn't carry, for a lock that has one (to try the Wax Key perk).
@@ -174,11 +197,42 @@ namespace vrlp::TestLocks
 		if (!cell) {
 			return;
 		}
+		if (g_all.empty()) {
+			CollectAll();
+		}
+		if (g_all.empty()) {
+			return;
+		}
+		if (g_next >= g_all.size()) {
+			g_next = 0;  // after the last batch, the first again
+		}
 
-		const auto chests = Collect<RE::TESObjectCONT>(
-			{ "chest", "strongbox", "coffer", "lockbox", "footlocker", "safe", "trunk", "box" },
-			{ "static", "corpse", "skeleton", "sack", "barrel", "urn" }, false, kMaxChests);
-		const auto doors = Collect<RE::TESObjectDOOR>({ "door" }, { "trapdoor", "secret", "load" }, true, kMaxDoors);
+		// this batch: as many as fit on the arc
+		std::vector<const Pick*> batch;
+		float                    arc = 0.0f;
+		const float              length = kArcDeg * RE::NI_PI / 180.0f * kRadius;
+		for (std::size_t i = g_next; i < g_all.size() && batch.size() < kMaxPerBatch; ++i) {
+			const float w = Width(g_all[i]) + kGap;
+			if (!batch.empty() && arc + w > length) {
+				break;
+			}
+			batch.push_back(&g_all[i]);
+			arc += w;
+		}
+		// batch numbers: count the batches the same way from the start
+		std::size_t batchNo = 0, batches = 0;
+		for (std::size_t i = 0; i < g_all.size(); ++batches) {
+			if (i == g_next) {
+				batchNo = batches + 1;
+			}
+			float       used = 0.0f;
+			std::size_t n = 0;
+			while (i < g_all.size() && n < kMaxPerBatch && (n == 0 || used + Width(g_all[i]) + kGap <= length)) {
+				used += Width(g_all[i]) + kGap;
+				++i;
+				++n;
+			}
+		}
 
 		// facing: where the headset looks, else the body
 		float heading = player->GetAngleZ();
@@ -189,48 +243,46 @@ namespace vrlp::TestLocks
 			}
 		}
 		const RE::NiPoint3 origin = player->GetPosition();
+		RE::TESKey*        key = SpareKey();
+		bool               keyGiven = false;
 
-		// Chests on two arcs in front, doors on a wider arc behind them. Each object's -Y (the
-		// usual front of a model) faces the player.
-		auto place = [&](const Pick& a_pick, float a_radius, float a_offsetDeg, std::size_t a_levelIndex, RE::TESKey* a_key = nullptr) {
-			const float        a = heading + a_offsetDeg * RE::NI_PI / 180.0f;
-			const RE::NiPoint3 pos{ origin.x + std::sin(a) * a_radius, origin.y + std::cos(a) * a_radius, origin.z };
-			const RE::NiPoint3 rot{ 0.0f, 0.0f, a };
-			auto               handle = RE::TESDataHandler::GetSingleton()->CreateReferenceAtLocation(a_pick.form, pos, rot, cell,
+		// Along the arc, centred in front of you. Each object's front faces you: -Y (the usual
+		// front of a model), or -X for a door that is thinner that way.
+		float       along = -arc / 2.0f;
+		std::size_t chests = 0, doors = 0;
+		for (std::size_t k = 0; k < batch.size(); ++k) {
+			const Pick& p = *batch[k];
+			const float w = Width(p) + kGap;
+			const float a = heading + (along + w / 2.0f) / kRadius;
+			along += w;
+			const bool  sideways = p.door && (p.max.x - p.min.x) < (p.max.y - p.min.y);
+			const float r = sideways ? a - RE::NI_PI / 2.0f : a;
+			// the model's middle on the arc (its origin may be at an edge, as a door's hinge)
+			const float  cx = (p.min.x + p.max.x) * 0.5f, cy = (p.min.y + p.max.y) * 0.5f;
+			const float  offX = cx * std::cos(r) + cy * std::sin(r);
+			const float  offY = -cx * std::sin(r) + cy * std::cos(r);
+			RE::NiPoint3 pos{ origin.x + std::sin(a) * kRadius - offX, origin.y + std::cos(a) * kRadius - offY, origin.z };
+			const RE::NiPoint3 rot{ 0.0f, 0.0f, r };
+			auto               handle = RE::TESDataHandler::GetSingleton()->CreateReferenceAtLocation(p.form, pos, rot, cell,
                 player->GetWorldspace(), nullptr, nullptr, RE::ObjectRefHandle(), false, true);
 			auto ref = std::as_const(handle).get();
 			if (!ref) {
-				logger::warn("Test locks: could not place {:08X} ({})", a_pick.form->GetFormID(), a_pick.model);
-				return;
+				logger::warn("Test locks: could not place {:08X} ({})", p.form->GetFormID(), p.model);
+				continue;
 			}
-			const std::size_t level = a_levelIndex % std::size(kLevels);
-			SetLock(ref.get(), kLevels[level], a_key);
+			const std::size_t level = (g_next + k) % std::size(kLevels);
+			// the first door has a key (picking it gives a copy with Wax Key)
+			RE::TESKey* withKey = p.door && !keyGiven ? key : nullptr;
+			keyGiven = keyGiven || withKey;
+			SetLock(ref.get(), kLevels[level], withKey);
 			g_spawned.push_back(handle);
-			logger::info("Test locks: {} {:08X} '{}' {} ({}), {:.0f} deg{}", ref->GetFormType() == RE::FormType::Door ? "door" : "chest",
-				a_pick.form->GetFormID(), a_pick.form->GetName(), a_pick.model, kLevelNames[level], a_offsetDeg,
-				a_key ? std::format(", has a key: '{}' (picking it gives a copy with Wax Key)", a_key->GetName()) : std::string());
-		};
+			(p.door ? doors : chests)++;
+			logger::info("Test locks: {} {:08X} '{}' {} ({}){}", p.door ? "door" : "chest", p.form->GetFormID(), p.form->GetName(), p.model,
+				kLevelNames[level], withKey ? std::format(", has a key: '{}'", withKey->GetName()) : std::string());
+		}
+		g_next += batch.size();
 
-		const std::size_t front = std::min<std::size_t>(chests.size(), 6);
-		for (std::size_t i = 0; i < chests.size(); ++i) {
-			const bool        row1 = i < front;
-			const std::size_t n = row1 ? front : chests.size() - front;
-			const std::size_t k = row1 ? i : i - front;
-			const float       span = n > 1 ? 150.0f : 0.0f;
-			place(chests[i], row1 ? 160.0f : 270.0f, -span / 2 + span * k / std::max<std::size_t>(n - 1, 1), i);
-		}
-		for (std::size_t i = 0; i < doors.size(); ++i) {
-			const float span = doors.size() > 1 ? 120.0f : 0.0f;
-			place(doors[i], 430.0f, -span / 2 + span * i / std::max<std::size_t>(doors.size() - 1, 1), i + 2);
-		}
-		// one more door, a Novice lock that has a key (for the Wax Key), straight ahead behind the others
-		if (!doors.empty()) {
-			if (auto* key = SpareKey()) {
-				place(doors.front(), 560.0f, 0.0f, 0, key);
-			}
-		}
-
-		Text::Show("$VRLP_Msg_TestLocksPlaced", chests.size(), doors.size());
-		logger::info("{} test chests and {} doors placed", chests.size(), doors.size());
+		Text::Show("$VRLP_Msg_TestLocksPlaced", batchNo, batches, chests, doors);
+		logger::info("Test locks: batch {} of {}: {} chests and {} doors placed", batchNo, batches, chests, doors);
 	}
 }

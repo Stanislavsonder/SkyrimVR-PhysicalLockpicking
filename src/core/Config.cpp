@@ -270,6 +270,7 @@ namespace vrlp
 
 		f("Placement.fLockSideOffset", lockSideOffset);
 		f("Placement.fCancelDistance", cancelDistance);
+		b("Placement.bLockOnObject", lockOnObject);
 
 		f("Controls.fToolLength", toolLength);
 		f("Controls.fInsertRadius", insertRadius);

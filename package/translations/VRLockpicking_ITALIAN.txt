@@ -10,6 +10,8 @@ $VRLP_LeftHandedPick	Grimaldello nella sinistra
 $VRLP_LeftHandedPick_Help	Scambia gli attrezzi tra le mani: il grimaldello nella sinistra, la chiave di tensione nella destra.
 $VRLP_FullPause	Pausa durante lo scasso
 $VRLP_FullPause_Help	Mette in pausa il gioco mentre scassini una serratura.
+$VRLP_LockOnObject	Serratura sulla porta o sul forziere
+$VRLP_LockOnObject_Help	La serratura sta sulla porta o sul forziere stesso invece di apparire davanti a te. Potresti doverti avvicinare. La sua posizione su ogni modello si allinea con lo strumento di calibrazione dei modelli.
 $VRLP_ActivateContainerAfterUnlock	Apri contenitore dopo scasso
 $VRLP_ActivateContainerAfterUnlock_Help	Apre automaticamente un contenitore dopo averne scassinato la serratura.
 $VRLP_HeaderDifficulty	Difficoltà
@@ -62,12 +64,12 @@ $VRLP_CrimeCheck	Rilevamento crimini
 $VRLP_CrimeCheck_Help	Essere visti scassinare una serratura altrui è un crimine, come nel gioco originale.
 $VRLP_HeaderModelMarkup	Calibrazione modelli
 $VRLP_MarkupMode	Strumento di calibrazione
-$VRLP_MarkupMode_Help	Durante lo scasso: 1) metti la punta del grimaldello al centro della serratura, poi in cima, col grilletto sinistro - il modello della serratura si adatta; 2) e 3) allinea il grimaldello e la chiave di tensione nelle mani: tieni premuto il grilletto sinistro per tenere fermo il modello mentre muovi la mano. A / X passa alla parte successiva. Salvato per modello.
+$VRLP_MarkupMode_Help	Durante lo scasso: 0) con la serratura sulla porta o sul forziere, mettila al suo posto: tieni premuto il grilletto sinistro per portarla con la mano; 1) metti la punta del grimaldello al centro della serratura, poi in cima, col grilletto sinistro - il modello della serratura si adatta; 2) e 3) allinea il grimaldello e la chiave di tensione nelle mani: tieni premuto il grilletto sinistro per tenere fermo il modello mentre muovi la mano. A / X passa alla parte successiva. Il tastierino numerico rifinisce ogni parte. Salvato per modello.
 $VRLP_ResetMarkup	Azzera calibrazione modelli
 $VRLP_ResetMarkup_Help	Dimentica tutte le serrature e le impugnature degli attrezzi salvate con lo strumento di calibrazione: si tornano a usare gli allineamenti integrati e l'adattamento automatico.
 $VRLP_HeaderTestLocks	Serrature di prova
 $VRLP_SpawnTestLocks	Crea serrature di prova
-$VRLP_SpawnTestLocks_Help	Piazza forzieri e porte chiusi attorno a te: uno per ogni modello di forziere / porta del gioco e delle mod, con serrature da novizio a maestro (e alcune che richiedono una chiave), più una porta da novizio proprio davanti a te con una chiave, per provare il talento Chiave di cera. Chiudi il menu per vederli. L'elenco è nel log.
+$VRLP_SpawnTestLocks_Help	Piazza forzieri e porte chiusi attorno a te, da novizio a maestro: ogni modello di forziere e porta del gioco e delle mod, un gruppo alla volta. Premi di nuovo per il gruppo successivo (sostituisce questo). La prima porta di ogni gruppo ha una chiave, per provare il talento Chiave di cera. Chiudi il menu per vederli. L'elenco è nel log. Suggerimento: il comando console coc qasmoke ti porta in una grande sala di prova.
 $VRLP_RemoveTestLocks	Rimuovi serrature di prova
 $VRLP_RemoveTestLocks_Help	Rimuove i forzieri e le porte piazzati da Crea serrature di prova.
 $VRLP_HeaderTestSetup	Preparazione test
@@ -107,6 +109,9 @@ $VRLP_Msg_MarkupLock2	Calibrazione serratura 2/3: metti la punta del grimaldello
 $VRLP_Msg_MarkupLock3	Calibrazione serratura 3/3: grilletto sinistro = salva per questo modello di serratura, clic levetta = indietro. A: passa al grimaldello.
 $VRLP_Msg_MarkupPick	Allinea il grimaldello ({}), fuori dalla serratura: tieni premuto il grilletto SINISTRO - il modello resta fermo mentre muovi la mano finché il cubo della punta non è dove deve stare la punta; rilascia e torna a seguire la mano (salvato). Rifinitura: la levetta destra lo inclina, la sinistra lo ruota, grilletto destro + levetta destra lo ridimensiona. Clic levetta: di nuovo automatico. A: passa alla chiave di tensione.
 $VRLP_Msg_MarkupWrench	Allinea la chiave di tensione ({}), fuori dalla serratura: tieni premuto il grilletto SINISTRO - il modello resta fermo mentre muovi la mano finché il cubo della punta non è dove deve stare la punta; rilascia e torna a seguire la mano (salvato). Rifinitura: la levetta destra la inclina, la sinistra la ruota, grilletto destro + levetta destra la ridimensiona. Clic levetta: di nuovo automatico. A: passa alla serratura.
+$VRLP_Msg_MarkupObject	Calibrazione: dove sta la serratura su questa porta o forziere. Tieni premuto il grilletto SINISTRO per portarla con la mano; rilascia per lasciarla lì (salvato). Tastierino numerico per la rifinitura. Clic levetta: torna al posto stimato. A: passa alla serratura.
+$VRLP_Msg_MarkupNumpad	Tastierino numerico (Bloc Num attivo): 4 / 6 sinistra / destra, 8 / 2 su / giù, + / - dentro / fuori, 7 / 9 gira, 1 / 3 ruota, / e * inclina, 0 / . dimensione, 5 passo.
+$VRLP_Msg_MarkupStep	Passo del tastierino: {} unità, {} gradi.
 $VRLP_Msg_RightHand	mano destra
 $VRLP_Msg_LeftHand	mano sinistra
 $VRLP_Msg_MarkupNoPickHand	Calibrazione: la mano del grimaldello non è visibile - riprova.
@@ -114,11 +119,13 @@ $VRLP_Msg_MarkupNoLockModel	Calibrazione: nessun modello di serratura per cui sa
 $VRLP_Msg_MarkupLockSaved	Calibrazione salvata per questo modello di serratura: ora il foro è nel bersaglio verde.
 $VRLP_Msg_MarkupPickSaved	Grimaldello salvato.
 $VRLP_Msg_MarkupWrenchSaved	Chiave di tensione salvata.
+$VRLP_Msg_MarkupObjectSaved	Posizione della serratura salvata per questo modello.
+$VRLP_Msg_MarkupObjectGuess	Tornato al posto stimato.
 $VRLP_Msg_MarkupAutomaticFit	Tornato all'adattamento automatico.
 $VRLP_Msg_MarkupCouldNotSave	Calibrazione: impossibile salvare.
 $VRLP_Msg_MarkupReset	Calibrazione modelli azzerata.
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: le serrature di prova richiedono una VR Address Library più recente.
-$VRLP_Msg_TestLocksPlaced	VR Lockpicking: piazzati {} forzieri e {} porte di prova (i livelli delle serrature sono nel log).
+$VRLP_Msg_TestLocksPlaced	VR Lockpicking: gruppo di prova {} di {}: {} forzieri e {} porte (l'elenco è nel log). Premi di nuovo per il gruppo successivo.
 $VRLP_Msg_LockpicksAdded	50 grimaldelli aggiunti (ora {}).
 $VRLP_Msg_SkeletonKeyAdded	Chiave scheletro aggiunta.
 $VRLP_Msg_SkeletonKeyRemoved	Chiave scheletro rimossa.

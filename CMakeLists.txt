@@ -21,6 +21,10 @@ add_library(vrlp_core STATIC
 )
 target_include_directories(vrlp_core PUBLIC src/core)
 target_compile_features(vrlp_core PUBLIC cxx_std_20)
+if(MSVC)
+	# Sources are UTF-8 (the tests hold non-English texts); MSVC otherwise reads them in the system code page.
+	target_compile_options(vrlp_core PUBLIC /utf-8)
+endif()
 
 if(VRLP_BUILD_TESTS AND NOT CMAKE_CROSSCOMPILING)
 	enable_testing()

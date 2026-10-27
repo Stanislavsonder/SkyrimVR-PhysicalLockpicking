@@ -108,6 +108,7 @@ namespace vrlp
 		bool                       _keyholeDirty{ false };
 		float                      _keyholeIdle{ 0.0f };
 		float                      _cancelDistance{ 90.0f };
+		bool                       _moving{ false };  // the player may walk while picking (lock on the object)
 		bool                       _nextHeld{ true };
 		bool                       _resetHeld{ true };
 		bool                       _alignDirty{ false };

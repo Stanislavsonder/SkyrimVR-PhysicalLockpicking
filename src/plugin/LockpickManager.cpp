@@ -471,8 +471,16 @@ namespace vrlp
 		_alignDirty = false;
 		_grab.reset();
 		const bool quiet = _markup.Active();  // during markup only its own messages
-		VRInput::Get().SetBlocking(true);  // the thumbsticks too: you stay where you are
-		PauseWorld(true);
+		// With the lock on its door or chest you may walk up to it (bMoveWhilePicking): the
+		// thumbsticks reach the game, which then can't be paused (nothing would move).
+		_moving = _onObject.has_value() && _cfg.moveWhilePicking;
+		if (_moving) {
+			logger::info("Lock on the object: you can walk and turn while picking (the game isn't paused)");
+		}
+		VRInput::Get().SetBlocking(true, _moving);  // else the thumbsticks too: you stay where you are
+		if (!_moving) {
+			PauseWorld(true);
+		}
 		MuteGameRumble(true);
 		// the "Open" prompt of the chest you just activated may still be up
 		if (auto* queue = RE::UIMessageQueue::GetSingleton()) {
@@ -1460,7 +1468,8 @@ namespace vrlp
 		}
 	}
 
-	// Keeps the player in place while picking: no walking, turning, sneaking, jumping or attacks.
+	// Keeps the player in place while picking: no walking, turning (both allowed with the lock on
+	// its object and bMoveWhilePicking), sneaking, jumping or attacks.
 	void LockpickManager::LockControls(bool a_lock)
 	{
 		auto* map = AddressCheck::Has(Ids::kControlMap) ? RE::ControlMap::GetSingleton() : nullptr;
@@ -1468,13 +1477,14 @@ namespace vrlp
 			return;
 		}
 		using UEFlag = RE::UserEvents::USER_EVENT_FLAG;
-		constexpr auto kFlags = static_cast<std::uint32_t>(UEFlag::kMovement) | static_cast<std::uint32_t>(UEFlag::kLooking) |
+		const std::uint32_t walk = _moving ? 0u : static_cast<std::uint32_t>(UEFlag::kMovement) | static_cast<std::uint32_t>(UEFlag::kLooking);
+		const std::uint32_t flags = walk |
 		                        static_cast<std::uint32_t>(UEFlag::kJumping) | static_cast<std::uint32_t>(UEFlag::kSneaking) |
 		                        static_cast<std::uint32_t>(UEFlag::kFighting) | static_cast<std::uint32_t>(UEFlag::kActivate) |
 		                        static_cast<std::uint32_t>(UEFlag::kWheelZoom) | static_cast<std::uint32_t>(UEFlag::kPOVSwitch);
 		auto& enabled = map->GetRuntimeData().enabledControls;
 		if (a_lock) {
-			_lockedControls = enabled.underlying() & kFlags;  // only give back what was on
+			_lockedControls = enabled.underlying() & flags;  // only give back what was on
 			enabled.reset(static_cast<UEFlag>(_lockedControls));
 			_controlsLocked = true;
 		} else {

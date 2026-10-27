@@ -12,6 +12,8 @@ $VRLP_FullPause	Pausa durante lo scasso
 $VRLP_FullPause_Help	Mette in pausa il gioco mentre scassini una serratura.
 $VRLP_LockOnObject	Serratura sulla porta o sul forziere
 $VRLP_LockOnObject_Help	La serratura sta sulla porta o sul forziere stesso invece di apparire davanti a te. Potresti doverti avvicinare. Porte e forzieri che il gioco non chiude mai la tengono davanti a te. La sua posizione su ogni modello si allinea con lo strumento di calibrazione dei modelli.
+$VRLP_MoveWhilePicking	Camminare durante lo scasso (serratura sull'oggetto)
+$VRLP_MoveWhilePicking_Help	Con la serratura sulla porta o sul forziere puoi camminare e girarti durante lo scasso, per raggiungerla. Il gioco allora non va in pausa.
 $VRLP_ActivateContainerAfterUnlock	Apri contenitore dopo scasso
 $VRLP_ActivateContainerAfterUnlock_Help	Apre automaticamente un contenitore dopo averne scassinato la serratura.
 $VRLP_HeaderDifficulty	Difficoltà

@@ -68,6 +68,15 @@
           }
         },
         {
+          "id": "bMoveWhilePicking:Placement",
+          "text": "$VRLP_MoveWhilePicking",
+          "type": "toggle",
+          "help": "$VRLP_MoveWhilePicking_Help",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
           "id": "bActivateContainerAfterUnlock:General",
           "text": "$VRLP_ActivateContainerAfterUnlock",
           "type": "toggle",

@@ -12,6 +12,8 @@ $VRLP_FullPause	開鎖時暫停
 $VRLP_FullPause_Help	開鎖時暫停遊戲。
 $VRLP_LockOnObject	鎖在門或箱子上
 $VRLP_LockOnObject_Help	鎖位於門或箱子本身上，而不是出現在你面前。你可能需要走近它。遊戲中從不上鎖的門和箱子，鎖仍出現在你面前。它在每個模型上的位置可用模型標定工具對齊。
+$VRLP_MoveWhilePicking	開鎖時可走動 (鎖在物件上時)
+$VRLP_MoveWhilePicking_Help	鎖在門或箱子上時，開鎖時可以走動和轉身以靠近它。此時遊戲不會暫停。
 $VRLP_ActivateContainerAfterUnlock	開鎖後打開容器
 $VRLP_ActivateContainerAfterUnlock_Help	鎖被撬開後自動打開容器。
 $VRLP_HeaderDifficulty	難度

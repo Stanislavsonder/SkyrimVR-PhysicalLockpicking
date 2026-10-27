@@ -12,6 +12,8 @@ $VRLP_FullPause	Pausa al forzar cerraduras
 $VRLP_FullPause_Help	Pausa el juego mientras fuerzas una cerradura.
 $VRLP_LockOnObject	Cerradura en la puerta o el cofre
 $VRLP_LockOnObject_Help	La cerradura está en la propia puerta o cofre en vez de aparecer delante de ti. Puede que tengas que acercarte. Las puertas y cofres que tu juego nunca cierra la mantienen delante de ti. Su sitio en cada modelo se ajusta con la herramienta de ajuste de modelos.
+$VRLP_MoveWhilePicking	Andar al forzar (cerradura en el objeto)
+$VRLP_MoveWhilePicking_Help	Con la cerradura en la puerta o el cofre, puedes andar y girar mientras fuerzas, para llegar a ella. El juego entonces no se pausa.
 $VRLP_ActivateContainerAfterUnlock	Abrir contenedor al forzarlo
 $VRLP_ActivateContainerAfterUnlock_Help	Abre un contenedor automáticamente en cuanto fuerzas su cerradura.
 $VRLP_HeaderDifficulty	Dificultad

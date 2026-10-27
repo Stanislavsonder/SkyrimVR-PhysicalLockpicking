@@ -12,6 +12,8 @@ $VRLP_FullPause	Pauza podczas otwierania
 $VRLP_FullPause_Help	Wstrzymuje grę, gdy otwierasz zamek.
 $VRLP_LockOnObject	Zamek na drzwiach lub skrzyni
 $VRLP_LockOnObject_Help	Zamek jest na samych drzwiach lub skrzyni, zamiast pojawiać się przed tobą. Być może trzeba będzie podejść. Drzwi i skrzynie, których gra nigdy nie zamyka, mają go przed tobą. Jego miejsce na każdym modelu można ustawić narzędziem oznaczania modeli.
+$VRLP_MoveWhilePicking	Chodzenie podczas otwierania (zamek na obiekcie)
+$VRLP_MoveWhilePicking_Help	Gdy zamek jest na drzwiach lub skrzyni, podczas otwierania możesz chodzić i się obracać, by do niego dojść. Gra nie jest wtedy wstrzymywana.
 $VRLP_ActivateContainerAfterUnlock	Auto-otwieranie pojemnika
 $VRLP_ActivateContainerAfterUnlock_Help	Automatycznie otwiera pojemnik, gdy jego zamek zostanie otwarty.
 $VRLP_HeaderDifficulty	Trudność

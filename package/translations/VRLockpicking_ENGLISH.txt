@@ -12,6 +12,8 @@ $VRLP_FullPause	Pause on lockpicking
 $VRLP_FullPause_Help	Pauses the game while you pick a lock.
 $VRLP_LockOnObject	Lock on the door or chest
 $VRLP_LockOnObject_Help	The lock sits on the door or chest itself instead of appearing in front of you. You may have to step up to it. Doors and chests your game never locks keep it in front of you. Where it sits on each model can be lined up with the model markup tool.
+$VRLP_MoveWhilePicking	Walk while picking (lock on the object)
+$VRLP_MoveWhilePicking_Help	With the lock on the door or chest, you can walk and turn while you pick, to get to it. The game is then not paused.
 $VRLP_ActivateContainerAfterUnlock	Open container after unlocking
 $VRLP_ActivateContainerAfterUnlock_Help	Opens a container automatically once its lock is picked.
 $VRLP_HeaderDifficulty	Difficulty

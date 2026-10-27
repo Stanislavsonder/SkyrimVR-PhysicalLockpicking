@@ -27,6 +27,7 @@ namespace vrlp
 		float lockSideOffset{ 0.0f };      // + = to the right
 		float cancelDistance{ 90.0f };     // walk/lean this far from the lock to give up
 		bool  lockOnObject{ false };       // the lock sits on the door / chest itself, not in front of you
+		bool  moveWhilePicking{ true };    // ...and you may walk and turn while picking (the game is then not paused)
 
 		// [Controls]
 		float toolLength{ 15.0f };           // pick / wrench length from the fist to the tip

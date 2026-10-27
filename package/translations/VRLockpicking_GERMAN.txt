@@ -12,6 +12,8 @@ $VRLP_FullPause	Pause beim Schlossknacken
 $VRLP_FullPause_Help	Pausiert das Spiel, während du ein Schloss knackst.
 $VRLP_LockOnObject	Schloss an Tür oder Truhe
 $VRLP_LockOnObject_Help	Das Schloss sitzt an der Tür oder Truhe selbst, statt vor dir zu erscheinen. Eventuell musst du hingehen. Türen und Truhen, die dein Spiel nie verschließt, behalten es vor dir. Wo es an jedem Modell sitzt, lässt sich mit dem Modell-Markierungswerkzeug ausrichten.
+$VRLP_MoveWhilePicking	Gehen beim Knacken (Schloss am Objekt)
+$VRLP_MoveWhilePicking_Help	Mit dem Schloss an Tür oder Truhe kannst du beim Knacken gehen und dich drehen, um hinzukommen. Das Spiel wird dann nicht pausiert.
 $VRLP_ActivateContainerAfterUnlock	Behälter danach öffnen
 $VRLP_ActivateContainerAfterUnlock_Help	Öffnet einen Behälter automatisch, sobald sein Schloss geknackt ist.
 $VRLP_HeaderDifficulty	Schwierigkeit

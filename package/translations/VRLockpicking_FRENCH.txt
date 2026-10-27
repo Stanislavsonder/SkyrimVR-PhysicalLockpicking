@@ -12,6 +12,8 @@ $VRLP_FullPause	Pause pendant le crochetage
 $VRLP_FullPause_Help	Met le jeu en pause pendant que vous crochetez une serrure.
 $VRLP_LockOnObject	Serrure sur la porte ou le coffre
 $VRLP_LockOnObject_Help	La serrure se trouve sur la porte ou le coffre lui-même au lieu d'apparaître devant vous. Vous devrez peut-être vous en approcher. Les portes et coffres que votre jeu ne verrouille jamais la gardent devant vous. Sa place sur chaque modèle s'aligne avec l'outil de marquage des modèles.
+$VRLP_MoveWhilePicking	Marcher pendant le crochetage (serrure sur l'objet)
+$VRLP_MoveWhilePicking_Help	Avec la serrure sur la porte ou le coffre, vous pouvez marcher et tourner pendant le crochetage, pour l'atteindre. Le jeu n'est alors pas en pause.
 $VRLP_ActivateContainerAfterUnlock	Ouvrir le contenant ensuite
 $VRLP_ActivateContainerAfterUnlock_Help	Ouvre automatiquement un contenant une fois sa serrure crochetée.
 $VRLP_HeaderDifficulty	Difficulté

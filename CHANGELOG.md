@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- Fixed: installing with Mod Organizer 2 could crash it. The archive no longer has an installer; it is laid out as the `Data` folder, so mod managers install it directly.
+- `VRLockpicking.esp` is now flagged as light (ESPFE). With Skyrim VR ESL Support it takes no load order slot; without it, it loads as a normal plugin as before.
+
 ## 1.0.0
 
 First release.

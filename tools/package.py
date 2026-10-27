@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble the FOMOD-installable mod archive.
+"""Assemble the mod archive, laid out as the game's Data folder (no installer: there is nothing to choose).
 
 usage: package.py <VRLockpicking.dll> <output.zip> [VRLockpicking.pdb]
 """
@@ -25,29 +25,27 @@ def main() -> int:
     plugins = "SKSE/Plugins/"
     out.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
-        z.write(PKG / "fomod" / "info.xml", "fomod/info.xml")
-        z.write(PKG / "fomod" / "ModuleConfig.xml", "fomod/ModuleConfig.xml")
-        z.write(dll, "core/" + plugins + "VRLockpicking.dll")
+        z.write(dll, plugins + "VRLockpicking.dll")
         if pdb and pdb.exists():
-            z.write(pdb, "core/" + plugins + "VRLockpicking.pdb")
-        z.writestr("core/" + plugins + "VRLockpicking.ini", ini)
-        z.write(ROOT / "README.md", "core/" + plugins + "VRLockpicking-README.md")
-        z.write(ROOT / "LICENSE", "core/" + plugins + "VRLockpicking-LICENSE.txt")
+            z.write(pdb, plugins + "VRLockpicking.pdb")
+        z.writestr(plugins + "VRLockpicking.ini", ini)
+        z.write(ROOT / "README.md", plugins + "VRLockpicking-README.md")
+        z.write(ROOT / "LICENSE", plugins + "VRLockpicking-LICENSE.txt")
         # Settings menu (MCM): needs SkyUI VR + MCM Helper; harmless without them.
-        z.writestr("core/" + make_mcm.PLUGIN, make_mcm.esp())
-        z.writestr(f"core/Scripts/{make_mcm.SCRIPT}.pex", make_mcm.pex())
-        z.writestr(f"core/Scripts/Source/{make_mcm.SCRIPT}.psc", make_mcm.PSC.replace("\n", "\r\n"))
-        z.write(PKG / "mcm" / "config.json", "core/MCM/Config/VRLockpicking/config.json")
-        z.write(PKG / "mcm" / "settings.ini", "core/MCM/Config/VRLockpicking/settings.ini")
+        z.writestr(make_mcm.PLUGIN, make_mcm.esp())
+        z.writestr(f"Scripts/{make_mcm.SCRIPT}.pex", make_mcm.pex())
+        z.writestr(f"Scripts/Source/{make_mcm.SCRIPT}.psc", make_mcm.PSC.replace("\n", "\r\n"))
+        z.write(PKG / "mcm" / "config.json", "MCM/Config/VRLockpicking/config.json")
+        z.write(PKG / "mcm" / "settings.ini", "MCM/Config/VRLockpicking/settings.ini")
         # Settings menu and message texts per game language. Kept as UTF-8 in the repo; the game
         # reads UTF-16 LE with a byte order mark and CRLF line ends.
         for f in sorted((PKG / "translations").glob("VRLockpicking_*.txt")):
             text = f.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\n", "\r\n")
-            z.writestr("core/Interface/Translations/" + f.name, "﻿".encode("utf-16-le") + text.encode("utf-16-le"))
+            z.writestr("Interface/Translations/" + f.name, "﻿".encode("utf-16-le") + text.encode("utf-16-le"))
         # The mod's own models (debug blocks, keyhole target, assist ring, pick counter), made by tools/nifgen.
         for f in sorted((PKG / "assets").rglob("*")):
             if f.is_file():
-                z.write(f, "core/" + f.relative_to(PKG / "assets").as_posix())
+                z.write(f, f.relative_to(PKG / "assets").as_posix())
     print(f"wrote {out}")
     return 0
 

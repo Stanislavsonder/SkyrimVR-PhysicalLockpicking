@@ -20,9 +20,9 @@ Works with any controllers SteamVR supports (Meta Quest 2 / 3 / Pro, Valve Index
 
 ## Installation
 
-Install the archive with Mod Organizer 2 or Vortex. There is nothing to choose. By hand: copy the contents of its `core` folder into `Skyrim VR/Data`.
+Install the archive with Mod Organizer 2 or Vortex. There is nothing to choose. By hand: copy its contents into `Skyrim VR/Data`.
 
-The mod adds `VRLockpicking.esp`, which only holds the settings menu's quest. Keep it enabled.
+The mod adds `VRLockpicking.esp`, which only holds the settings menu's quest. Keep it enabled. It is flagged as light (ESPFE): with Skyrim VR ESL Support it takes no load order slot, without it it loads as a normal plugin.
 
 ## How to pick a lock
 
@@ -102,7 +102,7 @@ It also cross-compiles on Linux with clang-cl and an `xwin` sysroot (`extern/Com
 | `src/core` | The lockpicking itself: lock and tool geometry, the simulation, vibration, settings, model fitting, Lock Variations files. No game code. |
 | `src/plugin` | The SKSE plugin: intercepting the vanilla menu, reading the hands, drawing the models, pausing, perks, crime, the settings menu. |
 | `tests` | Unit tests for `src/core`. |
-| `package` | What goes into the archive: the INI, the settings menu, the FOMOD, the mod's own models. |
+| `package` | What goes into the archive: the INI, the settings menu, the mod's own models. |
 | `tools` | Packaging, the settings menu's ESP and script, `nifgen` (the mod's own models), an address-library audit. |
 | `extern/CommonLibVR` | CommonLibSSE-NG with Skyrim VR support (submodule). |
 

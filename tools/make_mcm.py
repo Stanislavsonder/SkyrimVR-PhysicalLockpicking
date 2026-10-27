@@ -104,7 +104,10 @@ def esp() -> bytes:
             sub("INTV", struct.pack("<I", 1)),
         ]
     )
-    return record("TES4", 0, header) + body
+    # Light (ESL-flagged ESP): it holds one record with an id in the light range, so it needs no full
+    # load order slot with Skyrim VR ESL Support. Without that plugin VR ignores the flag and loads it as a
+    # regular ESP.
+    return record("TES4", 0, header, flags=0x200) + body
 
 
 # --------------------------------------------------------------------------------------------

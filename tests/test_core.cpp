@@ -1712,7 +1712,6 @@ TEST(VersionsMatch)
 	CHECK(rc.find("FILEVERSION " + major + "," + minor + "," + patch + ",0") != std::string::npos);
 	CHECK(rc.find("\"FileVersion\", \"" + v + "\"") != std::string::npos);
 	CHECK(ReadFile(VRLP_SOURCE_DIR "/vcpkg.json").find("\"" + v + "\"") != std::string::npos);
-	CHECK(ReadFile(VRLP_SOURCE_DIR "/package/fomod/info.xml").find(">" + v + "<") != std::string::npos);
 }
 
 TEST(McmDefaultsMatchConfig)

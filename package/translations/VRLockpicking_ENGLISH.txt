@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Mirrors the tools in your hands: the lockpick in the l
 $VRLP_FullPause	Pause on lockpicking
 $VRLP_FullPause_Help	Pauses the game while you pick a lock.
 $VRLP_LockOnObject	Lock on the door or chest
-$VRLP_LockOnObject_Help	The lock sits on the door or chest itself instead of appearing in front of you. You may have to step up to it. Where it sits on each model can be lined up with the model markup tool.
+$VRLP_LockOnObject_Help	The lock sits on the door or chest itself instead of appearing in front of you. You may have to step up to it. Doors and chests your game never locks keep it in front of you. Where it sits on each model can be lined up with the model markup tool.
 $VRLP_ActivateContainerAfterUnlock	Open container after unlocking
 $VRLP_ActivateContainerAfterUnlock_Help	Opens a container automatically once its lock is picked.
 $VRLP_HeaderDifficulty	Difficulty
@@ -69,7 +69,7 @@ $VRLP_ResetMarkup	Reset model markup
 $VRLP_ResetMarkup_Help	Forgets every lock keyhole and tool grip you saved with the model markup tool: the built-in alignments and the automatic fit are used again.
 $VRLP_HeaderTestLocks	Test locks
 $VRLP_SpawnTestLocks	Spawn test locks
-$VRLP_SpawnTestLocks_Help	Places locked chests and doors around you, Novice to Master: every chest and door model of your game and mods, a batch at a time. Press again for the next batch (it replaces this one). The first door of each batch has a key, to try the Wax Key perk. Close the menu to see them. The list is in the log. Tip: the console command coc qasmoke takes you to a big test hall.
+$VRLP_SpawnTestLocks_Help	Places locked chests and doors around you, Novice to Master: every chest and door model that is locked somewhere in your game and mods, a batch at a time. Press again for the next batch (it replaces this one). The first door of each batch has a key, to try the Wax Key perk. Close the menu to see them. The list is in the log. Tip: the console command coc qasmoke takes you to a big test hall.
 $VRLP_RemoveTestLocks	Remove test locks
 $VRLP_RemoveTestLocks_Help	Removes the chests and doors placed by Spawn test locks.
 $VRLP_HeaderTestSetup	Test setup
@@ -126,6 +126,7 @@ $VRLP_Msg_MarkupCouldNotSave	Markup: could not save.
 $VRLP_Msg_MarkupReset	Model markup reset.
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: test locks need a newer VR Address Library.
 $VRLP_Msg_TestLocksPlaced	VR Lockpicking: test batch {} of {}: {} chests and {} doors (the list is in the log). Spawn again for the next batch.
+$VRLP_Msg_TestLocksScanning	VR Lockpicking: still reading which chests and doors your game locks. Try again in a moment.
 $VRLP_Msg_LockpicksAdded	50 lockpicks added ({} now).
 $VRLP_Msg_SkeletonKeyAdded	Skeleton Key added.
 $VRLP_Msg_SkeletonKeyRemoved	Skeleton Key removed.

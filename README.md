@@ -50,7 +50,7 @@ With SkyUI VR and MCM Helper: journal → System → Mod Configuration → **VR 
 
 - **General:** on / off, alternative mode, pick in left hand, pause on lockpicking, lock on the door or chest, opening containers, and difficulty (sweet spot size, pick strength).
 - **Vibration:** overall strength, and how often and how strongly it pulses far from, near and in the sweet spot, and while a pick is about to break.
-- **Debug:** debug log and view, the keyhole target, the assist ring (dots on the lock showing where your pick is, and optionally the sweet spot on easy locks), the model markup tool, crime detection, test chests and doors (every model of your game, a batch at a time), and buttons to set up a test: lockpicks, the Skeleton Key, the lockpicking perks, and your Lockpicking skill.
+- **Debug:** debug log and view, the keyhole target, the assist ring (dots on the lock showing where your pick is, and optionally the sweet spot on easy locks), the model markup tool, crime detection, test chests and doors (every model your game locks, a batch at a time), and buttons to set up a test: lockpicks, the Skeleton Key, the lockpicking perks, and your Lockpicking skill.
 
 The menu and the mod's messages follow the game's language: English, French, German, Italian, Spanish, Polish, Russian, Japanese or Chinese.
 
@@ -62,7 +62,7 @@ On by default: the game is paused while you pick a lock, the way menus pause it.
 
 ### Lock on the door or chest
 
-Off by default: the lock appears in front of you. Turn on **Lock on the door or chest** to have it sit on the door or chest itself, on the side of the door you stand. You may have to step up to it. Where it sits on each model is a guess from the model's size until it is lined up with the markup tool.
+Off by default: the lock appears in front of you. Turn on **Lock on the door or chest** to have it sit on the door or chest itself, on the side of the door you stand. You may have to step up to it. Doors and chests that your game never locks (the mod reads which ones from your plugins when the game starts) keep the lock in front of you. Where it sits on each model is a guess from the model's size until it is lined up with the markup tool.
 
 ### Lining up models (markup tool)
 
@@ -74,7 +74,7 @@ The vanilla lock, lockpick and tension wrench come lined up. For a lock or tool 
 
 The number pad (Num Lock on) fine-tunes each part: 4 / 6 left / right, 8 / 2 up / down, + / - in / out, 7 / 9 turn, 1 / 3 roll, / and * tilt, 0 / . size (tools), 5 changes the step size.
 
-**Spawn test locks** (Debug page) places every chest and door model of your game around you, a batch at a time; press it again for the next batch. The console command `coc qasmoke` takes you to a big test hall to do it in.
+**Spawn test locks** (Debug page) places every chest and door model that your game locks somewhere around you, a batch at a time; press it again for the next batch. The console command `coc qasmoke` takes you to a big test hall to do it in.
 
 Everything is saved per model in `Data/SKSE/Plugins/VRLockpicking_Locks.ini` (with Mod Organizer 2, in its `overwrite` folder). **Reset model markup** (Debug page) forgets all of it.
 

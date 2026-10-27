@@ -2,9 +2,9 @@
 
 ## Unreleased
 
-- **Lock on the door or chest** (General page, off by default): the lock sits on the door or chest you pick instead of in front of you, on the side of the door you stand.
+- **Lock on the door or chest** (General page, off by default): the lock sits on the door or chest you pick instead of in front of you, on the side of the door you stand. Doors and chests that the game's plugins never lock keep it in front of you.
 - Markup tool: a new first step places the lock on the door or chest (carried with the left hand), saved per model. The number pad fine-tunes every step: moves, turns, and the tools' size.
-- **Spawn test locks** now places every chest and door model of your game, a batch at a time (press again for the next batch).
+- **Spawn test locks** now places every chest and door model that your game locks somewhere, a batch at a time (press again for the next batch).
 
 ## 1.0.1
 

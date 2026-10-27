@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Spiegelt die Werkzeuge in deinen Händen: den Dietrich
 $VRLP_FullPause	Pause beim Schlossknacken
 $VRLP_FullPause_Help	Pausiert das Spiel, während du ein Schloss knackst.
 $VRLP_LockOnObject	Schloss an Tür oder Truhe
-$VRLP_LockOnObject_Help	Das Schloss sitzt an der Tür oder Truhe selbst, statt vor dir zu erscheinen. Eventuell musst du hingehen. Wo es an jedem Modell sitzt, lässt sich mit dem Modell-Markierungswerkzeug ausrichten.
+$VRLP_LockOnObject_Help	Das Schloss sitzt an der Tür oder Truhe selbst, statt vor dir zu erscheinen. Eventuell musst du hingehen. Türen und Truhen, die dein Spiel nie verschließt, behalten es vor dir. Wo es an jedem Modell sitzt, lässt sich mit dem Modell-Markierungswerkzeug ausrichten.
 $VRLP_ActivateContainerAfterUnlock	Behälter danach öffnen
 $VRLP_ActivateContainerAfterUnlock_Help	Öffnet einen Behälter automatisch, sobald sein Schloss geknackt ist.
 $VRLP_HeaderDifficulty	Schwierigkeit
@@ -69,7 +69,7 @@ $VRLP_ResetMarkup	Markierung zurücksetzen
 $VRLP_ResetMarkup_Help	Vergisst alle Schlüssellöcher und Werkzeuggriffe, die du mit dem Markierungswerkzeug gespeichert hast: Die eingebauten Ausrichtungen und die automatische Anpassung gelten wieder.
 $VRLP_HeaderTestLocks	Testschlösser
 $VRLP_SpawnTestLocks	Testschlösser erzeugen
-$VRLP_SpawnTestLocks_Help	Platziert verschlossene Truhen und Türen um dich herum, Novize bis Meister: jedes Truhen- und Türmodell deines Spiels und deiner Mods, eine Gruppe nach der anderen. Drücke erneut für die nächste Gruppe (sie ersetzt diese). Die erste Tür jeder Gruppe hat einen Schlüssel, um das Talent Wachsschlüssel auszuprobieren. Schließe das Menü, um sie zu sehen. Die Liste steht im Log. Tipp: der Konsolenbefehl coc qasmoke bringt dich in eine große Testhalle.
+$VRLP_SpawnTestLocks_Help	Platziert verschlossene Truhen und Türen um dich herum, Novize bis Meister: jedes Truhen- und Türmodell, das irgendwo in deinem Spiel und deinen Mods verschlossen ist, eine Gruppe nach der anderen. Drücke erneut für die nächste Gruppe (sie ersetzt diese). Die erste Tür jeder Gruppe hat einen Schlüssel, um das Talent Wachsschlüssel auszuprobieren. Schließe das Menü, um sie zu sehen. Die Liste steht im Log. Tipp: der Konsolenbefehl coc qasmoke bringt dich in eine große Testhalle.
 $VRLP_RemoveTestLocks	Testschlösser entfernen
 $VRLP_RemoveTestLocks_Help	Entfernt die Truhen und Türen, die mit 'Testschlösser erzeugen' platziert wurden.
 $VRLP_HeaderTestSetup	Testaufbau
@@ -126,6 +126,7 @@ $VRLP_Msg_MarkupCouldNotSave	Markierung: Speichern fehlgeschlagen.
 $VRLP_Msg_MarkupReset	Modell-Markierung zurückgesetzt.
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: Testschlösser brauchen eine neuere VR Address Library.
 $VRLP_Msg_TestLocksPlaced	VR Lockpicking: Testgruppe {} von {}: {} Truhen und {} Türen (die Liste steht im Log). Erneut drücken für die nächste Gruppe.
+$VRLP_Msg_TestLocksScanning	VR Lockpicking: lese noch, welche Truhen und Türen dein Spiel verschließt. Versuche es gleich noch einmal.
 $VRLP_Msg_LockpicksAdded	50 Dietriche hinzugefügt (jetzt {}).
 $VRLP_Msg_SkeletonKeyAdded	Skelettschlüssel hinzugefügt.
 $VRLP_Msg_SkeletonKeyRemoved	Skelettschlüssel entfernt.

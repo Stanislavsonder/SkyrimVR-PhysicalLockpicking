@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	對調雙手的工具: 開鎖器在左手，張力扳�
 $VRLP_FullPause	開鎖時暫停
 $VRLP_FullPause_Help	開鎖時暫停遊戲。
 $VRLP_LockOnObject	鎖在門或箱子上
-$VRLP_LockOnObject_Help	鎖位於門或箱子本身上，而不是出現在你面前。你可能需要走近它。它在每個模型上的位置可用模型標定工具對齊。
+$VRLP_LockOnObject_Help	鎖位於門或箱子本身上，而不是出現在你面前。你可能需要走近它。遊戲中從不上鎖的門和箱子，鎖仍出現在你面前。它在每個模型上的位置可用模型標定工具對齊。
 $VRLP_ActivateContainerAfterUnlock	開鎖後打開容器
 $VRLP_ActivateContainerAfterUnlock_Help	鎖被撬開後自動打開容器。
 $VRLP_HeaderDifficulty	難度
@@ -69,7 +69,7 @@ $VRLP_ResetMarkup	重設模型標定
 $VRLP_ResetMarkup_Help	清除你用模型標定工具儲存的所有鑰匙孔與工具握法: 改回使用內建對齊與自動調整。
 $VRLP_HeaderTestLocks	測試用鎖
 $VRLP_SpawnTestLocks	產生測試用鎖
-$VRLP_SpawnTestLocks_Help	在你周圍放置上鎖的箱子和門，從新手到大師: 遊戲與模組中的所有箱子和門模型，一次一批。再按一次放置下一批 (取代這一批)。每批的第一扇門附有鑰匙，可用來試用蠟製鑰匙天賦。關閉選單即可看到。清單在記錄中。提示: 主控台指令 coc qasmoke 可帶你到一個大型測試大廳。
+$VRLP_SpawnTestLocks_Help	在你周圍放置上鎖的箱子和門，從新手到大師: 遊戲與模組中某處上了鎖的所有箱子和門模型，一次一批。再按一次放置下一批 (取代這一批)。每批的第一扇門附有鑰匙，可用來試用蠟製鑰匙天賦。關閉選單即可看到。清單在記錄中。提示: 主控台指令 coc qasmoke 可帶你到一個大型測試大廳。
 $VRLP_RemoveTestLocks	移除測試用鎖
 $VRLP_RemoveTestLocks_Help	移除「產生測試用鎖」放置的箱子和門。
 $VRLP_HeaderTestSetup	測試準備
@@ -126,6 +126,7 @@ $VRLP_Msg_MarkupCouldNotSave	標定: 無法儲存。
 $VRLP_Msg_MarkupReset	已重設模型標定。
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: 測試用鎖需要較新的 VR Address Library。
 $VRLP_Msg_TestLocksPlaced	VR Lockpicking: 測試批次 {} / {}: {} 個箱子和 {} 扇門 (清單在記錄中)。再按一次放置下一批。
+$VRLP_Msg_TestLocksScanning	VR Lockpicking: 仍在讀取你的遊戲會上鎖哪些箱子和門。請稍後再試。
 $VRLP_Msg_LockpicksAdded	已增加 50 個開鎖器 (目前 {} 個)。
 $VRLP_Msg_SkeletonKeyAdded	已加入骷髏鑰匙。
 $VRLP_Msg_SkeletonKeyRemoved	已移除骷髏鑰匙。

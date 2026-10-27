@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Inverse les outils dans vos mains : le crochet à gauc
 $VRLP_FullPause	Pause pendant le crochetage
 $VRLP_FullPause_Help	Met le jeu en pause pendant que vous crochetez une serrure.
 $VRLP_LockOnObject	Serrure sur la porte ou le coffre
-$VRLP_LockOnObject_Help	La serrure se trouve sur la porte ou le coffre lui-même au lieu d'apparaître devant vous. Vous devrez peut-être vous en approcher. Sa place sur chaque modèle s'aligne avec l'outil de marquage des modèles.
+$VRLP_LockOnObject_Help	La serrure se trouve sur la porte ou le coffre lui-même au lieu d'apparaître devant vous. Vous devrez peut-être vous en approcher. Les portes et coffres que votre jeu ne verrouille jamais la gardent devant vous. Sa place sur chaque modèle s'aligne avec l'outil de marquage des modèles.
 $VRLP_ActivateContainerAfterUnlock	Ouvrir le contenant ensuite
 $VRLP_ActivateContainerAfterUnlock_Help	Ouvre automatiquement un contenant une fois sa serrure crochetée.
 $VRLP_HeaderDifficulty	Difficulté
@@ -69,7 +69,7 @@ $VRLP_ResetMarkup	Réinitialiser le marquage
 $VRLP_ResetMarkup_Help	Oublie tous les trous de serrure et prises d'outils enregistrés avec l'outil de marquage : les alignements intégrés et l'ajustement automatique sont de nouveau utilisés.
 $VRLP_HeaderTestLocks	Serrures de test
 $VRLP_SpawnTestLocks	Créer des serrures de test
-$VRLP_SpawnTestLocks_Help	Place des coffres et des portes verrouillés autour de vous, de Novice à Maître : tous les modèles de coffre et de porte de votre jeu et de vos mods, par lots. Appuyez de nouveau pour le lot suivant (il remplace celui-ci). La première porte de chaque lot a une clé, pour essayer l'atout Empreinte de cire. Fermez le menu pour les voir. La liste est dans le journal. Astuce : la commande console coc qasmoke vous emmène dans une grande salle de test.
+$VRLP_SpawnTestLocks_Help	Place des coffres et des portes verrouillés autour de vous, de Novice à Maître : tous les modèles de coffre et de porte verrouillés quelque part dans votre jeu et vos mods, par lots. Appuyez de nouveau pour le lot suivant (il remplace celui-ci). La première porte de chaque lot a une clé, pour essayer l'atout Empreinte de cire. Fermez le menu pour les voir. La liste est dans le journal. Astuce : la commande console coc qasmoke vous emmène dans une grande salle de test.
 $VRLP_RemoveTestLocks	Retirer les serrures de test
 $VRLP_RemoveTestLocks_Help	Retire les coffres et les portes placés par 'Créer des serrures de test'.
 $VRLP_HeaderTestSetup	Préparation des tests
@@ -126,6 +126,7 @@ $VRLP_Msg_MarkupCouldNotSave	Marquage : enregistrement impossible.
 $VRLP_Msg_MarkupReset	Marquage des modèles réinitialisé.
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking : les serrures de test nécessitent une version plus récente de VR Address Library.
 $VRLP_Msg_TestLocksPlaced	VR Lockpicking : lot de test {} sur {} : {} coffres et {} portes (la liste est dans le journal). Appuyez de nouveau pour le lot suivant.
+$VRLP_Msg_TestLocksScanning	VR Lockpicking : lecture des coffres et portes que votre jeu verrouille en cours. Réessayez dans un instant.
 $VRLP_Msg_LockpicksAdded	50 crochets ajoutés ({} au total).
 $VRLP_Msg_SkeletonKeyAdded	Passe-partout ajouté.
 $VRLP_Msg_SkeletonKeyRemoved	Passe-partout retiré.

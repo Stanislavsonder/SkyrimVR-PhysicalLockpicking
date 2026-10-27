@@ -2,6 +2,7 @@
 
 #include "AddressCheck.h"
 #include "FrameHook.h"
+#include "LockableObjects.h"
 #include "LockpickManager.h"
 #include "DebugCheats.h"
 #include "TestLocks.h"
@@ -19,6 +20,7 @@ namespace
 			vrlp::LockpickManager::Get().RegisterEvents();
 			// after every plugin has loaded (and hooked), so it can chain after HIGGS
 			vrlp::FrameHook::Install(&vrlp::LockpickManager::OnPostWandUpdate);
+			vrlp::LockableObjects::Scan();
 			break;
 		case SKSE::MessagingInterface::kPreLoadGame:
 		case SKSE::MessagingInterface::kNewGame:

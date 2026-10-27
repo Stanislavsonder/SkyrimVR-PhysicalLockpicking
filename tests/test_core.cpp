@@ -20,6 +20,7 @@
 #include "LockProfile.h"
 #include "LockVariations.h"
 #include "MeshFit.h"
+#include "PluginScan.h"
 #include "Translations.h"
 #include "VecMath.h"
 
@@ -1346,6 +1347,74 @@ TEST(ObjectAnchorPlacementRoundTrip)
 		CHECK(d.valid);
 		CHECK_NEAR(Dot(Cross(d.rot.Column(0), d.rot.Column(1)), d.rot.Column(2)), 1.0, 1e-4);
 	}
+}
+
+namespace
+{
+	// a little plugin file, written the way the game's are
+	struct PluginWriter
+	{
+		std::string bytes;
+
+		static std::string U32(std::uint32_t a_v) { return std::string{ char(a_v), char(a_v >> 8), char(a_v >> 16), char(a_v >> 24) }; }
+		static std::string Field(const char* a_type, const std::string& a_data)
+		{
+			return std::string(a_type, 4) + char(a_data.size()) + char(a_data.size() >> 8) + a_data;
+		}
+		static std::string Record(const char* a_type, const std::string& a_fields, std::uint32_t a_flags = 0, std::uint32_t a_id = 0)
+		{
+			return std::string(a_type, 4) + U32(std::uint32_t(a_fields.size())) + U32(a_flags) + U32(a_id) + std::string(8, '\0') + a_fields;
+		}
+		static std::string Group(const char* a_label, const std::string& a_content, std::uint32_t a_type = 0)
+		{
+			return std::string("GRUP") + U32(std::uint32_t(a_content.size() + 24)) + std::string(a_label, 4) + U32(a_type) + std::string(8, '\0') + a_content;
+		}
+		static std::string Ref(std::uint32_t a_base, bool a_locked, std::uint32_t a_flags = 0)
+		{
+			std::string f = Field("NAME", U32(a_base));
+			if (a_locked) {
+				f += Field("XLOC", std::string(20, '\0'));
+			}
+			f += Field("DATA", std::string(24, '\0'));
+			return Record("REFR", f, a_flags);
+		}
+	};
+}
+
+TEST(PluginScanFindsLockedReferences)
+{
+	using W = PluginWriter;
+	const std::string tes4 = W::Record("TES4", W::Field("HEDR", std::string(12, '\0')) + W::Field("MAST", std::string("Skyrim.esm") + '\0') +
+	                                               W::Field("DATA", std::string(8, '\0')) + W::Field("MAST", std::string("Dawnguard.esm") + '\0') +
+	                                               W::Field("DATA", std::string(8, '\0')));
+	// a chest base record outside the cells: not a reference, skipped
+	const std::string conts = W::Group("CONT", W::Record("CONT", W::Field("EDID", "Chest\0") + W::Field("NAME", W::U32(0x0000AAAA))));
+	// an interior cell: two locked chests of one kind, an open one, a locked door from Dawnguard,
+	// and one compressed reference
+	const std::string cellChildren = W::Ref(0x00012345, true) + W::Ref(0x00012345, true) + W::Ref(0x00099999, false) +
+	                                 W::Ref(0x01000777, true) + W::Ref(0x00055555, true, 0x00040000);
+	const std::string cells = W::Group("CELL", W::Group("\0\0\0\0", W::Record("CELL", W::Field("EDID", "Test\0")) +
+	                                                                    W::Group("\x01\0\0\0", cellChildren, 6), 2));
+	// an exterior: a locked door the plugin itself adds (index 2 = after its two masters)
+	const std::string worlds = W::Group("WRLD", W::Record("WRLD", W::Field("EDID", "Tamriel\0")) +
+	                                                W::Group("\x3C\0\0\0", W::Group("\0\0\0\0", W::Ref(0x02000801, true), 9), 1));
+	std::istringstream in(tes4 + conts + cells + worlds);
+	const LockedRefScan scan = ScanLockedReferences(in);
+	CHECK(scan.ok);
+	CHECK(scan.masters.size() == 2 && scan.masters[0] == "Skyrim.esm" && scan.masters[1] == "Dawnguard.esm");
+	CHECK(scan.references == 6);
+	CHECK(scan.compressedSkipped == 1);
+	CHECK(scan.bases.size() == 3);
+	CHECK(scan.bases.contains(0x00012345) && scan.bases.at(0x00012345) == 2);
+	CHECK(!scan.bases.contains(0x00099999));
+	CHECK(!scan.bases.contains(0x0000AAAA));
+	CHECK(scan.bases.contains(0x01000777) && scan.bases.contains(0x02000801));
+	CHECK(FormFile(0x00012345, scan, "Mine.esp") == "Skyrim.esm");
+	CHECK(FormFile(0x01000777, scan, "Mine.esp") == "Dawnguard.esm");
+	CHECK(FormFile(0x02000801, scan, "Mine.esp") == "Mine.esp");
+
+	std::istringstream notPlugin("not a plugin at all, just text");
+	CHECK(!ScanLockedReferences(notPlugin).ok);
 }
 
 TEST(LockVariationsDescribesItsSections)

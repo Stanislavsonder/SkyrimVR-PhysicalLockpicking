@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Zamienia narzędzia w dłoniach: wytrych w lewej, napi
 $VRLP_FullPause	Pauza podczas otwierania
 $VRLP_FullPause_Help	Wstrzymuje grę, gdy otwierasz zamek.
 $VRLP_LockOnObject	Zamek na drzwiach lub skrzyni
-$VRLP_LockOnObject_Help	Zamek jest na samych drzwiach lub skrzyni, zamiast pojawiać się przed tobą. Być może trzeba będzie podejść. Jego miejsce na każdym modelu można ustawić narzędziem oznaczania modeli.
+$VRLP_LockOnObject_Help	Zamek jest na samych drzwiach lub skrzyni, zamiast pojawiać się przed tobą. Być może trzeba będzie podejść. Drzwi i skrzynie, których gra nigdy nie zamyka, mają go przed tobą. Jego miejsce na każdym modelu można ustawić narzędziem oznaczania modeli.
 $VRLP_ActivateContainerAfterUnlock	Auto-otwieranie pojemnika
 $VRLP_ActivateContainerAfterUnlock_Help	Automatycznie otwiera pojemnik, gdy jego zamek zostanie otwarty.
 $VRLP_HeaderDifficulty	Trudność
@@ -69,7 +69,7 @@ $VRLP_ResetMarkup	Zresetuj oznaczenia
 $VRLP_ResetMarkup_Help	Zapomina wszystkie dziurki zamków i chwyty narzędzi zapisane narzędziem oznaczania: znów używane są wbudowane ustawienia i automatyczne dopasowanie.
 $VRLP_HeaderTestLocks	Zamki testowe
 $VRLP_SpawnTestLocks	Utwórz zamki testowe
-$VRLP_SpawnTestLocks_Help	Stawia wokół ciebie zamknięte skrzynie i drzwi, od Nowicjusza do Mistrza: każdy model skrzyni i drzwi z gry i modów, partiami. Naciśnij ponownie, by postawić następną partię (zastąpi tę). Pierwsze drzwi każdej partii mają klucz, by wypróbować atut Woskowy klucz. Zamknij menu, by je zobaczyć. Lista jest w dzienniku. Wskazówka: polecenie konsoli coc qasmoke przenosi do dużej sali testowej.
+$VRLP_SpawnTestLocks_Help	Stawia wokół ciebie zamknięte skrzynie i drzwi, od Nowicjusza do Mistrza: każdy model skrzyni i drzwi, który gdzieś w grze i modach jest zamknięty, partiami. Naciśnij ponownie, by postawić następną partię (zastąpi tę). Pierwsze drzwi każdej partii mają klucz, by wypróbować atut Woskowy klucz. Zamknij menu, by je zobaczyć. Lista jest w dzienniku. Wskazówka: polecenie konsoli coc qasmoke przenosi do dużej sali testowej.
 $VRLP_RemoveTestLocks	Usuń zamki testowe
 $VRLP_RemoveTestLocks_Help	Usuwa skrzynie i drzwi postawione przez „Utwórz zamki testowe”.
 $VRLP_HeaderTestSetup	Przygotowanie testu
@@ -126,6 +126,7 @@ $VRLP_Msg_MarkupCouldNotSave	Oznaczanie: nie udało się zapisać.
 $VRLP_Msg_MarkupReset	Oznaczenia modeli zresetowane.
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: zamki testowe wymagają nowszej VR Address Library.
 $VRLP_Msg_TestLocksPlaced	VR Lockpicking: partia testowa {} z {}: skrzynie: {}, drzwi: {} (lista jest w dzienniku). Naciśnij ponownie, by postawić następną partię.
+$VRLP_Msg_TestLocksScanning	VR Lockpicking: wciąż sprawdzam, które skrzynie i drzwi twoja gra zamyka. Spróbuj za chwilę.
 $VRLP_Msg_LockpicksAdded	Dodano 50 wytrychów (teraz {}).
 $VRLP_Msg_SkeletonKeyAdded	Dodano Klucz Szkieletowy.
 $VRLP_Msg_SkeletonKeyRemoved	Usunięto Klucz Szkieletowy.

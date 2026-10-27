@@ -2,6 +2,7 @@
 
 #include "AddressCheck.h"
 #include "FrameHook.h"
+#include "LockableObjects.h"
 #include "LockMods.h"
 #include "Text.h"
 #include "VRInput.h"
@@ -1281,7 +1282,8 @@ namespace vrlp
 
 	// bLockOnObject: where the lock goes on the door or chest being picked. Its placement for the
 	// model: the player's own (markup tool), else a built-in one, else a guess from the model's
-	// bounds. A door's lock is on the side you stand.
+	// bounds. A door's lock is on the side you stand. Doors and containers the game's plugins
+	// never lock keep the lock in front of you.
 	bool LockpickManager::LockOnObject(RE::TESObjectREFR* a_target, const Vec3& a_head)
 	{
 		auto*       base = a_target ? a_target->GetBaseObject() : nullptr;
@@ -1290,6 +1292,11 @@ namespace vrlp
 		auto*       obj = a_target ? a_target->Get3D() : nullptr;
 		if (!base || !path || !*path || !obj) {
 			logger::info("Lock on the object: no model or 3D for {:08X}; in front of you instead", a_target ? a_target->GetFormID() : 0);
+			return false;
+		}
+		// never locked in the game's plugins (a script locked it): nowhere on it made for a lock
+		if (LockableObjects::Ready() && !LockableObjects::IsLockable(base->GetFormID())) {
+			logger::info("Lock on the object: [{}] is never locked in the game's plugins; in front of you instead", NormalizeModelPath(path));
 			return false;
 		}
 		OnObject o;

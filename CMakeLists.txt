@@ -18,6 +18,7 @@ add_library(vrlp_core STATIC
 	src/core/LockProfile.cpp
 	src/core/LockVariations.cpp
 	src/core/Translations.cpp
+	src/core/PluginScan.cpp
 )
 target_include_directories(vrlp_core PUBLIC src/core)
 target_compile_features(vrlp_core PUBLIC cxx_std_20)
@@ -56,6 +57,7 @@ add_library(VRLockpicking SHARED
 	src/plugin/Visuals.cpp
 	src/plugin/DebugView.cpp
 	src/plugin/Markup.cpp
+	src/plugin/LockableObjects.cpp
 	src/plugin/Numpad.cpp
 	src/plugin/TestLocks.cpp
 	src/plugin/DebugCheats.cpp

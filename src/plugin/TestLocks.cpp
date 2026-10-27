@@ -1,6 +1,7 @@
 #include "TestLocks.h"
 
 #include "AddressCheck.h"
+#include "LockableObjects.h"
 #include "LockpickManager.h"
 #include "Text.h"
 
@@ -39,23 +40,22 @@ namespace vrlp::TestLocks
 			RE::NiPoint3        min, max;  // its bounds (OBND), model space
 		};
 
-		// Every door and chest model of the loaded game and mods, one form each: containers
-		// first, then doors, each by model path.
+		// Every door and chest model of the loaded game and mods that is locked somewhere in it
+		// (LockableObjects), one form each: containers first, then doors, each by model path.
 		std::vector<Pick> g_all;
 		std::size_t       g_next = 0;  // first of the next batch
 
 		template <class T>
-		void Collect(std::vector<Pick>& a_out, bool a_door, std::initializer_list<const char*> a_skip)
+		void Collect(std::vector<Pick>& a_out, bool a_door)
 		{
 			std::set<std::string> seen;
 			std::vector<Pick>     found;
 			for (auto* form : RE::TESDataHandler::GetSingleton()->GetFormArray<T>()) {
 				const char* path = form ? form->GetModel() : nullptr;
-				if (!path || !*path) {
+				if (!path || !*path || !LockableObjects::IsLockable(form->GetFormID())) {
 					continue;
 				}
-				const std::string model = Lower(path);
-				if (Contains(model, a_skip) || !seen.insert(model).second) {
+				if (!seen.insert(Lower(path)).second) {
 					continue;
 				}
 				const auto& b = form->boundData;
@@ -70,10 +70,8 @@ namespace vrlp::TestLocks
 		{
 			g_all.clear();
 			g_next = 0;
-			// not containers anyone locks: bodies, sacks, barrels, plants...
-			Collect<RE::TESObjectCONT>(g_all, false,
-				{ "actors\\", "corpse", "skeleton", "sack", "barrel", "\\urn", "basket", "plants\\", "flora", "nest", "markers\\" });
-			Collect<RE::TESObjectDOOR>(g_all, true, { "markers\\" });
+			Collect<RE::TESObjectCONT>(g_all, false);
+			Collect<RE::TESObjectDOOR>(g_all, true);
 			const auto doors = static_cast<std::size_t>(std::ranges::count_if(g_all, [](const Pick& a_p) { return a_p.door; }));
 			logger::info("Test locks: {} container and {} door models in this game", g_all.size() - doors, doors);
 		}
@@ -197,6 +195,10 @@ namespace vrlp::TestLocks
 		if (!cell) {
 			return;
 		}
+		if (!LockableObjects::Ready()) {
+			Text::Show("$VRLP_Msg_TestLocksScanning");
+			return;
+		}
 		if (g_all.empty()) {
 			CollectAll();
 		}
@@ -277,8 +279,9 @@ namespace vrlp::TestLocks
 			SetLock(ref.get(), kLevels[level], withKey);
 			g_spawned.push_back(handle);
 			(p.door ? doors : chests)++;
-			logger::info("Test locks: {} {:08X} '{}' {} ({}){}", p.door ? "door" : "chest", p.form->GetFormID(), p.form->GetName(), p.model,
-				kLevelNames[level], withKey ? std::format(", has a key: '{}'", withKey->GetName()) : std::string());
+			logger::info("Test locks: {} {:08X} '{}' {} ({}; locked {} times in the game){}", p.door ? "door" : "chest", p.form->GetFormID(),
+				p.form->GetName(), p.model, kLevelNames[level], LockableObjects::LockedReferences(p.form->GetFormID()),
+				withKey ? std::format(", has a key: '{}'", withKey->GetName()) : std::string());
 		}
 		g_next += batch.size();
 

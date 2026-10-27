@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Intercambia las herramientas de mano: la ganzúa en la
 $VRLP_FullPause	Pausa al forzar cerraduras
 $VRLP_FullPause_Help	Pausa el juego mientras fuerzas una cerradura.
 $VRLP_LockOnObject	Cerradura en la puerta o el cofre
-$VRLP_LockOnObject_Help	La cerradura está en la propia puerta o cofre en vez de aparecer delante de ti. Puede que tengas que acercarte. Su sitio en cada modelo se ajusta con la herramienta de ajuste de modelos.
+$VRLP_LockOnObject_Help	La cerradura está en la propia puerta o cofre en vez de aparecer delante de ti. Puede que tengas que acercarte. Las puertas y cofres que tu juego nunca cierra la mantienen delante de ti. Su sitio en cada modelo se ajusta con la herramienta de ajuste de modelos.
 $VRLP_ActivateContainerAfterUnlock	Abrir contenedor al forzarlo
 $VRLP_ActivateContainerAfterUnlock_Help	Abre un contenedor automáticamente en cuanto fuerzas su cerradura.
 $VRLP_HeaderDifficulty	Dificultad
@@ -69,7 +69,7 @@ $VRLP_ResetMarkup	Reiniciar ajuste de modelos
 $VRLP_ResetMarkup_Help	Olvida todas las cerraduras y agarres de herramientas guardados con la herramienta de ajuste: se vuelven a usar las alineaciones integradas y el ajuste automático.
 $VRLP_HeaderTestLocks	Cerraduras de prueba
 $VRLP_SpawnTestLocks	Crear cerraduras de prueba
-$VRLP_SpawnTestLocks_Help	Coloca cofres y puertas cerrados a tu alrededor, de novato a maestro: todos los modelos de cofre y puerta de tu juego y tus mods, por tandas. Pulsa de nuevo para la siguiente tanda (sustituye a esta). La primera puerta de cada tanda tiene llave, para probar la mejora Llave de cera. Cierra el menú para verlos. La lista está en el registro. Consejo: el comando de consola coc qasmoke te lleva a una gran sala de pruebas.
+$VRLP_SpawnTestLocks_Help	Coloca cofres y puertas cerrados a tu alrededor, de novato a maestro: todos los modelos de cofre y puerta cerrados en algún lugar de tu juego y tus mods, por tandas. Pulsa de nuevo para la siguiente tanda (sustituye a esta). La primera puerta de cada tanda tiene llave, para probar la mejora Llave de cera. Cierra el menú para verlos. La lista está en el registro. Consejo: el comando de consola coc qasmoke te lleva a una gran sala de pruebas.
 $VRLP_RemoveTestLocks	Quitar cerraduras de prueba
 $VRLP_RemoveTestLocks_Help	Quita los cofres y puertas colocados con Crear cerraduras de prueba.
 $VRLP_HeaderTestSetup	Preparación de pruebas
@@ -126,6 +126,7 @@ $VRLP_Msg_MarkupCouldNotSave	Ajuste: no se pudo guardar.
 $VRLP_Msg_MarkupReset	Ajuste de modelos restablecido.
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: las cerraduras de prueba necesitan una VR Address Library más reciente.
 $VRLP_Msg_TestLocksPlaced	VR Lockpicking: tanda de prueba {} de {}: {} cofres y {} puertas (la lista está en el registro). Pulsa de nuevo para la siguiente tanda.
+$VRLP_Msg_TestLocksScanning	VR Lockpicking: aún leyendo qué cofres y puertas cierra tu juego. Inténtalo de nuevo en un momento.
 $VRLP_Msg_LockpicksAdded	50 ganzúas añadidas (ahora {}).
 $VRLP_Msg_SkeletonKeyAdded	Llave Esqueleto añadida.
 $VRLP_Msg_SkeletonKeyRemoved	Llave Esqueleto quitada.

@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Scambia gli attrezzi tra le mani: il grimaldello nella
 $VRLP_FullPause	Pausa durante lo scasso
 $VRLP_FullPause_Help	Mette in pausa il gioco mentre scassini una serratura.
 $VRLP_LockOnObject	Serratura sulla porta o sul forziere
-$VRLP_LockOnObject_Help	La serratura sta sulla porta o sul forziere stesso invece di apparire davanti a te. Potresti doverti avvicinare. La sua posizione su ogni modello si allinea con lo strumento di calibrazione dei modelli.
+$VRLP_LockOnObject_Help	La serratura sta sulla porta o sul forziere stesso invece di apparire davanti a te. Potresti doverti avvicinare. Porte e forzieri che il gioco non chiude mai la tengono davanti a te. La sua posizione su ogni modello si allinea con lo strumento di calibrazione dei modelli.
 $VRLP_ActivateContainerAfterUnlock	Apri contenitore dopo scasso
 $VRLP_ActivateContainerAfterUnlock_Help	Apre automaticamente un contenitore dopo averne scassinato la serratura.
 $VRLP_HeaderDifficulty	Difficoltà
@@ -69,7 +69,7 @@ $VRLP_ResetMarkup	Azzera calibrazione modelli
 $VRLP_ResetMarkup_Help	Dimentica tutte le serrature e le impugnature degli attrezzi salvate con lo strumento di calibrazione: si tornano a usare gli allineamenti integrati e l'adattamento automatico.
 $VRLP_HeaderTestLocks	Serrature di prova
 $VRLP_SpawnTestLocks	Crea serrature di prova
-$VRLP_SpawnTestLocks_Help	Piazza forzieri e porte chiusi attorno a te, da novizio a maestro: ogni modello di forziere e porta del gioco e delle mod, un gruppo alla volta. Premi di nuovo per il gruppo successivo (sostituisce questo). La prima porta di ogni gruppo ha una chiave, per provare il talento Chiave di cera. Chiudi il menu per vederli. L'elenco è nel log. Suggerimento: il comando console coc qasmoke ti porta in una grande sala di prova.
+$VRLP_SpawnTestLocks_Help	Piazza forzieri e porte chiusi attorno a te, da novizio a maestro: ogni modello di forziere e porta chiuso da qualche parte nel gioco e nelle mod, un gruppo alla volta. Premi di nuovo per il gruppo successivo (sostituisce questo). La prima porta di ogni gruppo ha una chiave, per provare il talento Chiave di cera. Chiudi il menu per vederli. L'elenco è nel log. Suggerimento: il comando console coc qasmoke ti porta in una grande sala di prova.
 $VRLP_RemoveTestLocks	Rimuovi serrature di prova
 $VRLP_RemoveTestLocks_Help	Rimuove i forzieri e le porte piazzati da Crea serrature di prova.
 $VRLP_HeaderTestSetup	Preparazione test
@@ -126,6 +126,7 @@ $VRLP_Msg_MarkupCouldNotSave	Calibrazione: impossibile salvare.
 $VRLP_Msg_MarkupReset	Calibrazione modelli azzerata.
 $VRLP_Msg_TestLocksNeedLibrary	VR Lockpicking: le serrature di prova richiedono una VR Address Library più recente.
 $VRLP_Msg_TestLocksPlaced	VR Lockpicking: gruppo di prova {} di {}: {} forzieri e {} porte (l'elenco è nel log). Premi di nuovo per il gruppo successivo.
+$VRLP_Msg_TestLocksScanning	VR Lockpicking: sto ancora leggendo quali forzieri e porte il gioco chiude. Riprova tra un momento.
 $VRLP_Msg_LockpicksAdded	50 grimaldelli aggiunti (ora {}).
 $VRLP_Msg_SkeletonKeyAdded	Chiave scheletro aggiunta.
 $VRLP_Msg_SkeletonKeyRemoved	Chiave scheletro rimossa.

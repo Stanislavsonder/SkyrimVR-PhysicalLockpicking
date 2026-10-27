@@ -25,6 +25,8 @@
 #include <random>
 #include <sstream>
 #include <string>
+#include <thread>
+#include <unordered_map>
 
 
 // <windows.h> may sneak in through third-party headers

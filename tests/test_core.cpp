@@ -1470,23 +1470,30 @@ TEST(BsaReadsStoredAndLz4Files)
 		std::ofstream out(path, std::ios::binary);
 		out << bsa;
 	}
-	BsaArchive archive;
-	CHECK(archive.Open(path.string()));
-	CHECK(archive.Size() == 2);
-	CHECK(archive.Contains("Meshes/Clutter/chest01.NIF"));
-	const auto chest = archive.Read("meshes\\clutter\\chest01.nif");
-	CHECK(chest && std::string(chest->begin(), chest->end()) == "hello");
-	const auto door = archive.Read("\\MESHES\\clutter\\door01.nif");
-	CHECK(door && std::string(door->begin(), door->end()) == "abcabcabcabcabcabc");
-	CHECK(!archive.Read("meshes\\clutter\\nothing.nif"));
-	std::filesystem::remove(path);
+	// each archive in its own scope: Windows can't delete a file that is still open
+	{
+		BsaArchive archive;
+		CHECK(archive.Open(path.string()));
+		CHECK(archive.Size() == 2);
+		CHECK(archive.Contains("Meshes/Clutter/chest01.NIF"));
+		const auto chest = archive.Read("meshes\\clutter\\chest01.nif");
+		CHECK(chest && std::string(chest->begin(), chest->end()) == "hello");
+		const auto door = archive.Read("\\MESHES\\clutter\\door01.nif");
+		CHECK(door && std::string(door->begin(), door->end()) == "abcabcabcabcabcabc");
+		CHECK(!archive.Read("meshes\\clutter\\nothing.nif"));
+	}
+	std::error_code ec;
+	std::filesystem::remove(path, ec);
 	const auto notArchive = std::filesystem::temp_directory_path() / "vrlp_test.txt";
 	{
 		std::ofstream out(notArchive, std::ios::binary);
 		out << "not an archive, just some text to read";
 	}
-	CHECK(!archive.Open(notArchive.string()));
-	std::filesystem::remove(notArchive);
+	{
+		BsaArchive archive;
+		CHECK(!archive.Open(notArchive.string()));
+	}
+	std::filesystem::remove(notArchive, ec);
 }
 
 TEST(LockVariationsDescribesItsSections)

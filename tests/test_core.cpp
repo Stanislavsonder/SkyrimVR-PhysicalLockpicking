@@ -1351,7 +1351,15 @@ TEST(ObjectAnchorPlacementRoundTrip)
 	if (it != all.end()) {
 		CHECK_NEAR(Distance(it->second.keyhole, a.keyhole), 0.0, 2e-3);
 		CHECK_NEAR(Dot(it->second.rot.Column(0), a.rot.Column(0)), 1.0, 1e-4);
+		CHECK(!it->second.keyholeOnly);
 	}
+	// only the keyhole on this one: saved over the same section, and kept by the other side
+	ObjectAnchor small = a;
+	small.keyholeOnly = true;
+	const auto smallBack = ParseObjectAnchors(WriteObjectAnchor(text, "clutter\\containers\\chest01.nif", small));
+	CHECK(smallBack.size() == 1 && smallBack.begin()->second.keyholeOnly);
+	CHECK(OtherSide(small, { -40, -25, 0 }, { 40, 25, 50 }).keyholeOnly);
+	CHECK(ParseObjectAnchors("[a.nif]\nvObjectKeyhole = 1, 2, 3\nbObjectKeyholeOnly = TRUE\n").at("a.nif").keyholeOnly);
 	CHECK(ObjectAnchorText(a).find("vObjectKeyhole = 12.000, -30.000, 41.000") != std::string::npos);
 	for (const auto& [model, d] : DefaultObjectAnchors()) {
 		CHECK(d.valid);

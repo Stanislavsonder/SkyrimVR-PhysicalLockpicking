@@ -271,6 +271,7 @@ namespace vrlp
 				{ a_section, "vObjectKeyhole", AnchorVecText(a_a.keyhole) },
 				{ a_section, "vObjectInto", AnchorVecText(a_a.rot.Column(1)) },
 				{ a_section, "vObjectUp", AnchorVecText(a_a.rot.Column(2)) },
+				{ a_section, "bObjectKeyholeOnly", a_a.keyholeOnly ? "1" : "0" },
 			};
 		}
 	}
@@ -332,6 +333,7 @@ namespace vrlp
 		{
 			Vec3 keyhole, into{ 0, 1, 0 }, up{ 0, 0, 1 };
 			bool valid{ false };
+			bool keyholeOnly{ false };
 		};
 		std::map<std::string, Raw> raw;
 		for (const auto& [key, value] : ParseIni(a_text)) {
@@ -340,12 +342,16 @@ namespace vrlp
 				continue;
 			}
 			const std::string name = key.substr(dot + 1);
-			if (name != "vobjectkeyhole" && name != "vobjectinto" && name != "vobjectup") {
+			if (name != "vobjectkeyhole" && name != "vobjectinto" && name != "vobjectup" && name != "bobjectkeyholeonly") {
 				continue;
 			}
 			Raw& r = raw[NormalizeModelPath(key.substr(0, dot))];
 			if (name == "vobjectkeyhole") {
 				r.valid = ParseVec(value, r.keyhole);
+			} else if (name == "bobjectkeyholeonly") {
+				std::string v = value;
+				std::transform(v.begin(), v.end(), v.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+				r.keyholeOnly = v == "1" || v == "true" || v == "yes" || v == "on";
 			} else if (name == "vobjectinto") {
 				ParseVec(value, r.into);
 			} else {
@@ -355,7 +361,7 @@ namespace vrlp
 		std::map<std::string, ObjectAnchor> out;
 		for (const auto& [model, r] : raw) {
 			if (r.valid) {
-				out[model] = ObjectAnchor{ r.keyhole, LockAxes(r.into, r.up), true };
+				out[model] = ObjectAnchor{ r.keyhole, LockAxes(r.into, r.up), true, r.keyholeOnly };
 			}
 		}
 		return out;

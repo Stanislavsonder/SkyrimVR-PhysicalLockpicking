@@ -398,6 +398,31 @@ namespace vrlp
 		return true;
 	}
 
+	bool Visuals::ShowKeyholeOnly()
+	{
+		if (!_lock.clone || !_cylinder) {
+			logger::info("Lock '{}': no turning part, so the whole lock is shown", _lock.path);
+			return false;
+		}
+		int                                  hidden = 0;
+		std::function<void(RE::NiAVObject*)> hide = [&](RE::NiAVObject* a_obj) {
+			if (!a_obj || a_obj == _cylinder.get()) {
+				return;
+			}
+			if (auto* node = a_obj->AsNode()) {
+				for (auto& child : node->GetChildren()) {
+					hide(child.get());
+				}
+			} else if (a_obj->AsGeometry() && !a_obj->GetAppCulled()) {
+				a_obj->SetAppCulled(true);
+				++hidden;
+			}
+		};
+		hide(_lock.clone.get());
+		logger::info("Lock '{}': only the keyhole is shown ({} part(s) hidden)", _lock.path, hidden);
+		return true;
+	}
+
 	void Visuals::ApplyFit(Model& a_model, bool a_log)
 	{
 		if (!a_model.clone) {

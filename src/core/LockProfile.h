@@ -76,6 +76,7 @@ namespace vrlp
 		Vec3 keyhole;
 		Mat3 rot;  // columns: right, into the lock, up
 		bool valid{ false };
+		bool keyholeOnly{ false };  // only the lock's turning part is drawn (small chests, safes)
 	};
 
 	// A first guess from the model's bounds (OBND, model space). Chest: on its front (-Y) face,

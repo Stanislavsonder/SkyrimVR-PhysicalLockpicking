@@ -451,6 +451,8 @@ namespace vrlp
 		} else {
 			if (!_visuals.Create(models, ref.get(), profile)) {
 				logger::info("Running without 3D meshes (haptics + sound only)");
+			} else if (_onObject && _onObject->anchor.keyholeOnly) {
+				_visuals.ShowKeyholeOnly();
 			}
 			if (_cfg.showTargets || _cfg.markupMode) {
 				_debug.Create(_cfg, ref.get(), true);
@@ -1371,7 +1373,8 @@ namespace vrlp
 		auto& o = *_onObject;
 		// a lock pose in the world -> the anchor as saved (a door: its marked side)
 		auto store = [&o](const Pose& a_world) {
-			const ObjectAnchor shown = ObjectAnchorFromPose(a_world, o.object, o.scale);
+			ObjectAnchor shown = ObjectAnchorFromPose(a_world, o.object, o.scale);
+			shown.keyholeOnly = o.anchor.keyholeOnly;
 			o.anchor = o.otherSide ? OtherSide(shown, o.boundMin, o.boundMax) : shown;
 		};
 		if (a_reset) {

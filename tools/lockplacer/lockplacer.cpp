@@ -45,6 +45,7 @@ using nifly::Vector3;
 namespace
 {
 	constexpr const char* kMarker = "VRLP_Lock";
+	constexpr const char* kLockBody = "VRLP_LockBody";
 
 	std::string ReadText(const fs::path& a_path)
 	{
@@ -219,6 +220,23 @@ namespace
 		return vrlp::ObjectAnchorFromPose(lock, vrlp::Pose{}, 1.0f);  // also cleans up the rotation
 	}
 
+	// Where a marker is, and whether its lock's body was deleted or hidden (only the keyhole shows).
+	vrlp::ObjectAnchor MarkerAnchor(nifly::NifFile& a_nif, nifly::NiNode* a_marker)
+	{
+		vrlp::ObjectAnchor a = FromNif(a_marker->GetTransformToParent());
+		bool               lockShown = false;
+		nifly::NiNode*     body = nullptr;
+		for (auto* child : a_nif.GetChildren<nifly::NiAVObject>(a_marker)) {
+			const std::string name = child->name.get();
+			if (name == kLockBody) {
+				body = dynamic_cast<nifly::NiNode*>(child);
+			}
+			lockShown = lockShown || (name.starts_with("VRLP_Lock") && name != "VRLP_LockMarker");
+		}
+		a.keyholeOnly = lockShown && (!body || (body->flags & 1) || a_nif.GetChildren<nifly::NiShape>(body).empty());
+		return a;
+	}
+
 	struct Mesh
 	{
 		std::vector<Vector3>  v;
@@ -281,9 +299,15 @@ namespace
 	// plugin places it (MeshFit from its parts' bounds), without its screwdriver.
 	struct LockModel
 	{
-		nifly::NifFile                                    nif;
-		std::vector<std::pair<nifly::NiShape*, nifly::MatTransform>> shapes;  // each shape -> its place in the lock frame
-		bool                                              ok{ false };
+		struct Shape
+		{
+			nifly::NiShape*     shape;
+			nifly::MatTransform place;  // in the lock frame
+			bool                body;   // not the turning part (hidden when only the keyhole shows)
+		};
+		nifly::NifFile     nif;
+		std::vector<Shape> shapes;
+		bool               ok{ false };
 	};
 
 	bool NameHas(const nifly::NiObjectNET* a_obj, const char* a_needle) { return Lower(a_obj->name.get()).find(a_needle) != std::string::npos; }
@@ -304,6 +328,7 @@ namespace
 			nifly::NiShape*     shape;
 			nifly::MatTransform model;  // shape -> model space
 			bool                shiv;
+			bool                cylinder;
 		};
 		std::vector<Found>           found;
 		std::vector<vrlp::MeshPart>  parts;
@@ -350,7 +375,7 @@ namespace
 						} else if (part.radius > 0.0f) {
 							parts.push_back(part);
 						}
-						found.push_back({ shape, xf, shiv });
+						found.push_back({ shape, xf, shiv, a_cyl });
 					}
 				}
 			};
@@ -371,7 +396,7 @@ namespace
 		place.scale = fit.place.scale;
 		for (const auto& f : found) {
 			if (!f.shiv) {
-				a_lock.shapes.emplace_back(f.shape, place.ComposeTransforms(f.model));
+				a_lock.shapes.push_back({ f.shape, place.ComposeTransforms(f.model), !f.cylinder });
 			}
 		}
 		a_lock.ok = !a_lock.shapes.empty();
@@ -400,11 +425,15 @@ namespace
 		a_nif.SetParentNode(shape, node);
 		if (a_lock && a_lock->ok) {
 			int i = 0;
-			for (auto& [src, place] : a_lock->shapes) {
-				auto* copy = a_nif.CloneShape(src, std::format("VRLP_Lock{}", i++), &a_lock->nif);
-				if (copy) {
-					copy->SetTransformToParent(place);
-					a_nif.SetParentNode(copy, node);
+			// the lock's body on its own node: delete it to show only the keyhole
+			nifly::NiNode* body = a_anchor.keyholeOnly ? nullptr : a_nif.AddNode(kLockBody, nifly::MatTransform(), node);
+			for (const auto& s : a_lock->shapes) {
+				if (s.body && !body) {
+					continue;
+				}
+				if (auto* copy = a_nif.CloneShape(s.shape, std::format("VRLP_Lock{}", i++), &a_lock->nif)) {
+					copy->SetTransformToParent(s.place);
+					a_nif.SetParentNode(copy, s.body ? body : node);
 				}
 			}
 		}
@@ -427,7 +456,7 @@ namespace
 				nifly::NifFile existing;
 				if (existing.Load(out) == 0) {
 					if (auto* node = existing.FindBlockByName<nifly::NiNode>(kMarker)) {
-						moved = FromNif(node->GetTransformToParent());
+						moved = MarkerAnchor(existing, node);
 					}
 				}
 			}
@@ -504,7 +533,7 @@ namespace
 			if (nif.GetParentNode(node) != nif.GetRootNode()) {
 				std::printf("note     %s: the marker is no longer right under the root; its place is read as if it were\n", key.c_str());
 			}
-			const vrlp::ObjectAnchor a = FromNif(node->GetTransformToParent());
+			const vrlp::ObjectAnchor a = MarkerAnchor(nif, node);
 			text = vrlp::WriteObjectAnchor(text, key, a);
 			std::printf("saved    %s: %s\n", key.c_str(), vrlp::ObjectAnchorText(a).c_str());
 			++saved;

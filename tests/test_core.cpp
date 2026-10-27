@@ -1365,6 +1365,15 @@ TEST(ObjectAnchorPlacementRoundTrip)
 		CHECK(d.valid);
 		CHECK_NEAR(Dot(Cross(d.rot.Column(0), d.rot.Column(1)), d.rot.Column(2)), 1.0, 1e-4);
 	}
+	// the built-in ones are found by the path the game gives, whatever its case
+	CHECK(DefaultObjectAnchors().size() == 18);
+	const auto& farm = DefaultObjectAnchors().at(NormalizeModelPath("Meshes\\Architecture\\Farmhouse\\FarmhouseDoor01.nif"));
+	CHECK(farm.keyholeOnly);
+	CHECK_NEAR(farm.keyhole.z, 83.0, 1e-3);
+	// a trapdoor's lock looks down into it
+	const auto& trap = DefaultObjectAnchors().at(NormalizeModelPath("architecture\\farmhouse\\interior\\basement\\farmbtrapdoor02.nif"));
+	CHECK(!trap.keyholeOnly);
+	CHECK_NEAR(trap.rot.Column(1).z, -1.0, 1e-4);
 }
 
 namespace

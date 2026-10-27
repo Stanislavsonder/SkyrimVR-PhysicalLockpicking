@@ -383,8 +383,98 @@ namespace vrlp
 
 	const std::map<std::string, ObjectAnchor>& DefaultObjectAnchors()
 	{
-		// Measured in game with the markup tool (the "Lock on" lines of the log).
-		static const std::string                         kText = R"(
+		// Lined up in NifSkope with tools/lockplacer (or in game with the markup tool, the "Lock on"
+		// lines of the log).
+		static const std::string                         kText = R"([architecture\farmhouse\farmhousedoor01.nif]
+vObjectKeyhole = -40.000, -4.200, 83.000
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 1
+[architecture\farmhouse\farmhouseldoor01.nif]
+vObjectKeyhole = -40.000, -4.500, 83.000
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 1
+[architecture\farmhouse\interior\basement\farmbtrapdoor02.nif]
+vObjectKeyhole = 0.000, 32.000, 16.300
+vObjectInto = 0.000, 0.000, -1.000
+vObjectUp = -1.000, 0.000, 0.000
+bObjectKeyholeOnly = 0
+[architecture\farmhouse\interior\basement\farmhousejaildoor01.nif]
+vObjectKeyhole = -38.500, -1.200, 86.000
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 1
+[architecture\orclonghouse\orcdoor01.nif]
+vObjectKeyhole = 42.000, 203.000, 62.000
+vObjectInto = 0.000, -1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 0
+[architecture\orclonghouse\orcdoorload01.nif]
+vObjectKeyhole = -41.920, -2.000, 62.000
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 0
+[architecture\riften\riftendoor01.nif]
+vObjectKeyhole = 10.000, 5.000, 76.000
+vObjectInto = 0.000, -1.000, 0.000
+vObjectUp = -0.000, 0.000, 1.000
+bObjectKeyholeOnly = 0
+[architecture\riften\riftendoor02.nif]
+vObjectKeyhole = -6.000, -4.300, 88.000
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 0
+[architecture\riften\rtirongate01.nif]
+vObjectKeyhole = -52.300, -6.200, 82.000
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 1
+[architecture\riften\rtirongate02.nif]
+vObjectKeyhole = -52.400, -6.000, 82.000
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 1
+[architecture\riften\rtmarketstalldoor01.nif]
+vObjectKeyhole = -43.500, -39.500, 29.300
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 1
+[architecture\solitude\doors\sdoorjail01.nif]
+vObjectKeyhole = 2.700, 77.000, 3.100
+vObjectInto = 0.000, 0.000, -1.000
+vObjectUp = -0.000, 1.000, 0.000
+bObjectKeyholeOnly = 1
+[architecture\solitude\doors\shousedoor01.nif]
+vObjectKeyhole = 1.700, 9.560, -63.000
+vObjectInto = 1.000, 0.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 0
+[architecture\solitude\doors\shousedoor02.nif]
+vObjectKeyhole = -10.560, -2.300, -5.000
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 1
+[architecture\solitude\doors\shousedoor03.nif]
+vObjectKeyhole = 9.300, -29.300, 85.000
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 1
+[architecture\whiterun\wrdoor02.nif]
+vObjectKeyhole = -7.500, -6.280, 54.000
+vObjectInto = 1.000, 0.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 1
+[architecture\whiterun\wrinteriors\wrdungeon\wrprisoncellfloorgrate01door.nif]
+vObjectKeyhole = -3.000, 44.280, 3.500
+vObjectInto = 0.000, -0.000, -1.000
+vObjectUp = 1.000, 0.000, 0.000
+bObjectKeyholeOnly = 0
+[architecture\whiterun\wrinteriors\wrjaildoor01.nif]
+vObjectKeyhole = 58.500, -2.800, -18.000
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+bObjectKeyholeOnly = 0
 )";
 		static const std::map<std::string, ObjectAnchor> kAnchors = ParseObjectAnchors(kText);
 		return kAnchors;

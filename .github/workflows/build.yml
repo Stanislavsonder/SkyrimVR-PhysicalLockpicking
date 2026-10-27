@@ -113,6 +113,22 @@ jobs:
           name: VRLockpicking-${{ github.run_number }}-pdb
           path: build/VRLockpicking.pdb
 
+      # tools/lockplacer: lining up the lock on door / chest models in NifSkope
+      - name: Build lockplacer
+        shell: bash
+        run: |
+          git clone --quiet https://github.com/ousnius/nifly build-nifly
+          git -C build-nifly checkout --quiet 6cb15fb5da71527b33cea8ff7913be8790e1c633
+          cmake -S tools/lockplacer -B build-lockplacer -G Ninja -DCMAKE_BUILD_TYPE=Release -DNIFLY_DIR="$PWD/build-nifly" -DBUILD_TESTING=OFF
+          cmake --build build-lockplacer
+          mkdir -p out-lockplacer
+          cp build-lockplacer/lockplacer.exe tools/lockplacer/README.md out-lockplacer/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VRLockpicking-${{ github.run_number }}-lockplacer
+          path: out-lockplacer/
+
   release:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [ core-tests-linux, plugin-windows ]

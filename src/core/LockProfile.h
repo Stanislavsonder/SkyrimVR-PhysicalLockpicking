@@ -5,6 +5,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "MeshFit.h"
 #include "VecMath.h"
@@ -98,5 +99,20 @@ namespace vrlp
 	// the lock, up. ObjectAnchorFromPose is the other way round.
 	Pose         PlaceOnObject(const ObjectAnchor& a_anchor, const Pose& a_object, float a_scale);
 	ObjectAnchor ObjectAnchorFromPose(const Pose& a_lock, const Pose& a_object, float a_scale);
+
+	// The door and chest models the game locks somewhere, as the plugin lists them for lining up
+	// the lock outside the game (tools/lockplacer): one line each, tab-separated: "door" or
+	// "container", the model path, its bounds (min and max, "x y z"), how many references lock
+	// it, its name.
+	struct LockableModel
+	{
+		std::string model;
+		bool        door{ false };
+		Vec3        boundMin, boundMax;
+		int         locked{ 0 };
+		std::string name;
+	};
+	std::string                WriteLockableModels(const std::vector<LockableModel>& a_models);
+	std::vector<LockableModel> ParseLockableModels(const std::string& a_text);
 
 }

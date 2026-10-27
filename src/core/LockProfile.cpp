@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <cstdlib>
 #include <format>
 #include <vector>
 
@@ -390,5 +391,58 @@ namespace vrlp
 		a.rot = LockAxes(local.Column(1), local.Column(2));
 		a.valid = true;
 		return a;
+	}
+
+	std::string WriteLockableModels(const std::vector<LockableModel>& a_models)
+	{
+		std::string out = "; VR Lockpicking: the door and chest models your game locks somewhere (for tools/lockplacer)\n"
+		                  "; kind\tmodel\tbounds min\tbounds max\tlocked references\tname\n";
+		for (const auto& m : a_models) {
+			out += std::format("{}\t{}\t{:.0f} {:.0f} {:.0f}\t{:.0f} {:.0f} {:.0f}\t{}\t{}\n", m.door ? "door" : "container", m.model, m.boundMin.x,
+				m.boundMin.y, m.boundMin.z, m.boundMax.x, m.boundMax.y, m.boundMax.z, m.locked, m.name);
+		}
+		return out;
+	}
+
+	std::vector<LockableModel> ParseLockableModels(const std::string& a_text)
+	{
+		std::vector<LockableModel> out;
+		std::size_t                start = 0;
+		while (start < a_text.size()) {
+			std::size_t end = a_text.find('\n', start);
+			if (end == std::string::npos) {
+				end = a_text.size();
+			}
+			std::string line = a_text.substr(start, end - start);
+			start = end + 1;
+			if (!line.empty() && line.back() == '\r') {
+				line.pop_back();
+			}
+			if (line.empty() || line[0] == ';') {
+				continue;
+			}
+			std::vector<std::string> f;
+			std::size_t              p = 0;
+			while (true) {
+				const std::size_t tab = line.find('\t', p);
+				f.push_back(line.substr(p, tab == std::string::npos ? std::string::npos : tab - p));
+				if (tab == std::string::npos) {
+					break;
+				}
+				p = tab + 1;
+			}
+			if (f.size() < 4 || (f[0] != "door" && f[0] != "container") || f[1].empty()) {
+				continue;
+			}
+			LockableModel m;
+			m.door = f[0] == "door";
+			m.model = f[1];
+			ParseVec(f[2], m.boundMin);
+			ParseVec(f[3], m.boundMax);
+			m.locked = f.size() > 4 ? std::atoi(f[4].c_str()) : 0;
+			m.name = f.size() > 5 ? f[5] : std::string();
+			out.push_back(m);
+		}
+		return out;
 	}
 }

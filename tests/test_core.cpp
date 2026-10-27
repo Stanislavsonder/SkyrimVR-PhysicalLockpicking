@@ -1381,6 +1381,20 @@ namespace
 	};
 }
 
+TEST(LockableModelsRoundTrip)
+{
+	std::vector<LockableModel> list{ { "Clutter\\Containers\\Chest01.nif", false, { -40, -25, 0 }, { 40, 25, 50 }, 312, "Chest" },
+		{ "Architecture\\Whiterun\\WRDoor01.nif", true, { 0, -4, 0 }, { 90, 4, 180 }, 7, "" } };
+	const auto back = ParseLockableModels(WriteLockableModels(list) + "garbage line\r\n");
+	CHECK(back.size() == 2);
+	if (back.size() == 2) {
+		CHECK(back[0].model == list[0].model && !back[0].door && back[0].locked == 312 && back[0].name == "Chest");
+		CHECK(back[1].door && back[1].name.empty());
+		CHECK_NEAR(Distance(back[1].boundMax, Vec3{ 90, 4, 180 }), 0.0, 1e-4);
+		CHECK_NEAR(Distance(back[0].boundMin, Vec3{ -40, -25, 0 }), 0.0, 1e-4);
+	}
+}
+
 TEST(PluginScanFindsLockedReferences)
 {
 	using W = PluginWriter;

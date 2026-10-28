@@ -39,9 +39,10 @@ namespace vrlp
 		// Target circle radius from the profile, in game units (0 = no profile).
 		float KeyholeRadius() const { return _keyholeRadius; }
 		void  SetLockProfile(const LockProfile& a_profile);
-		// Draws only the lock's turning part, the keyhole (a lock on a small chest or a safe). False
-		// when the model has no turning part: the whole lock stays.
-		bool ShowKeyholeOnly();
+		// Draws only the lock's turning part (kRing: the keyhole and its ring, for a small chest or a
+		// safe) or only its keyhole (kKeyhole: a lock built into the model). False when the model has
+		// no turning part: the whole lock stays.
+		bool ShowOnly(LockShown a_shown);
 
 		// Tool profiles (markup tool), keyed by normalized model path; set before Create.
 		void SetToolProfiles(std::map<std::string, ToolProfile> a_picks, std::map<std::string, ToolProfile> a_shivs);

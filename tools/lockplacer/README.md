@@ -19,7 +19,13 @@ cmake --build build-lockplacer
    lockplacer place VRLockpicking_LockableModels.txt C:\VRLP\preview "D:\SteamLibrary\steamapps\common\SkyrimVR\Data;C:\Mods\SomeMod" VRLockpicking_Locks.ini
    ```
    Each model is copied to `C:\VRLP\preview\meshes\...` with a marker where the lock is now: what the INI says, else the mod's guess. Each line says where the model came from; a `missing` line means it was in none of them. The INI is optional. Copies that are already there are made again with their marker where you left it, so you can run it again after adding models or after a new lockplacer. The copies have no collision (NifSkope can fail to save it, and it isn't needed here). Never put the preview folder into `Data`.
-4. **Line them up in NifSkope.** Open a copy. The marker is the node `VRLP_Lock`: the lock the mod draws, at its size in the game, with a red keyhole, a green arrow pointing into the door or chest, and a blue tick on top. (Without the lock model in the data it is a white frame the size of the lock's face.) Add the game's archives in NifSkope (Options → Settings → Resources → Archives) to see the textures. Select `VRLP_Lock`, then Transform → Edit, and move and turn it until the keyhole sits where the lock should be. Save. For a small chest or a safe, where the whole lock is too big, delete the node `VRLP_LockBody` under the marker (right click → Block → Remove Branch): only the keyhole is then shown, here and in the game.
+4. **Line them up in NifSkope.** Open a copy. The marker is the node `VRLP_Lock`: the lock the mod draws, at its size in the game, with a red keyhole, a green arrow pointing into the door or chest, and a blue tick on top. (Without the lock model in the data it is a white frame the size of the lock's face.) Add the game's archives in NifSkope (Options → Settings → Resources → Archives) to see the textures. Select `VRLP_Lock`, then Transform → Edit, and move and turn it until the keyhole sits where the lock should be. Save. The game draws what is left of the lock on the marker:
+   - all of it: the whole lock;
+   - delete the node `VRLP_LockBody` under the marker (right click → Block → Remove Branch): only the keyhole and the ring round it, for a small chest or a safe where the whole lock is too big;
+   - delete the ring's shapes (`VRLP_LockRing...`) too: only the keyhole, for a model with its own lock face (a Dwemer chest);
+   - delete the marker itself: no lock on this model at all, it stays in front of you (a model that is locked but has nothing to pick).
+
+   The marker's red, green and blue guides (`VRLP_LockMarker`) can be deleted too; they are only for lining up.
 5. **Save them for the mod:**
    ```
    lockplacer read VRLockpicking_LockableModels.txt C:\VRLP\preview <Data>\SKSE\Plugins\VRLockpicking_Locks.ini

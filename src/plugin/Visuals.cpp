@@ -398,8 +398,11 @@ namespace vrlp
 		return true;
 	}
 
-	bool Visuals::ShowKeyholeOnly()
+	bool Visuals::ShowOnly(LockShown a_shown)
 	{
+		if (a_shown != LockShown::kRing && a_shown != LockShown::kKeyhole) {
+			return true;
+		}
 		if (!_lock.clone || !_cylinder) {
 			logger::info("Lock '{}': no turning part, so the whole lock is shown", _lock.path);
 			return false;
@@ -419,7 +422,35 @@ namespace vrlp
 			}
 		};
 		hide(_lock.clone.get());
-		logger::info("Lock '{}': only the keyhole is shown ({} part(s) hidden)", _lock.path, hidden);
+		if (a_shown == LockShown::kKeyhole) {
+			// of the turning part, only the keyhole: its smallest shape(s); the ring round it goes
+			std::vector<RE::NiAVObject*>                shapes;
+			std::vector<float>                          radii;
+			std::function<void(RE::NiAVObject*, float)> collect = [&](RE::NiAVObject* a_obj, float a_scale) {
+				if (!a_obj) {
+					return;
+				}
+				const float scale = a_obj == _cylinder.get() ? 1.0f : a_scale * a_obj->local.scale;
+				if (auto* node = a_obj->AsNode()) {
+					for (auto& child : node->GetChildren()) {
+						collect(child.get(), scale);
+					}
+				} else if (auto* geom = a_obj->AsGeometry(); geom && !a_obj->GetAppCulled()) {
+					shapes.push_back(a_obj);
+					radii.push_back(geom->GetModelData().modelBound.radius * scale);
+				}
+			};
+			collect(_cylinder.get(), 1.0f);
+			const std::vector<bool> keyhole = KeyholeShapes(radii);
+			for (std::size_t i = 0; i < shapes.size(); ++i) {
+				if (!keyhole[i]) {
+					shapes[i]->SetAppCulled(true);
+					++hidden;
+				}
+			}
+		}
+		logger::info("Lock '{}': only the {} is shown ({} part(s) hidden)", _lock.path, a_shown == LockShown::kKeyhole ? "keyhole" : "keyhole and its ring",
+			hidden);
 		return true;
 	}
 

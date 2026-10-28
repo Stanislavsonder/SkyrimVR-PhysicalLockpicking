@@ -451,8 +451,8 @@ namespace vrlp
 		} else {
 			if (!_visuals.Create(models, ref.get(), profile)) {
 				logger::info("Running without 3D meshes (haptics + sound only)");
-			} else if (_onObject && ObjectSideShown().keyholeOnly) {
-				_visuals.ShowKeyholeOnly();
+			} else if (_onObject) {
+				_visuals.ShowOnly(ObjectSideShown().shown);
 			}
 			if (_cfg.showTargets || _cfg.markupMode) {
 				_debug.Create(_cfg, ref.get(), true);
@@ -1337,15 +1337,19 @@ namespace vrlp
 		} else {
 			o.anchor = GuessObjectAnchor(o.boundMin, o.boundMax, o.door);
 		}
+		if (o.anchor.shown == LockShown::kNone) {
+			logger::info("Lock on the object: [{}] has no lock on it ({}); in front of you instead", key, source);
+			return false;
+		}
 		if (o.door) {
 			o.otherSide = UseOtherSide(o.anchor, o.boundMin, o.boundMax, o.object, o.scale, a_head);
 		}
 		_onObject = o;
 		const Pose  lock = ObjectLockWorld();
 		const float dist = Distance(lock.pos, a_head);
-		logger::info("Lock on the {} [{}] ({}{}{}), {:.0f} from your head; bounds ({:.0f}, {:.0f}, {:.0f}) - ({:.0f}, {:.0f}, {:.0f}), scale {:.2f}",
-			o.door ? "door" : "container", key, source, o.anchor.back ? ", both sides marked" : "", o.otherSide ? ", the other side" : "", dist, o.boundMin.x, o.boundMin.y, o.boundMin.z,
-			o.boundMax.x, o.boundMax.y, o.boundMax.z, o.scale);
+		logger::info("Lock on the {} [{}] ({}{}{}, {}), {:.0f} from your head; bounds ({:.0f}, {:.0f}, {:.0f}) - ({:.0f}, {:.0f}, {:.0f}), scale {:.2f}",
+			o.door ? "door" : "container", key, source, o.anchor.back ? ", both sides marked" : "", o.otherSide ? ", the other side" : "",
+			LockShownName(ObjectSideShown().shown), dist, o.boundMin.x, o.boundMin.y, o.boundMin.z, o.boundMax.x, o.boundMax.y, o.boundMax.z, o.scale);
 		return true;
 	}
 
@@ -1379,18 +1383,18 @@ namespace vrlp
 		auto store = [this, &o](const Pose& a_world) {
 			ObjectAnchor shown = ObjectAnchorFromPose(a_world, o.object, o.scale);
 			if (o.otherSide) {
-				const bool keyholeOnly = ObjectSideShown().keyholeOnly;
-				o.anchor.back = ObjectAnchor::Side{ shown.keyhole, shown.rot, keyholeOnly };
+				o.anchor.back = ObjectAnchor::Side{ shown.keyhole, shown.rot, ObjectSideShown().shown };
 				return;
 			}
-			shown.keyholeOnly = o.anchor.keyholeOnly;
+			shown.shown = o.anchor.shown;
 			shown.back = o.anchor.back;
 			o.anchor = shown;
 		};
 		if (a_reset) {
 			_lockGrab.reset();
 			const auto def = DefaultObjectAnchors().find(NormalizeModelPath(o.model));
-			o.anchor = def != DefaultObjectAnchors().end() ? def->second : GuessObjectAnchor(o.boundMin, o.boundMax, o.door);
+			const bool builtIn = def != DefaultObjectAnchors().end() && def->second.shown != LockShown::kNone;
+			o.anchor = builtIn ? def->second : GuessObjectAnchor(o.boundMin, o.boundMax, o.door);
 			_objectDirty = true;
 			SaveObjectPlacement();
 			Text::Show("$VRLP_Msg_MarkupObjectGuess");

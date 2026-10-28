@@ -72,20 +72,34 @@ namespace vrlp
 	// lock, up). Set with the markup tool's first step and saved under the object's model in the
 	// same file: vObjectKeyhole, vObjectInto, vObjectUp. A door can have its other side marked too
 	// (the same keys ending in 2); without it, the other side is the mirror through the door
-	// (OtherSide).
+	// (OtherSide). sObjectLock says how much of the lock is drawn (LockShown).
+	enum class LockShown
+	{
+		kWhole,    // "whole": the whole lock
+		kRing,     // "ring": its turning part, the keyhole and the ring round it (small chests, safes)
+		kKeyhole,  // "keyhole": the keyhole alone (a lock built into the model)
+		kNone,     // "none": no lock on this model, it stays in front of you (nothing there to pick)
+	};
+	const char* LockShownName(LockShown a_shown);
+	// false (a_out unchanged) for anything else
+	bool ParseLockShown(const std::string& a_text, LockShown& a_out);
+	// The keyhole among the shapes of a lock's turning part, by their bound radii: the smallest,
+	// and any within 15% of it. The others are the ring.
+	std::vector<bool> KeyholeShapes(const std::vector<float>& a_radii);
+
 	struct ObjectAnchor
 	{
 		struct Side
 		{
-			Vec3 keyhole;
-			Mat3 rot;
-			bool keyholeOnly{ false };
+			Vec3      keyhole;
+			Mat3      rot;
+			LockShown shown{ LockShown::kWhole };
 		};
 		Vec3                keyhole;
 		Mat3                rot;  // columns: right, into the lock, up
 		bool                valid{ false };
-		bool                keyholeOnly{ false };  // only the lock's turning part is drawn (small chests, safes)
-		std::optional<Side> back;                  // the door's other side, when it was marked
+		LockShown           shown{ LockShown::kWhole };
+		std::optional<Side> back;  // the door's other side, when it was marked
 	};
 
 	// A first guess from the model's bounds (OBND, model space). Chest: on its front (-Y) face,

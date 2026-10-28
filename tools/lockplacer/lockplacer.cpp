@@ -16,6 +16,9 @@
 // The marker is a node named VRLP_Lock under the model's root: its origin is the keyhole, +Y
 // points into the door or chest, +Z is up. Move and turn it with NifSkope's Transform > Edit.
 // A second VRLP_Lock (a copy of the first) marks a door's other side (vObjectKeyhole2 ...).
+// What is left of the lock on a marker is what the game draws (sObjectLock): the body node
+// VRLP_LockBody deleted -> the keyhole and its ring; VRLP_LockRing* deleted too -> the keyhole
+// alone. A copy with its marker deleted gets no lock on the model (the lock stays in front of you).
 
 #include <NifFile.hpp>
 
@@ -47,6 +50,8 @@ namespace
 {
 	constexpr const char* kMarker = "VRLP_Lock";
 	constexpr const char* kLockBody = "VRLP_LockBody";
+	constexpr const char* kKeyholeShape = "VRLP_LockKeyhole";
+	constexpr const char* kRingShape = "VRLP_LockRing";
 
 	std::string ReadText(const fs::path& a_path)
 	{
@@ -221,20 +226,46 @@ namespace
 		return vrlp::ObjectAnchorFromPose(lock, vrlp::Pose{}, 1.0f);  // also cleans up the rotation
 	}
 
-	// Where a marker is, and whether its lock's body was deleted or hidden (only the keyhole shows).
+	// What is left of a marker's lock (parts deleted or hidden): its body -> the whole lock, else
+	// the ring -> the keyhole and its ring, else the keyhole alone. Copies made before the parts
+	// had their own names call the keyhole VRLP_Lock0 and the ring VRLP_Lock1.
+	vrlp::LockShown MarkerShows(nifly::NifFile& a_nif, nifly::NiNode* a_marker)
+	{
+		bool                                          body = false, ring = false, keyhole = false;
+		std::function<void(nifly::NiAVObject*, bool)> walk = [&](nifly::NiAVObject* a_obj, bool a_inBody) {
+			if (!a_obj || (a_obj->flags & 1)) {
+				return;
+			}
+			const std::string name = a_obj->name.get();
+			if (auto* node = dynamic_cast<nifly::NiNode*>(a_obj)) {
+				for (auto* child : a_nif.GetChildren<nifly::NiAVObject>(node)) {
+					walk(child, a_inBody || name == kLockBody);
+				}
+				return;
+			}
+			if (!dynamic_cast<nifly::NiShape*>(a_obj) || !name.starts_with("VRLP_Lock") || name == "VRLP_LockMarker") {
+				return;
+			}
+			if (a_inBody) {
+				body = true;
+			} else if (name.starts_with(kKeyholeShape) || name == "VRLP_Lock0") {
+				keyhole = true;
+			} else {
+				ring = true;
+			}
+		};
+		walk(a_marker, false);
+		if (body || (!ring && !keyhole)) {
+			return vrlp::LockShown::kWhole;  // all of it, or a marker without the lock model
+		}
+		return ring ? vrlp::LockShown::kRing : vrlp::LockShown::kKeyhole;
+	}
+
+	// Where a marker is, and how much of its lock is left.
 	vrlp::ObjectAnchor MarkerAnchor(nifly::NifFile& a_nif, nifly::NiNode* a_marker)
 	{
 		vrlp::ObjectAnchor a = FromNif(a_marker->GetTransformToParent());
-		bool               lockShown = false;
-		nifly::NiNode*     body = nullptr;
-		for (auto* child : a_nif.GetChildren<nifly::NiAVObject>(a_marker)) {
-			const std::string name = child->name.get();
-			if (name == kLockBody) {
-				body = dynamic_cast<nifly::NiNode*>(child);
-			}
-			lockShown = lockShown || (name.starts_with("VRLP_Lock") && name != "VRLP_LockMarker");
-		}
-		a.keyholeOnly = lockShown && (!body || (body->flags & 1) || a_nif.GetChildren<nifly::NiShape>(body).empty());
+		a.shown = MarkerShows(a_nif, a_marker);
 		return a;
 	}
 
@@ -251,12 +282,16 @@ namespace
 		return out;
 	}
 
-	// Where the markers are: the first one, and the second as the door's other side.
-	std::optional<vrlp::ObjectAnchor> MarkersAnchor(nifly::NifFile& a_nif, const std::string& a_key)
+	// Where the markers are: the first one, and the second as the door's other side. No marker
+	// left: no lock on this model.
+	vrlp::ObjectAnchor MarkersAnchor(nifly::NifFile& a_nif, const std::string& a_key)
 	{
 		const auto markers = Markers(a_nif);
 		if (markers.empty()) {
-			return std::nullopt;
+			vrlp::ObjectAnchor none;
+			none.valid = true;
+			none.shown = vrlp::LockShown::kNone;
+			return none;
 		}
 		for (auto* node : markers) {
 			if (a_nif.GetParentNode(node) != a_nif.GetRootNode()) {
@@ -269,7 +304,7 @@ namespace
 		vrlp::ObjectAnchor a = MarkerAnchor(a_nif, markers[0]);
 		if (markers.size() >= 2) {
 			const vrlp::ObjectAnchor b = MarkerAnchor(a_nif, markers[1]);
-			a.back = vrlp::ObjectAnchor::Side{ b.keyhole, b.rot, b.keyholeOnly };
+			a.back = vrlp::ObjectAnchor::Side{ b.keyhole, b.rot, b.shown };
 		}
 		return a;
 	}
@@ -357,9 +392,15 @@ namespace
 	{
 		struct Shape
 		{
+			enum class Role
+			{
+				kBody,     // not the turning part
+				kRing,     // the turning part round the keyhole
+				kKeyhole,  // the turning part's smallest shape(s)
+			};
 			nifly::NiShape*     shape;
 			nifly::MatTransform place;  // in the lock frame
-			bool                body;   // not the turning part (hidden when only the keyhole shows)
+			Role                role;
 		};
 		nifly::NifFile     nif;
 		std::vector<Shape> shapes;
@@ -385,6 +426,7 @@ namespace
 			nifly::MatTransform model;  // shape -> model space
 			bool                shiv;
 			bool                cylinder;
+			float               radius;
 		};
 		std::vector<Found>           found;
 		std::vector<vrlp::MeshPart>  parts;
@@ -431,7 +473,7 @@ namespace
 						} else if (part.radius > 0.0f) {
 							parts.push_back(part);
 						}
-						found.push_back({ shape, xf, shiv, a_cyl });
+						found.push_back({ shape, xf, shiv, a_cyl, part.radius });
 					}
 				}
 			};
@@ -450,10 +492,21 @@ namespace
 			}
 		}
 		place.scale = fit.place.scale;
+		std::vector<float> radii;
 		for (const auto& f : found) {
-			if (!f.shiv) {
-				a_lock.shapes.push_back({ f.shape, place.ComposeTransforms(f.model), !f.cylinder });
+			if (!f.shiv && f.cylinder) {
+				radii.push_back(f.radius);
 			}
+		}
+		const std::vector<bool> keyhole = vrlp::KeyholeShapes(radii);
+		std::size_t             k = 0;
+		for (const auto& f : found) {
+			if (f.shiv) {
+				continue;
+			}
+			using Role = LockModel::Shape::Role;
+			const Role role = !f.cylinder ? Role::kBody : (keyhole[k++] ? Role::kKeyhole : Role::kRing);
+			a_lock.shapes.push_back({ f.shape, place.ComposeTransforms(f.model), role });
 		}
 		a_lock.ok = !a_lock.shapes.empty();
 		std::printf("lock     %s from %s: %zu part(s) shown on the markers\n", key.c_str(), from.c_str(), a_lock.shapes.size());
@@ -461,9 +514,12 @@ namespace
 
 	bool AddMarker(nifly::NifFile& a_nif, const vrlp::ObjectAnchor& a_anchor, LockModel* a_lock = nullptr);
 
-	// The marked side, and a door's other side when it was marked too.
+	// The marked side, and a door's other side when it was marked too; none for no lock on it.
 	bool AddMarkers(nifly::NifFile& a_nif, const vrlp::ObjectAnchor& a_anchor, LockModel* a_lock)
 	{
+		if (a_anchor.shown == vrlp::LockShown::kNone) {
+			return true;
+		}
 		vrlp::ObjectAnchor front = a_anchor;
 		front.back.reset();
 		if (!AddMarker(a_nif, front, a_lock)) {
@@ -475,7 +531,7 @@ namespace
 		vrlp::ObjectAnchor back;
 		back.keyhole = a_anchor.back->keyhole;
 		back.rot = a_anchor.back->rot;
-		back.keyholeOnly = a_anchor.back->keyholeOnly;
+		back.shown = a_anchor.back->shown;
 		back.valid = true;
 		return AddMarker(a_nif, back, a_lock);
 	}
@@ -501,16 +557,19 @@ namespace
 		}
 		a_nif.SetParentNode(shape, node);
 		if (a_lock && a_lock->ok) {
+			using Role = LockModel::Shape::Role;
 			int i = 0;
-			// the lock's body on its own node: delete it to show only the keyhole
-			nifly::NiNode* body = a_anchor.keyholeOnly ? nullptr : a_nif.AddNode(kLockBody, nifly::MatTransform(), node);
+			// the lock's body on its own node: delete it to show only the keyhole and its ring, then
+			// the ring's shapes to show only the keyhole
+			nifly::NiNode* body = a_anchor.shown == vrlp::LockShown::kWhole ? a_nif.AddNode(kLockBody, nifly::MatTransform(), node) : nullptr;
 			for (const auto& s : a_lock->shapes) {
-				if (s.body && !body) {
+				if ((s.role == Role::kBody && !body) || (s.role == Role::kRing && a_anchor.shown == vrlp::LockShown::kKeyhole)) {
 					continue;
 				}
-				if (auto* copy = a_nif.CloneShape(s.shape, std::format("VRLP_Lock{}", i++), &a_lock->nif)) {
+				const char* prefix = s.role == Role::kKeyhole ? kKeyholeShape : (s.role == Role::kRing ? kRingShape : "VRLP_Lock");
+				if (auto* copy = a_nif.CloneShape(s.shape, std::format("{}{}", prefix, i++), &a_lock->nif)) {
 					copy->SetTransformToParent(s.place);
-					a_nif.SetParentNode(copy, s.body ? body : node);
+					a_nif.SetParentNode(copy, s.role == Role::kBody ? body : node);
 				}
 			}
 		}
@@ -571,8 +630,8 @@ namespace
 				++failed;
 				continue;
 			}
-			std::printf("placed   %s (%s, %s%s, locked %d times, from %s)\n", key.c_str(), m.door ? "door" : "container", from, anchor.back ? ", both sides" : "",
-				m.locked, source.c_str());
+			std::printf("placed   %s (%s, %s, %s%s, locked %d times, from %s)\n", key.c_str(), m.door ? "door" : "container", from,
+				vrlp::LockShownName(anchor.shown), anchor.back ? ", both sides" : "", m.locked, source.c_str());
 			++placed;
 		}
 		// the marker alone, to copy into other models
@@ -601,14 +660,12 @@ namespace
 			if (!fs::exists(path) || nif.Load(path) != 0) {
 				continue;
 			}
-			const auto a = MarkersAnchor(nif, key);
-			if (!a) {
-				std::printf("no marker %s\n", key.c_str());
+			const vrlp::ObjectAnchor a = MarkersAnchor(nif, key);
+			if (a.shown == vrlp::LockShown::kNone) {
 				++without;
-				continue;
 			}
-			text = vrlp::WriteObjectAnchor(text, key, *a);
-			std::printf("saved    %s: %s\n", key.c_str(), vrlp::ObjectAnchorText(*a).c_str());
+			text = vrlp::WriteObjectAnchor(text, key, a);
+			std::printf("saved    %s: %s\n", key.c_str(), vrlp::ObjectAnchorText(a).c_str());
 			++saved;
 		}
 		std::ofstream out(a_ini, std::ios::binary | std::ios::trunc);
@@ -617,7 +674,7 @@ namespace
 			std::printf("could not write %s\n", a_ini.string().c_str());
 			return 1;
 		}
-		std::printf("\n%d saved to %s (%d without a marker)\n", saved, a_ini.string().c_str(), without);
+		std::printf("\n%d saved to %s (%d without a marker: no lock on them)\n", saved, a_ini.string().c_str(), without);
 		return 0;
 	}
 

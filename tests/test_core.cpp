@@ -1334,18 +1334,18 @@ TEST(ObjectAnchorBothSidesMarked)
 	door.rot = Mat3::FromColumns({ 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 });
 	door.valid = true;
 	std::string text = WriteObjectAnchor("", "architecture\\orclonghouse\\orcdoor01.nif", door);
-	text = text + "vObjectKeyhole2 = 40, 214, 61\nvObjectInto2 = 0, -1, 0\nvObjectUp2 = 0, 0, 1\nbObjectKeyholeOnly2 = 1\n";
+	text = text + "vObjectKeyhole2 = 40, 214, 61\nvObjectInto2 = 0, -1, 0\nvObjectUp2 = 0, 0, 1\nsObjectLock2 = Ring\n";
 	const ObjectAnchor both = ParseObjectAnchors(text).at("architecture\\orclonghouse\\orcdoor01.nif");
 	CHECK(both.back.has_value());
-	CHECK(!both.keyholeOnly && both.back->keyholeOnly);
+	CHECK(both.shown == LockShown::kWhole && both.back->shown == LockShown::kRing);
 	// the other side is the one marked there, and back again
 	const ObjectAnchor other = OtherSide(both, lo, hi);
 	CHECK_NEAR(Distance(other.keyhole, { 40, 214, 61 }), 0.0, 1e-4);
 	CHECK_NEAR(Dot(other.rot.Column(1), Vec3{ 0, -1, 0 }), 1.0, 1e-4);
-	CHECK(other.keyholeOnly);
+	CHECK(other.shown == LockShown::kRing);
 	const ObjectAnchor again = OtherSide(other, lo, hi);
 	CHECK_NEAR(Distance(again.keyhole, both.keyhole), 0.0, 1e-4);
-	CHECK(!again.keyholeOnly);
+	CHECK(again.shown == LockShown::kWhole);
 
 	// the lock you stand in front of: the marked one is read from smaller Y, the other from larger
 	Pose object;
@@ -1401,29 +1401,57 @@ TEST(ObjectAnchorPlacementRoundTrip)
 	if (it != all.end()) {
 		CHECK_NEAR(Distance(it->second.keyhole, a.keyhole), 0.0, 2e-3);
 		CHECK_NEAR(Dot(it->second.rot.Column(0), a.rot.Column(0)), 1.0, 1e-4);
-		CHECK(!it->second.keyholeOnly);
+		CHECK(it->second.shown == LockShown::kWhole);
 	}
 	// only the keyhole on this one: saved over the same section, and kept by the other side
 	ObjectAnchor small = a;
-	small.keyholeOnly = true;
+	small.shown = LockShown::kKeyhole;
 	const auto smallBack = ParseObjectAnchors(WriteObjectAnchor(text, "clutter\\containers\\chest01.nif", small));
-	CHECK(smallBack.size() == 1 && smallBack.begin()->second.keyholeOnly);
-	CHECK(OtherSide(small, { -40, -25, 0 }, { 40, 25, 50 }).keyholeOnly);
-	CHECK(ParseObjectAnchors("[a.nif]\nvObjectKeyhole = 1, 2, 3\nbObjectKeyholeOnly = TRUE\n").at("a.nif").keyholeOnly);
+	CHECK(smallBack.size() == 1 && smallBack.begin()->second.shown == LockShown::kKeyhole);
+	CHECK(OtherSide(small, { -40, -25, 0 }, { 40, 25, 50 }).shown == LockShown::kKeyhole);
+	CHECK(ParseObjectAnchors("[a.nif]\nvObjectKeyhole = 1, 2, 3\nsObjectLock = KEYHOLE\n").at("a.nif").shown == LockShown::kKeyhole);
+	// anything else: the whole lock
+	CHECK(ParseObjectAnchors("[a.nif]\nvObjectKeyhole = 1, 2, 3\nsObjectLock = half\n").at("a.nif").shown == LockShown::kWhole);
+	// no lock on this one: needs no place, and saves none
+	const auto none = ParseObjectAnchors("[b.nif]\nsObjectLock = none\n");
+	CHECK(none.size() == 1 && none.at("b.nif").shown == LockShown::kNone);
+	ObjectAnchor off;
+	off.valid = true;
+	off.shown = LockShown::kNone;
+	CHECK(ObjectAnchorText(off) == "sObjectLock = none");
+	CHECK(ParseObjectAnchors(WriteObjectAnchor(text, "clutter\\containers\\chest01.nif", off)).at("clutter\\containers\\chest01.nif").shown == LockShown::kNone);
+	CHECK(ParseObjectAnchors("[c.nif]\nsObjectLock = ring\n").empty());  // a lock needs a place
+	for (const LockShown s : { LockShown::kWhole, LockShown::kRing, LockShown::kKeyhole, LockShown::kNone }) {
+		LockShown back = LockShown::kWhole;
+		CHECK(ParseLockShown(LockShownName(s), back) && back == s);
+	}
 	CHECK(ObjectAnchorText(a).find("vObjectKeyhole = 12.000, -30.000, 41.000") != std::string::npos);
 	for (const auto& [model, d] : DefaultObjectAnchors()) {
 		CHECK(d.valid);
 		CHECK_NEAR(Dot(Cross(d.rot.Column(0), d.rot.Column(1)), d.rot.Column(2)), 1.0, 1e-4);
 	}
 	// the built-in ones are found by the path the game gives, whatever its case
-	CHECK(DefaultObjectAnchors().size() == 18);
+	CHECK(DefaultObjectAnchors().size() == 20);
 	const auto& farm = DefaultObjectAnchors().at(NormalizeModelPath("Meshes\\Architecture\\Farmhouse\\FarmhouseDoor01.nif"));
-	CHECK(farm.keyholeOnly);
+	CHECK(farm.shown == LockShown::kRing);
+	CHECK(DefaultObjectAnchors().at("clutter\\nightmother\\nmcoffin01.nif").shown == LockShown::kNone);
 	CHECK_NEAR(farm.keyhole.z, 83.0, 1e-3);
 	// a trapdoor's lock looks down into it
 	const auto& trap = DefaultObjectAnchors().at(NormalizeModelPath("architecture\\farmhouse\\interior\\basement\\farmbtrapdoor02.nif"));
-	CHECK(!trap.keyholeOnly);
+	CHECK(trap.shown == LockShown::kWhole);
 	CHECK_NEAR(trap.rot.Column(1).z, -1.0, 1e-4);
+}
+
+TEST(KeyholeAmongTheTurningPart)
+{
+	// the vanilla lock's turning part: the keyhole and the ring round it
+	CHECK((KeyholeShapes({ 16.87f, 23.07f }) == std::vector<bool>{ true, false }));
+	// Lock Variations' Dwemer lock: a gear, the inlay and the keyhole
+	CHECK((KeyholeShapes({ 32.77f, 22.43f, 14.72f }) == std::vector<bool>{ false, false, true }));
+	// two keyhole pieces of about the same size both stay
+	CHECK((KeyholeShapes({ 112.47f, 14.13f, 15.03f }) == std::vector<bool>{ false, true, true }));
+	CHECK((KeyholeShapes({ 0.0f, 5.0f }) == std::vector<bool>{ false, true }));
+	CHECK(KeyholeShapes({}).empty());
 }
 
 namespace

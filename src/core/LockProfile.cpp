@@ -269,25 +269,70 @@ namespace vrlp
 		// a_clearBack: a back side saved before is gone (its keys are emptied)
 		std::vector<IniValue> AnchorValues(const std::string& a_section, const ObjectAnchor& a_a, bool a_clearBack = false)
 		{
+			if (a_a.shown == LockShown::kNone) {
+				return { { a_section, "sObjectLock", LockShownName(a_a.shown) } };
+			}
 			std::vector<IniValue> out = {
 				{ a_section, "vObjectKeyhole", AnchorVecText(a_a.keyhole) },
 				{ a_section, "vObjectInto", AnchorVecText(a_a.rot.Column(1)) },
 				{ a_section, "vObjectUp", AnchorVecText(a_a.rot.Column(2)) },
-				{ a_section, "bObjectKeyholeOnly", a_a.keyholeOnly ? "1" : "0" },
+				{ a_section, "sObjectLock", LockShownName(a_a.shown) },
 			};
 			if (a_a.back) {
 				const auto& b = *a_a.back;
 				out.push_back({ a_section, "vObjectKeyhole2", AnchorVecText(b.keyhole) });
 				out.push_back({ a_section, "vObjectInto2", AnchorVecText(b.rot.Column(1)) });
 				out.push_back({ a_section, "vObjectUp2", AnchorVecText(b.rot.Column(2)) });
-				out.push_back({ a_section, "bObjectKeyholeOnly2", b.keyholeOnly ? "1" : "0" });
+				out.push_back({ a_section, "sObjectLock2", LockShownName(b.shown) });
 			} else if (a_clearBack) {
-				for (const char* key : { "vObjectKeyhole2", "vObjectInto2", "vObjectUp2", "bObjectKeyholeOnly2" }) {
+				for (const char* key : { "vObjectKeyhole2", "vObjectInto2", "vObjectUp2", "sObjectLock2" }) {
 					out.push_back({ a_section, key, "" });
 				}
 			}
 			return out;
 		}
+	}
+
+	const char* LockShownName(LockShown a_shown)
+	{
+		switch (a_shown) {
+		case LockShown::kRing:
+			return "ring";
+		case LockShown::kKeyhole:
+			return "keyhole";
+		case LockShown::kNone:
+			return "none";
+		default:
+			return "whole";
+		}
+	}
+
+	bool ParseLockShown(const std::string& a_text, LockShown& a_out)
+	{
+		std::string v = a_text;
+		std::transform(v.begin(), v.end(), v.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+		for (const LockShown s : { LockShown::kWhole, LockShown::kRing, LockShown::kKeyhole, LockShown::kNone }) {
+			if (v == LockShownName(s)) {
+				a_out = s;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	std::vector<bool> KeyholeShapes(const std::vector<float>& a_radii)
+	{
+		float smallest = 0.0f;
+		for (const float r : a_radii) {
+			if (r > 0.0f && (smallest <= 0.0f || r < smallest)) {
+				smallest = r;
+			}
+		}
+		std::vector<bool> out;
+		for (const float r : a_radii) {
+			out.push_back(smallest > 0.0f && r > 0.0f && r <= smallest * 1.15f);
+		}
+		return out;
 	}
 
 	ObjectAnchor GuessObjectAnchor(const Vec3& a_min, const Vec3& a_max, bool a_door)
@@ -335,8 +380,8 @@ namespace vrlp
 			ObjectAnchor a = a_anchor;
 			a.keyhole = a_anchor.back->keyhole;
 			a.rot = a_anchor.back->rot;
-			a.keyholeOnly = a_anchor.back->keyholeOnly;
-			a.back = ObjectAnchor::Side{ a_anchor.keyhole, a_anchor.rot, a_anchor.keyholeOnly };
+			a.shown = a_anchor.back->shown;
+			a.back = ObjectAnchor::Side{ a_anchor.keyhole, a_anchor.rot, a_anchor.shown };
 			return a;
 		}
 		ObjectAnchor a = a_anchor;
@@ -367,8 +412,9 @@ namespace vrlp
 		struct Raw
 		{
 			Vec3 keyhole, into{ 0, 1, 0 }, up{ 0, 0, 1 };
-			bool valid{ false };
-			bool keyholeOnly{ false };
+			bool      valid{ false };
+			bool      hasShown{ false };
+			LockShown shown{ LockShown::kWhole };
 		};
 		// [0] the marked side, [1] a door's other side (the keys ending in 2)
 		std::map<std::string, std::array<Raw, 2>> raw;
@@ -382,16 +428,14 @@ namespace vrlp
 			if (side == 1) {
 				name.pop_back();
 			}
-			if (name != "vobjectkeyhole" && name != "vobjectinto" && name != "vobjectup" && name != "bobjectkeyholeonly") {
+			if (name != "vobjectkeyhole" && name != "vobjectinto" && name != "vobjectup" && name != "sobjectlock") {
 				continue;
 			}
 			Raw& r = raw[NormalizeModelPath(key.substr(0, dot))][side];
 			if (name == "vobjectkeyhole") {
 				r.valid = ParseVec(value, r.keyhole);
-			} else if (name == "bobjectkeyholeonly") {
-				std::string v = value;
-				std::transform(v.begin(), v.end(), v.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-				r.keyholeOnly = v == "1" || v == "true" || v == "yes" || v == "on";
+			} else if (name == "sobjectlock") {
+				r.hasShown = ParseLockShown(value, r.shown);
 			} else if (name == "vobjectinto") {
 				ParseVec(value, r.into);
 			} else {
@@ -401,12 +445,14 @@ namespace vrlp
 		std::map<std::string, ObjectAnchor> out;
 		for (const auto& [model, sides] : raw) {
 			const Raw& r = sides[0];
-			if (!r.valid) {
+			// "none" needs no place
+			const bool none = r.hasShown && r.shown == LockShown::kNone;
+			if (!r.valid && !none) {
 				continue;
 			}
-			ObjectAnchor a{ r.keyhole, LockAxes(r.into, r.up), true, r.keyholeOnly };
-			if (const Raw& b = sides[1]; b.valid) {
-				a.back = ObjectAnchor::Side{ b.keyhole, LockAxes(b.into, b.up), b.keyholeOnly };
+			ObjectAnchor a{ r.keyhole, LockAxes(r.into, r.up), true, r.shown };
+			if (const Raw& b = sides[1]; b.valid && !none) {
+				a.back = ObjectAnchor::Side{ b.keyhole, LockAxes(b.into, b.up), b.shown == LockShown::kNone ? LockShown::kWhole : b.shown };
 			}
 			out[model] = a;
 		}
@@ -434,97 +480,102 @@ namespace vrlp
 	const std::map<std::string, ObjectAnchor>& DefaultObjectAnchors()
 	{
 		// Lined up in NifSkope with tools/lockplacer (or in game with the markup tool, the "Lock on"
-		// lines of the log).
+		// lines of the log). "none": locked in the game's plugins, but nothing there looks pickable
+		// (the Night Mother's coffin, Apocrypha's urns).
 		static const std::string                         kText = R"([architecture\farmhouse\farmhousedoor01.nif]
 vObjectKeyhole = -40.000, -4.200, 83.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 1
+sObjectLock = ring
 [architecture\farmhouse\farmhouseldoor01.nif]
 vObjectKeyhole = -40.000, -4.500, 83.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 1
+sObjectLock = ring
 [architecture\farmhouse\interior\basement\farmbtrapdoor02.nif]
 vObjectKeyhole = 0.000, 32.000, 16.300
 vObjectInto = 0.000, 0.000, -1.000
 vObjectUp = -1.000, 0.000, 0.000
-bObjectKeyholeOnly = 0
+sObjectLock = whole
 [architecture\farmhouse\interior\basement\farmhousejaildoor01.nif]
 vObjectKeyhole = -38.500, -1.200, 86.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 1
+sObjectLock = ring
 [architecture\orclonghouse\orcdoor01.nif]
 vObjectKeyhole = 42.000, 203.000, 62.000
 vObjectInto = 0.000, -1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 0
+sObjectLock = whole
 [architecture\orclonghouse\orcdoorload01.nif]
 vObjectKeyhole = -41.920, -2.000, 62.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 0
+sObjectLock = whole
 [architecture\riften\riftendoor01.nif]
 vObjectKeyhole = 10.000, 5.000, 76.000
 vObjectInto = 0.000, -1.000, 0.000
 vObjectUp = -0.000, 0.000, 1.000
-bObjectKeyholeOnly = 0
+sObjectLock = whole
 [architecture\riften\riftendoor02.nif]
 vObjectKeyhole = -6.000, -4.300, 88.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 0
+sObjectLock = whole
 [architecture\riften\rtirongate01.nif]
 vObjectKeyhole = -52.300, -6.200, 82.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 1
+sObjectLock = ring
 [architecture\riften\rtirongate02.nif]
 vObjectKeyhole = -52.400, -6.000, 82.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 1
+sObjectLock = ring
 [architecture\riften\rtmarketstalldoor01.nif]
 vObjectKeyhole = -43.500, -39.500, 29.300
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 1
+sObjectLock = ring
 [architecture\solitude\doors\sdoorjail01.nif]
 vObjectKeyhole = 2.700, 77.000, 3.100
 vObjectInto = 0.000, 0.000, -1.000
 vObjectUp = -0.000, 1.000, 0.000
-bObjectKeyholeOnly = 1
+sObjectLock = ring
 [architecture\solitude\doors\shousedoor01.nif]
 vObjectKeyhole = 1.700, 9.560, -63.000
 vObjectInto = 1.000, 0.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 0
+sObjectLock = whole
 [architecture\solitude\doors\shousedoor02.nif]
 vObjectKeyhole = -10.560, -2.300, -5.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 1
+sObjectLock = ring
 [architecture\solitude\doors\shousedoor03.nif]
 vObjectKeyhole = 9.300, -29.300, 85.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 1
+sObjectLock = ring
 [architecture\whiterun\wrdoor02.nif]
 vObjectKeyhole = -7.500, -6.280, 54.000
 vObjectInto = 1.000, 0.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 1
+sObjectLock = ring
 [architecture\whiterun\wrinteriors\wrdungeon\wrprisoncellfloorgrate01door.nif]
 vObjectKeyhole = -3.000, 44.280, 3.500
 vObjectInto = 0.000, -0.000, -1.000
 vObjectUp = 1.000, 0.000, 0.000
-bObjectKeyholeOnly = 0
+sObjectLock = whole
 [architecture\whiterun\wrinteriors\wrjaildoor01.nif]
 vObjectKeyhole = 58.500, -2.800, -18.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-bObjectKeyholeOnly = 0
+sObjectLock = whole
+[clutter\nightmother\nmcoffin01.nif]
+sObjectLock = none
+[dlc02\dungeons\apocrypha\animated\apourn\apourn01.nif]
+sObjectLock = none
 )";
 		static const std::map<std::string, ObjectAnchor> kAnchors = ParseObjectAnchors(kText);
 		return kAnchors;

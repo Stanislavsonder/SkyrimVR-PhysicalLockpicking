@@ -15,7 +15,8 @@
 //
 // The marker is a node named VRLP_Lock under the model's root: its origin is the keyhole, +Y
 // points into the door or chest, +Z is up. Move and turn it with NifSkope's Transform > Edit.
-// A second VRLP_Lock (a copy of the first) marks a door's other side (vObjectKeyhole2 ...).
+// A second VRLP_Lock (a copy of the first) marks a door's other side (vObjectKeyhole2 ...). NifSkope
+// renames a pasted copy when it saves; read finds it by its shapes and names it back.
 // What is left of the lock on a marker is what the game draws (sObjectLock): the body node
 // VRLP_LockBody deleted -> the keyhole and its ring; VRLP_LockRing* deleted too -> the keyhole
 // alone. A copy with its marker deleted gets no lock on the model (the lock stays in front of you).
@@ -33,6 +34,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "Bsa.h"
@@ -280,6 +282,76 @@ namespace
 			}
 		}
 		return out;
+	}
+
+	// NifSkope gives a pasted copy of the marker new names when it saves ("<root>:53", ":54" ...), so
+	// a copy is found by its shapes instead: a node right under the root whose shapes all have the
+	// geometry of the marker's. Its parts get the marker's names back, the copy itself VRLP_Lock.
+	int RenameMarkerCopies(nifly::NifFile& a_nif)
+	{
+		const auto markers = Markers(a_nif);
+		auto*      root = a_nif.GetRootNode();
+		if (markers.empty() || !root) {
+			return 0;
+		}
+		using Geometry = std::tuple<uint16_t, float, float, float, float>;
+		auto geometry = [](nifly::NiShape* a_shape) {
+			const auto b = a_shape->GetBounds();
+			return Geometry{ a_shape->GetNumVertices(), b.center.x, b.center.y, b.center.z, b.radius };
+		};
+		std::function<void(nifly::NiAVObject*, std::vector<nifly::NiAVObject*>&)> collect = [&](nifly::NiAVObject* a_obj, std::vector<nifly::NiAVObject*>& a_out) {
+			a_out.push_back(a_obj);
+			if (auto* node = dynamic_cast<nifly::NiNode*>(a_obj)) {
+				for (auto* child : a_nif.GetChildren<nifly::NiAVObject>(node)) {
+					collect(child, a_out);
+				}
+			}
+		};
+		// the marker's shapes by their geometry
+		std::map<Geometry, nifly::NiShape*> marked;
+		std::vector<nifly::NiAVObject*>     inMarker;
+		collect(markers[0], inMarker);
+		for (auto* obj : inMarker) {
+			if (auto* shape = dynamic_cast<nifly::NiShape*>(obj)) {
+				marked.emplace(geometry(shape), shape);
+			}
+		}
+		int renamed = 0;
+		for (auto* top : a_nif.GetChildren<nifly::NiNode>(root)) {
+			if (top->name.get() == kMarker) {
+				continue;
+			}
+			std::vector<nifly::NiAVObject*> parts;
+			collect(top, parts);
+			std::vector<std::pair<nifly::NiShape*, nifly::NiShape*>> same;  // the copy's shape, the marker's
+			bool                                                     all = true;
+			for (auto* obj : parts) {
+				if (auto* shape = dynamic_cast<nifly::NiShape*>(obj)) {
+					const auto it = marked.find(geometry(shape));
+					all = all && it != marked.end();
+					if (it != marked.end()) {
+						same.emplace_back(shape, it->second);
+					}
+				}
+			}
+			if (!all || same.empty()) {
+				continue;
+			}
+			for (auto [copy, from] : same) {
+				copy->name.get() = from->name.get();
+				// the nodes between the shape and the copy take the names of the marker's nodes
+				auto* c = a_nif.GetParentNode(copy);
+				auto* f = a_nif.GetParentNode(from);
+				while (c && f && c != top && f != markers[0]) {
+					c->name.get() = f->name.get();
+					c = a_nif.GetParentNode(c);
+					f = a_nif.GetParentNode(f);
+				}
+			}
+			top->name.get() = kMarker;
+			++renamed;
+		}
+		return renamed;
 	}
 
 	// Where the markers are: the first one, and the second as the door's other side. No marker
@@ -591,6 +663,7 @@ namespace
 			if (fs::exists(out)) {
 				nifly::NifFile existing;
 				if (existing.Load(out) == 0) {
+					RenameMarkerCopies(existing);
 					moved = MarkersAnchor(existing, key);
 				}
 			}
@@ -659,6 +732,11 @@ namespace
 			nifly::NifFile    nif;
 			if (!fs::exists(path) || nif.Load(path) != 0) {
 				continue;
+			}
+			if (const int copies = RenameMarkerCopies(nif)) {
+				const bool kept = nif.Save(path) == 0;
+				std::printf("renamed  %s: %d copy of the marker had lost its names in NifSkope; %s\n", key.c_str(), copies,
+					kept ? "they are back in the file" : "could not save them into the file, read anyway");
 			}
 			const vrlp::ObjectAnchor a = MarkersAnchor(nif, key);
 			if (a.shown == vrlp::LockShown::kNone) {

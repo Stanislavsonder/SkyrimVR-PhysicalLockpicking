@@ -1419,7 +1419,12 @@ TEST(ObjectAnchorPlacementRoundTrip)
 	off.valid = true;
 	off.shown = LockShown::kNone;
 	CHECK(ObjectAnchorText(off) == "sObjectLock = none");
-	CHECK(ParseObjectAnchors(WriteObjectAnchor(text, "clutter\\containers\\chest01.nif", off)).at("clutter\\containers\\chest01.nif").shown == LockShown::kNone);
+	const std::string offText = WriteObjectAnchor(text, "clutter\\containers\\chest01.nif", off);
+	CHECK(ParseObjectAnchors(offText).at("clutter\\containers\\chest01.nif").shown == LockShown::kNone);
+	// the place it had before is emptied, not left behind
+	CHECK(offText.find("vObjectKeyhole=12.000") == std::string::npos && offText.find("vObjectInto=") != std::string::npos);
+	CHECK(ParseIni(offText).at("clutter\\containers\\chest01.nif.vobjectkeyhole").empty());
+	CHECK(WriteObjectAnchor("", "b.nif", off).find("vObject") == std::string::npos);
 	CHECK(ParseObjectAnchors("[c.nif]\nsObjectLock = ring\n").empty());  // a lock needs a place
 	for (const LockShown s : { LockShown::kWhole, LockShown::kRing, LockShown::kKeyhole, LockShown::kNone }) {
 		LockShown back = LockShown::kWhole;
@@ -1431,14 +1436,20 @@ TEST(ObjectAnchorPlacementRoundTrip)
 		CHECK_NEAR(Dot(Cross(d.rot.Column(0), d.rot.Column(1)), d.rot.Column(2)), 1.0, 1e-4);
 	}
 	// the built-in ones are found by the path the game gives, whatever its case
-	CHECK(DefaultObjectAnchors().size() == 20);
+	CHECK(DefaultObjectAnchors().size() == 88);
 	const auto& farm = DefaultObjectAnchors().at(NormalizeModelPath("Meshes\\Architecture\\Farmhouse\\FarmhouseDoor01.nif"));
-	CHECK(farm.shown == LockShown::kRing);
-	CHECK(DefaultObjectAnchors().at("clutter\\nightmother\\nmcoffin01.nif").shown == LockShown::kNone);
+	CHECK(farm.shown == LockShown::kKeyhole);
 	CHECK_NEAR(farm.keyhole.z, 83.0, 1e-3);
+	// both sides of this door marked, each facing into it
+	CHECK(farm.back && farm.back->shown == LockShown::kKeyhole);
+	CHECK(farm.back && Dot(farm.rot.Column(1), farm.back->rot.Column(1)) < -0.99f);
+	// nothing to pick, or out of reach: in front of you
+	for (const char* model : { "clutter\\nightmother\\nmcoffin01.nif", "dungeons\\imperial\\door\\trapdoorladder01.nif", "traps\\hingetrap\\traphingetrigger01.nif" }) {
+		CHECK(DefaultObjectAnchors().at(model).shown == LockShown::kNone);
+	}
 	// a trapdoor's lock looks down into it
 	const auto& trap = DefaultObjectAnchors().at(NormalizeModelPath("architecture\\farmhouse\\interior\\basement\\farmbtrapdoor02.nif"));
-	CHECK(trap.shown == LockShown::kWhole);
+	CHECK(trap.shown == LockShown::kRing);
 	CHECK_NEAR(trap.rot.Column(1).z, -1.0, 1e-4);
 }
 

@@ -456,7 +456,7 @@ TEST(WalkingAwayCancels)
 	const LockFrame f = MakeLockFrame(Hmd(), c);
 	LockSession     s(SimpleParams(0, 10), f, c, f.Basis(), f.Basis());
 	FrameInput      in = MakeInput(f, c, 0.0f, 0.0f, false);
-	in.hmd.pos = { 0, -200, 120 };
+	in.hmd.pos = { 0, -400, 120 };
 	CHECK(Has(s.Update(in), SessionEvent::kCancelled));
 }
 
@@ -1305,30 +1305,68 @@ TEST(ObjectAnchorGuessAndOtherSide)
 	CHECK_NEAR(Dot(side.rot.Column(1), Vec3{ 1, 0, 0 }), 1.0, 1e-4);
 	CHECK(side.keyhole.y < -80.0f);
 	CHECK(side.keyhole.x < -3.0f);
-	// the other side: through the door, facing back; twice = the same
-	const ObjectAnchor back = OtherSide(door, { 0, -4, 0 }, { 90, 4, 180 });
-	CHECK_NEAR(back.keyhole.x, door.keyhole.x, 1e-4);
-	CHECK_NEAR(back.keyhole.y, -door.keyhole.y, 1e-4);
-	CHECK_NEAR(Dot(back.rot.Column(1), Vec3{ 0, -1, 0 }), 1.0, 1e-4);
-	CHECK_NEAR(Dot(Cross(back.rot.Column(0), back.rot.Column(1)), back.rot.Column(2)), 1.0, 1e-4);  // still a rotation
-	const ObjectAnchor again = OtherSide(back, { 0, -4, 0 }, { 90, 4, 180 });
-	CHECK_NEAR(Distance(again.keyhole, door.keyhole), 0.0, 1e-4);
-	CHECK_NEAR(Dot(again.rot.Column(0), door.rot.Column(0)), 1.0, 1e-4);
+	// one side marked: no lock on the other, whichever side you stand
+	const ObjectAnchor same = OtherSide(door);
+	CHECK_NEAR(Distance(same.keyhole, door.keyhole), 0.0, 1e-4);
+	CHECK(!UseOtherSide(door, Pose{}, 1.0f, { 80, 400, 120 }));
+	CHECK(!UseOtherSide(door, Pose{}, 1.0f, { 80, -400, 120 }));
 	// a trapdoor hinged at its origin, lying flat: on top, near the free edge, facing down
 	const ObjectAnchor trap = GuessObjectAnchor({ -50, 0, -4 }, { 50, 120, 4 }, true);
 	CHECK(trap.keyhole.y > 100.0f && trap.keyhole.y < 120.0f);
 	CHECK(trap.keyhole.z > 4.0f && trap.keyhole.z < 5.0f);
 	CHECK_NEAR(Dot(trap.rot.Column(1), Vec3{ 0, 0, -1 }), 1.0, 1e-4);
 	CHECK_NEAR(Dot(trap.rot.Column(2), Vec3{ 0, -1, 0 }), 1.0, 1e-4);
-	const ObjectAnchor below = OtherSide(trap, { -50, 0, -4 }, { 50, 120, 4 });
-	CHECK(below.keyhole.z < -4.0f);
-	CHECK_NEAR(Dot(below.rot.Column(1), Vec3{ 0, 0, 1 }), 1.0, 1e-4);
+}
+
+TEST(TestCopiesStandAsInTheGame)
+{
+	// the game's turn: +Y of a model turned by z points at (sin z, cos z)
+	const Mat3 yaw = RefRotation({ 0, 0, 0.5f });
+	CHECK_NEAR(Distance(yaw * Vec3{ 0, 1, 0 }, { std::sin(0.5f), std::cos(0.5f), 0 }), 0.0, 1e-5);
+	// angles -> turn -> the same angles
+	for (const Vec3 a : { Vec3{ 0.3f, -0.4f, 2.0f }, Vec3{ -1.2f, 0.1f, -2.5f }, Vec3{ kPi / 2, 0, 0 } }) {
+		const Mat3 r = RefRotation(a);
+		const Mat3 again = RefRotation(RefAngles(r));
+		for (int c = 0; c < 3; ++c) {
+			CHECK_NEAR(Dot(r.Column(c), again.Column(c)), 1.0, 1e-4);
+		}
+	}
+
+	// a chest standing as modelled: turned so its lock (on its -Y face) faces you, bottom on the floor
+	const Vec3   lo{ -40, -25, 10 }, hi{ 40, 25, 60 };
+	ObjectAnchor chest = GuessObjectAnchor(lo, hi, false);
+	const Vec3   away{ 1, 0, 0 };  // you stand at -X of it
+	StandPose    stand = StandFacing(chest, lo, hi, {}, away);
+	Mat3         r = RefRotation(stand.angles);
+	CHECK(Dot(r * chest.rot.Column(1), away) > 0.999f);
+	CHECK_NEAR((r * lo).z + stand.offset.z, 0.0, 1e-3);
+	CHECK_NEAR(Length(Vec3{ (r * ((lo + hi) * 0.5f)).x + stand.offset.x, (r * ((lo + hi) * 0.5f)).y + stand.offset.y, 0 }), 0.0, 1e-3);
+
+	// a door modelled lying down (its height along -Y), stood up by the game's reference: kept
+	// standing, turned to you, and above the floor
+	const Vec3   dlo{ 0, -180, -4 }, dhi{ 90, 0, 4 };
+	ObjectAnchor door;
+	door.keyhole = { 80, -64, -4 };
+	door.rot = Mat3::FromColumns({ 1, 0, 0 }, { 0, 0, 1 }, { 0, -1, 0 });  // right, into (+Z), up (-Y)
+	door.valid = true;
+	const Vec3 tilt{ kPi / 2, 0, 0 };
+	CHECK(RefRotation(tilt).Column(1).z < -0.999f);  // the game's turn stands it up: model -Y is up
+	stand = StandFacing(door, dlo, dhi, tilt, { 0, 1, 0 });
+	r = RefRotation(stand.angles);
+	CHECK(r.Column(1).z < -0.999f);  // still standing
+	CHECK(Dot(r * door.rot.Column(1), Vec3{ 0, 1, 0 }) > 0.999f);
+	float bottom = 1e9f;
+	for (const Vec3 c : { dlo, dhi, Vec3{ dlo.x, dhi.y, dlo.z }, Vec3{ dhi.x, dlo.y, dhi.z } }) {
+		bottom = std::min(bottom, (r * c).z);
+	}
+	CHECK_NEAR(bottom + stand.offset.z, 0.0, 1e-3);
+	// as wide on the floor as its diagonal there, however it turns
+	CHECK_NEAR(StandWidth(dlo, dhi, tilt), std::hypot(90.0f, 8.0f), 1e-2);
 }
 
 TEST(ObjectAnchorBothSidesMarked)
 {
-	// a door whose bounds take in its frame: the mirror would be far off, so its other side is marked
-	const Vec3   lo{ -60, 192, 0 }, hi{ 57, 319, 181 };
+	// a door whose bounds take in its frame, both sides marked
 	ObjectAnchor door;
 	door.keyhole = { 42, 192, 62 };
 	door.rot = Mat3::FromColumns({ 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 });
@@ -1339,31 +1377,31 @@ TEST(ObjectAnchorBothSidesMarked)
 	CHECK(both.back.has_value());
 	CHECK(both.shown == LockShown::kWhole && both.back->shown == LockShown::kRing);
 	// the other side is the one marked there, and back again
-	const ObjectAnchor other = OtherSide(both, lo, hi);
+	const ObjectAnchor other = OtherSide(both);
 	CHECK_NEAR(Distance(other.keyhole, { 40, 214, 61 }), 0.0, 1e-4);
 	CHECK_NEAR(Dot(other.rot.Column(1), Vec3{ 0, -1, 0 }), 1.0, 1e-4);
 	CHECK(other.shown == LockShown::kRing);
-	const ObjectAnchor again = OtherSide(other, lo, hi);
+	const ObjectAnchor again = OtherSide(other);
 	CHECK_NEAR(Distance(again.keyhole, both.keyhole), 0.0, 1e-4);
 	CHECK(again.shown == LockShown::kWhole);
 
 	// the lock you stand in front of: the marked one is read from smaller Y, the other from larger
 	Pose object;
-	CHECK(!UseOtherSide(both, lo, hi, object, 1.0f, { 42, 150, 120 }));
-	CHECK(UseOtherSide(both, lo, hi, object, 1.0f, { 40, 260, 120 }));
+	CHECK(!UseOtherSide(both, object, 1.0f, { 42, 150, 120 }));
+	CHECK(UseOtherSide(both, object, 1.0f, { 40, 260, 120 }));
 	// turned and moved in the world: the same
 	object.rot = AxisAngle({ 0, 0, 1 }, 1.2f);
 	object.pos = { 500, -300, 20 };
-	CHECK(UseOtherSide(both, lo, hi, object, 1.0f, object.pos + object.rot * Vec3{ 40, 260, 120 }));
+	CHECK(UseOtherSide(both, object, 1.0f, object.pos + object.rot * Vec3{ 40, 260, 120 }));
 	// in front of both (or neither): the nearer one
 	ObjectAnchor odd = both;
 	odd.back->rot = door.rot;
 	odd.back->keyhole = { 40, 240, 61 };
-	CHECK(UseOtherSide(odd, lo, hi, Pose{}, 1.0f, { 40, 300, 120 }));
-	CHECK(!UseOtherSide(odd, lo, hi, Pose{}, 1.0f, { 40, 150, 120 }));
-	// only one side marked: the mirror, as before
-	CHECK(UseOtherSide(door, lo, hi, Pose{}, 1.0f, { 42, 400, 120 }));
-	CHECK(!UseOtherSide(door, lo, hi, Pose{}, 1.0f, { 42, 100, 120 }));
+	CHECK(UseOtherSide(odd, Pose{}, 1.0f, { 40, 300, 120 }));
+	CHECK(!UseOtherSide(odd, Pose{}, 1.0f, { 40, 150, 120 }));
+	// only one side marked: that side, from behind too
+	CHECK(!UseOtherSide(door, Pose{}, 1.0f, { 42, 400, 120 }));
+	CHECK(!UseOtherSide(door, Pose{}, 1.0f, { 42, 100, 120 }));
 
 	// saved with both sides; the other side's marker deleted -> its keys emptied, read as one side
 	const std::string saved = WriteObjectAnchor("", "architecture\\orclonghouse\\orcdoor01.nif", both);
@@ -1408,7 +1446,7 @@ TEST(ObjectAnchorPlacementRoundTrip)
 	small.shown = LockShown::kKeyhole;
 	const auto smallBack = ParseObjectAnchors(WriteObjectAnchor(text, "clutter\\containers\\chest01.nif", small));
 	CHECK(smallBack.size() == 1 && smallBack.begin()->second.shown == LockShown::kKeyhole);
-	CHECK(OtherSide(small, { -40, -25, 0 }, { 40, 25, 50 }).shown == LockShown::kKeyhole);
+	CHECK(OtherSide(small).shown == LockShown::kKeyhole);
 	CHECK(ParseObjectAnchors("[a.nif]\nvObjectKeyhole = 1, 2, 3\nsObjectLock = KEYHOLE\n").at("a.nif").shown == LockShown::kKeyhole);
 	// anything else: the whole lock
 	CHECK(ParseObjectAnchors("[a.nif]\nvObjectKeyhole = 1, 2, 3\nsObjectLock = half\n").at("a.nif").shown == LockShown::kWhole);
@@ -1485,13 +1523,15 @@ namespace
 		{
 			return std::string("GRUP") + U32(std::uint32_t(a_content.size() + 24)) + std::string(a_label, 4) + U32(a_type) + std::string(8, '\0') + a_content;
 		}
-		static std::string Ref(std::uint32_t a_base, bool a_locked, std::uint32_t a_flags = 0, char a_level = 0)
+		static std::string Ref(std::uint32_t a_base, bool a_locked, std::uint32_t a_flags = 0, char a_level = 0, float a_angleX = 0.0f)
 		{
 			std::string f = Field("NAME", U32(a_base));
 			if (a_locked) {
 				f += Field("XLOC", a_level + std::string(19, '\0'));
 			}
-			f += Field("DATA", std::string(24, '\0'));
+			std::uint32_t angle = 0;
+			std::memcpy(&angle, &a_angleX, 4);
+			f += Field("DATA", std::string(12, '\0') + U32(angle) + std::string(8, '\0'));
 			return Record("REFR", f, a_flags);
 		}
 	};
@@ -1521,7 +1561,7 @@ TEST(PluginScanFindsLockedReferences)
 	const std::string conts = W::Group("CONT", W::Record("CONT", W::Field("EDID", "Chest\0") + W::Field("NAME", W::U32(0x0000AAAA))));
 	// an interior cell: two locked chests of one kind, an open one, a locked door from Dawnguard,
 	// one compressed reference, and a door only its key opens
-	const std::string cellChildren = W::Ref(0x00012345, true) + W::Ref(0x00012345, true) + W::Ref(0x00099999, false) +
+	const std::string cellChildren = W::Ref(0x00012345, true, 0, 0, 1.5f) + W::Ref(0x00012345, true) + W::Ref(0x00099999, false) +
 	                                 W::Ref(0x01000777, true) + W::Ref(0x00055555, true, 0x00040000) +
 	                                 W::Ref(0x00066666, true, 0, char(0xFF));
 	const std::string cells = W::Group("CELL", W::Group("\0\0\0\0", W::Record("CELL", W::Field("EDID", "Test\0")) +
@@ -1537,6 +1577,9 @@ TEST(PluginScanFindsLockedReferences)
 	CHECK(scan.compressedSkipped == 1);
 	CHECK(scan.bases.size() == 3);
 	CHECK(scan.bases.contains(0x00012345) && scan.bases.at(0x00012345) == 2);
+	// how its first locked reference stands
+	CHECK(scan.angles.contains(0x00012345) && scan.angles.at(0x00012345)[0] == 1.5f && scan.angles.at(0x00012345)[2] == 0.0f);
+	CHECK(!scan.angles.contains(0x00099999));
 	CHECK(!scan.bases.contains(0x00099999));
 	CHECK(!scan.bases.contains(0x00066666));
 	CHECK(!scan.bases.contains(0x0000AAAA));

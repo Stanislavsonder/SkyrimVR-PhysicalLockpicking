@@ -33,7 +33,7 @@ The mod adds `VRLockpicking.esp`, which only holds the settings menu's quest. Ke
 5. **Tension wrench:** put it in however you hold it, then turn it clockwise like a key.
 6. How far the lock turns tells you how close you are: all the way in the sweet spot (it opens), part of the way near it, only a wiggle far from it.
 7. If you keep turning a lock that has stopped, the pick strains (a fast rattle, the lock shakes) and then breaks. Take the broken pick out and put it in again for a new one, and turn the tension wrench back to its start.
-8. Over the lock you see how many lockpicks you have left. It is hidden while your picks can't break.
+8. With **Show lockpicks left** (General page, off by default) you see by the lock how many lockpicks you have left. It is hidden while your picks can't break.
 9. **B / Y** gives up, and so does walking away from the lock.
 
 **Alternative mode** (settings, General) is on by default. Turn it off to play like the vanilla minigame: put the pick in with its handle pointing up and search by sweeping the handle clockwise down the right side of the keyhole, from straight up to straight down; put the tension wrench in with the back of your hand to the left and turn it until the back of your hand points up.
@@ -62,7 +62,7 @@ On by default: the game is paused while you pick a lock, the way menus pause it.
 
 ### Lock on the door or chest
 
-Off by default: the lock appears in front of you. Turn on **Lock on the door or chest** to have it sit on the door or chest itself, on the side of the door you stand. You may have to step up to it. Doors and chests that your game never locks (the mod reads which ones from your plugins when the game starts) keep the lock in front of you. With **Walk while picking** (on by default) you can walk and turn while you pick, to get to the lock; the game is then not paused. Where it sits on each model is a guess from the model's size until it is lined up with the markup tool.
+On by default: the lock sits on the door or chest itself, on its locked side (on a door marked on both sides, the side you stand). Turn **Lock on the door or chest** off to have it appear in front of you instead. You may have to step up to it. Doors and chests that your game never locks (the mod reads which ones from your plugins when the game starts) keep the lock in front of you. With **Walk while picking** (on by default) you can walk and turn while you pick, to get to the lock; the game is then not paused. The base game's and its DLCs' doors and chests come lined up; on other models it is a guess from the model's size until it is lined up with the markup tool.
 
 ### Lining up models (markup tool)
 

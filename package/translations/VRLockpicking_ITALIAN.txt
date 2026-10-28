@@ -16,6 +16,8 @@ $VRLP_MoveWhilePicking	Camminare durante lo scasso (serratura sull'oggetto)
 $VRLP_MoveWhilePicking_Help	Con la serratura sulla porta o sul forziere puoi camminare e girarti durante lo scasso, per raggiungerla. Il gioco allora non va in pausa.
 $VRLP_ActivateContainerAfterUnlock	Apri contenitore dopo scasso
 $VRLP_ActivateContainerAfterUnlock_Help	Apre automaticamente un contenitore dopo averne scassinato la serratura.
+$VRLP_ShowPickCount	Mostra i grimaldelli rimasti
+$VRLP_ShowPickCount_Help	Un piccolo grimaldello e un numero accanto alla serratura: quanti grimaldelli ti restano.
 $VRLP_HeaderDifficulty	Difficoltà
 $VRLP_SweetSpotMult	Ampiezza punto giusto
 $VRLP_SweetSpotMult_Help	Quanto è ampio il punto in cui la serratura gira del tutto (x l'ampiezza originale per la tua abilità e i tuoi talenti). Più piccolo = più difficile da trovare.

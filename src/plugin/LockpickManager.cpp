@@ -390,7 +390,7 @@ namespace vrlp
 			// you may have activated it from further away than that: walking away counts from there
 			Vec3 away = lock.pos - head.pos;
 			away.z = 0.0f;
-			_cancelDistance = std::max(_cfg.cancelDistance, Length(away) + 30.0f);
+			_cancelDistance = std::max(_cfg.cancelDistance, Length(away) + 100.0f);
 		}
 
 		logger::info("Session start: level {} skill {:.0f} perkMult {:.2f} -> sweet {:.1f} +/- {:.1f} deg, break {:.2f}s{}{}",
@@ -405,6 +405,9 @@ namespace vrlp
 		Config     sessionCfg = _cfg;
 		_useHandNodes = _cfg.handGrip && SkeletonHandNode(vrNodes, pickSide) && SkeletonHandNode(vrNodes, wrenchSide);
 		sessionCfg.handGrip = _useHandNodes;
+		// the session gives up at the same distance (it would otherwise end at once on a lock
+		// activated from further away than fCancelDistance)
+		sessionCfg.cancelDistance = _cancelDistance;
 		sessionCfg.swapGripMirror = _cfg.followLeftHandedMode && RE::BSOpenVRControllerDevice::IsLeftHandedMode();
 		RE::NiNode* pickNode = HandNodeFor(vrNodes, pickSide);
 		RE::NiNode* wrenchNode = HandNodeFor(vrNodes, wrenchSide);
@@ -466,7 +469,7 @@ namespace vrlp
 			const bool easy = static_cast<int>(_level) <= static_cast<int>(LockLevel::kApprentice);
 			_assist.Create(_cfg, ref.get(), _cfg.assistRing >= 2 && easy);
 		}
-		if (!_markup.Active()) {
+		if (_cfg.showPickCount && !_markup.Active()) {
 			_counter.Create(_cfg, ref.get());
 		}
 		_markHeld = _nextHeld = _resetHeld = true;
@@ -1292,9 +1295,8 @@ namespace vrlp
 
 	// bLockOnObject: where the lock goes on the door or chest being picked. Its placement for the
 	// model: the player's own (markup tool), else a built-in one, else a guess from the model's
-	// bounds. A door's lock is on the side you stand (marked there too, or the mirror of the marked
-	// side). Doors and containers the game's plugins
-	// never lock keep the lock in front of you.
+	// bounds. A door with both sides marked has its lock on the side you stand; with one, on that
+	// side. Doors and containers the game's plugins never lock keep the lock in front of you.
 	bool LockpickManager::LockOnObject(RE::TESObjectREFR* a_target, const Vec3& a_head)
 	{
 		auto*       base = a_target ? a_target->GetBaseObject() : nullptr;
@@ -1327,22 +1329,14 @@ namespace vrlp
 		o.scale = obj->world.scale > 0.0f ? obj->world.scale : 1.0f;
 
 		const std::string key = NormalizeModelPath(path);
-		const char*       source = "guessed from its size";
-		if (auto it = _objectAnchors.find(key); it != _objectAnchors.end()) {
-			o.anchor = it->second;
-			source = "lined up by you";
-		} else if (auto def = DefaultObjectAnchors().find(key); def != DefaultObjectAnchors().end()) {
-			o.anchor = def->second;
-			source = "built in";
-		} else {
-			o.anchor = GuessObjectAnchor(o.boundMin, o.boundMax, o.door);
-		}
+		const char*       source = nullptr;
+		o.anchor = AnchorFor(key, o.boundMin, o.boundMax, o.door, &source);
 		if (o.anchor.shown == LockShown::kNone) {
 			logger::info("Lock on the object: [{}] has no lock on it ({}); in front of you instead", key, source);
 			return false;
 		}
 		if (o.door) {
-			o.otherSide = UseOtherSide(o.anchor, o.boundMin, o.boundMax, o.object, o.scale, a_head);
+			o.otherSide = UseOtherSide(o.anchor, o.object, o.scale, a_head);
 		}
 		_onObject = o;
 		const Pose  lock = ObjectLockWorld();
@@ -1364,7 +1358,27 @@ namespace vrlp
 	ObjectAnchor LockpickManager::ObjectSideShown() const
 	{
 		const auto& o = *_onObject;
-		return o.otherSide ? OtherSide(o.anchor, o.boundMin, o.boundMax) : o.anchor;
+		return o.otherSide ? OtherSide(o.anchor) : o.anchor;
+	}
+
+	ObjectAnchor LockpickManager::AnchorFor(const std::string& a_model, const Vec3& a_min, const Vec3& a_max, bool a_door, const char** a_source) const
+	{
+		const std::string key = NormalizeModelPath(a_model);
+		const char*       source = "guessed from its size";
+		ObjectAnchor      a;
+		if (auto it = _objectAnchors.find(key); it != _objectAnchors.end()) {
+			a = it->second;
+			source = "lined up by you";
+		} else if (auto def = DefaultObjectAnchors().find(key); def != DefaultObjectAnchors().end()) {
+			a = def->second;
+			source = "built in";
+		} else {
+			a = GuessObjectAnchor(a_min, a_max, a_door);
+		}
+		if (a_source) {
+			*a_source = source;
+		}
+		return a;
 	}
 
 	// Markup, object part: where the lock sits on its door or chest.
@@ -1378,8 +1392,7 @@ namespace vrlp
 			return;
 		}
 		auto& o = *_onObject;
-		// a lock pose in the world -> the anchor as saved. Moved on a door's other side, that side
-		// is marked on its own from then on (no longer the mirror).
+		// a lock pose in the world -> the anchor as saved; on a door's other side, that side's.
 		auto store = [this, &o](const Pose& a_world) {
 			ObjectAnchor shown = ObjectAnchorFromPose(a_world, o.object, o.scale);
 			if (o.otherSide) {

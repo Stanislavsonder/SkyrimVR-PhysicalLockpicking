@@ -16,6 +16,8 @@ $VRLP_MoveWhilePicking	Marcher pendant le crochetage (serrure sur l'objet)
 $VRLP_MoveWhilePicking_Help	Avec la serrure sur la porte ou le coffre, vous pouvez marcher et tourner pendant le crochetage, pour l'atteindre. Le jeu n'est alors pas en pause.
 $VRLP_ActivateContainerAfterUnlock	Ouvrir le contenant ensuite
 $VRLP_ActivateContainerAfterUnlock_Help	Ouvre automatiquement un contenant une fois sa serrure crochetée.
+$VRLP_ShowPickCount	Afficher les crochets restants
+$VRLP_ShowPickCount_Help	Un petit crochet et un nombre près de la serrure : combien de crochets il vous reste.
 $VRLP_HeaderDifficulty	Difficulté
 $VRLP_SweetSpotMult	Taille du point idéal
 $VRLP_SweetSpotMult_Help	Largeur de la zone où la serrure tourne entièrement (x la taille d'origine pour votre compétence et vos atouts). Plus petit = plus dur à trouver.

@@ -71,8 +71,8 @@ namespace vrlp
 	// (before the reference's scale): the keyhole, and the lock frame's axes (right, into the
 	// lock, up). Set with the markup tool's first step and saved under the object's model in the
 	// same file: vObjectKeyhole, vObjectInto, vObjectUp. A door can have its other side marked too
-	// (the same keys ending in 2); without it, the other side is the mirror through the door
-	// (OtherSide). sObjectLock says how much of the lock is drawn (LockShown).
+	// (the same keys ending in 2); without it, the lock is only on the side marked.
+	// sObjectLock says how much of the lock is drawn (LockShown).
 	enum class LockShown
 	{
 		kWhole,    // "whole": the whole lock
@@ -106,13 +106,30 @@ namespace vrlp
 	// in the middle, a little below the lid. Door: on the face of its thin side, at handle height,
 	// near the edge furthest from the model's origin (doors swing about their origin).
 	ObjectAnchor GuessObjectAnchor(const Vec3& a_boundMin, const Vec3& a_boundMax, bool a_door);
-	// The lock on the other side of a door: the one marked there (front and back swapped), else
-	// this one mirrored through the middle of the door, facing the other way. Applying it twice
-	// gives the anchor back.
-	ObjectAnchor OtherSide(const ObjectAnchor& a_anchor, const Vec3& a_boundMin, const Vec3& a_boundMax);
-	// Which of a door's two locks a player with the head at a_head picks: the one they stand in
-	// front of, else the nearer one. True for the other side.
-	bool UseOtherSide(const ObjectAnchor& a_anchor, const Vec3& a_boundMin, const Vec3& a_boundMax, const Pose& a_object, float a_scale, const Vec3& a_head);
+	// The lock on the other side of a door: the one marked there (front and back swapped; twice
+	// gives the anchor back). A door with one side marked has no other: the same anchor.
+	ObjectAnchor OtherSide(const ObjectAnchor& a_anchor);
+	// Which of a door's two marked locks a player with the head at a_head picks: the one they
+	// stand in front of, else the nearer one. True for the other side; false with one side marked.
+	bool UseOtherSide(const ObjectAnchor& a_anchor, const Pose& a_object, float a_scale, const Vec3& a_head);
+
+	// How the game turns a placed reference by its angles (radians, as its record stores them),
+	// and the angles of a turn.
+	Mat3 RefRotation(const Vec3& a_angles);
+	Vec3 RefAngles(const Mat3& a_rot);
+	// Where a test copy of a door or chest stands. It is tilted as the game's own reference of it
+	// is (a_angles: some models lie on their side or stand on their head in their own file),
+	// turned about the vertical so the side its lock is marked on faces you (a_away: flat, the way
+	// from you to it), and stood with its middle on the spot and its bottom on the floor: its
+	// origin goes to the spot + offset.
+	struct StandPose
+	{
+		Vec3 angles;
+		Vec3 offset;
+	};
+	StandPose StandFacing(const ObjectAnchor& a_anchor, const Vec3& a_boundMin, const Vec3& a_boundMax, const Vec3& a_angles, const Vec3& a_away);
+	// How much room it takes on the floor, tilted that way, whichever way it then faces.
+	float StandWidth(const Vec3& a_boundMin, const Vec3& a_boundMax, const Vec3& a_angles);
 
 	std::map<std::string, ObjectAnchor> ParseObjectAnchors(const std::string& a_text);
 	std::string                         WriteObjectAnchor(const std::string& a_text, const std::string& a_modelPath, const ObjectAnchor& a_anchor);

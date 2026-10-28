@@ -12,6 +12,9 @@
 //   lockplacer read <list> <out dir> <VRLockpicking_Locks.ini>
 //     Reads where the markers are now and saves them to the INI (vObjectKeyhole / vObjectInto /
 //     vObjectUp), the same file and keys the in-game markup tool writes.
+//   lockplacer reset <list> <out dir> <data>[;<data>...] <model>[;<model>...] [built-in]
+//     Makes the named copies again from the data, the whole lock back on their markers (where
+//     they are, or with built-in at the built-in place).
 //
 // The marker is a node named VRLP_Lock under the model's root: its origin is the keyhole, +Y
 // points into the door or chest, +Z is up. Move and turn it with NifSkope's Transform > Edit.
@@ -648,7 +651,24 @@ namespace
 		return true;
 	}
 
-	int Place(const std::vector<vrlp::LockableModel>& a_list, const fs::path& a_out, Sources& a_sources, const fs::path& a_ini)
+	enum class Remake
+	{
+		kPlace,         // place: a copy made before keeps its markers as they are
+		kReset,         // reset: its markers stay where they are, with the whole lock on them again
+		kResetBuiltIn,  // reset ... built-in: the marker back at the built-in place (or the guess)
+	};
+
+	// the whole lock on every side (the parts deleted in NifSkope back)
+	vrlp::ObjectAnchor WholeLock(vrlp::ObjectAnchor a_anchor)
+	{
+		a_anchor.shown = vrlp::LockShown::kWhole;
+		if (a_anchor.back) {
+			a_anchor.back->shown = vrlp::LockShown::kWhole;
+		}
+		return a_anchor;
+	}
+
+	int Place(const std::vector<vrlp::LockableModel>& a_list, const fs::path& a_out, Sources& a_sources, const fs::path& a_ini, Remake a_remake = Remake::kPlace)
 	{
 		const auto saved = a_ini.empty() ? std::map<std::string, vrlp::ObjectAnchor>{} : vrlp::ParseObjectAnchors(ReadText(a_ini));
 		int        placed = 0, kept = 0, missing = 0, failed = 0;
@@ -660,11 +680,20 @@ namespace
 			// a copy made before keeps where its marker is now (you may have moved it); the copy
 			// itself is made again, so it gets the current marker
 			std::optional<vrlp::ObjectAnchor> moved;
-			if (fs::exists(out)) {
+			if (fs::exists(out) && a_remake != Remake::kResetBuiltIn) {
 				nifly::NifFile existing;
 				if (existing.Load(out) == 0) {
 					RenameMarkerCopies(existing);
 					moved = MarkersAnchor(existing, key);
+				}
+			}
+			if (a_remake != Remake::kPlace) {
+				// its marker deleted too: from the built-in place
+				if (moved && moved->shown == vrlp::LockShown::kNone) {
+					moved.reset();
+				}
+				if (moved) {
+					moved = WholeLock(*moved);
 				}
 			}
 			std::string source;
@@ -683,18 +712,22 @@ namespace
 			}
 			const char*        from = "saved";
 			vrlp::ObjectAnchor anchor;
+			const auto def = vrlp::DefaultObjectAnchors().find(key);
 			if (moved) {
 				anchor = *moved;
 				from = "kept";
 				++kept;
-			} else if (auto it = saved.find(key); it != saved.end()) {
+			} else if (auto it = saved.find(key); it != saved.end() && a_remake == Remake::kPlace) {
 				anchor = it->second;
-			} else if (auto def = vrlp::DefaultObjectAnchors().find(key); def != vrlp::DefaultObjectAnchors().end()) {
+			} else if (def != vrlp::DefaultObjectAnchors().end() && (a_remake == Remake::kPlace || def->second.shown != vrlp::LockShown::kNone)) {
 				anchor = def->second;
 				from = "built in";
 			} else {
 				anchor = vrlp::GuessObjectAnchor(m.boundMin, m.boundMax, m.door);
 				from = "guessed";
+			}
+			if (a_remake != Remake::kPlace) {
+				anchor = WholeLock(anchor);
 			}
 			StripCollision(nif);
 			fs::create_directories(out.parent_path());
@@ -761,8 +794,36 @@ namespace
 		std::fprintf(stderr,
 			"usage:\n"
 			"  lockplacer place <VRLockpicking_LockableModels.txt> <out dir> <Data folder or .bsa>[;...] [VRLockpicking_Locks.ini]\n"
-			"  lockplacer read  <VRLockpicking_LockableModels.txt> <out dir> <VRLockpicking_Locks.ini>\n");
+			"  lockplacer read  <VRLockpicking_LockableModels.txt> <out dir> <VRLockpicking_Locks.ini>\n"
+			"  lockplacer reset <VRLockpicking_LockableModels.txt> <out dir> <Data folder or .bsa>[;...] <model>[;<model>...] [built-in]\n");
 		return 2;
+	}
+
+	// The models of the list a_names names, each by its path or its file name (with or without .nif).
+	std::vector<vrlp::LockableModel> Named(const std::vector<vrlp::LockableModel>& a_list, const std::string& a_names)
+	{
+		std::vector<vrlp::LockableModel> out;
+		for (std::string name : Split(a_names, ';')) {
+			name = vrlp::NormalizeModelPath(name);
+			if (name.empty()) {
+				continue;
+			}
+			if (!name.ends_with(".nif")) {
+				name += ".nif";
+			}
+			bool found = false;
+			for (const auto& m : a_list) {
+				const std::string key = vrlp::NormalizeModelPath(m.model);
+				if (key == name || key.ends_with("\\" + name)) {
+					out.push_back(m);
+					found = true;
+				}
+			}
+			if (!found) {
+				std::printf("unknown  %s (not in the list)\n", name.c_str());
+			}
+		}
+		return out;
 	}
 }
 
@@ -787,6 +848,15 @@ int main(int argc, char** argv)
 	}
 	if (command == "read") {
 		return Read(list, argv[3], argv[4]);
+	}
+	if (command == "reset" && argc > 5) {
+		const auto models = Named(list, argv[5]);
+		if (models.empty()) {
+			return 1;
+		}
+		const bool builtIn = argc > 6 && std::string(argv[6]) == "built-in";
+		Sources    sources(Split(argv[4], ';'));
+		return Place(models, argv[3], sources, fs::path(), builtIn ? Remake::kResetBuiltIn : Remake::kReset);
 	}
 	return Usage();
 }

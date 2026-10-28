@@ -16,6 +16,8 @@ $VRLP_MoveWhilePicking	Andar al forzar (cerradura en el objeto)
 $VRLP_MoveWhilePicking_Help	Con la cerradura en la puerta o el cofre, puedes andar y girar mientras fuerzas, para llegar a ella. El juego entonces no se pausa.
 $VRLP_ActivateContainerAfterUnlock	Abrir contenedor al forzarlo
 $VRLP_ActivateContainerAfterUnlock_Help	Abre un contenedor automáticamente en cuanto fuerzas su cerradura.
+$VRLP_ShowPickCount	Mostrar ganzúas restantes
+$VRLP_ShowPickCount_Help	Una pequeña ganzúa y un número junto a la cerradura: cuántas ganzúas te quedan.
 $VRLP_HeaderDifficulty	Dificultad
 $VRLP_SweetSpotMult	Tamaño del punto justo
 $VRLP_SweetSpotMult_Help	Lo ancho que es el punto en el que la cerradura gira del todo (x el tamaño original para tu habilidad y tus mejoras). Menor = más difícil de encontrar.

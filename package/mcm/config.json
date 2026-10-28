@@ -86,6 +86,15 @@
           }
         },
         {
+          "id": "bShowPickCount:Visuals",
+          "text": "$VRLP_ShowPickCount",
+          "type": "toggle",
+          "help": "$VRLP_ShowPickCount_Help",
+          "valueOptions": {
+            "sourceType": "ModSettingBool"
+          }
+        },
+        {
           "text": "$VRLP_HeaderDifficulty",
           "type": "header",
           "position": 1

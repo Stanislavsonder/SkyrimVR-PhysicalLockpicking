@@ -16,6 +16,8 @@ $VRLP_MoveWhilePicking	Chodzenie podczas otwierania (zamek na obiekcie)
 $VRLP_MoveWhilePicking_Help	Gdy zamek jest na drzwiach lub skrzyni, podczas otwierania możesz chodzić i się obracać, by do niego dojść. Gra nie jest wtedy wstrzymywana.
 $VRLP_ActivateContainerAfterUnlock	Auto-otwieranie pojemnika
 $VRLP_ActivateContainerAfterUnlock_Help	Automatycznie otwiera pojemnik, gdy jego zamek zostanie otwarty.
+$VRLP_ShowPickCount	Pokazuj pozostałe wytrychy
+$VRLP_ShowPickCount_Help	Mały wytrych i liczba przy zamku: ile wytrychów ci zostało.
 $VRLP_HeaderDifficulty	Trudność
 $VRLP_SweetSpotMult	Wielkość właściwego punktu
 $VRLP_SweetSpotMult_Help	Jak szeroki jest obszar, w którym zamek obraca się do końca (x zwykła wielkość dla twojej umiejętności i atutów). Mniej = trudniej znaleźć.

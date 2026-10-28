@@ -16,6 +16,8 @@ $VRLP_MoveWhilePicking	開鎖時可走動 (鎖在物件上時)
 $VRLP_MoveWhilePicking_Help	鎖在門或箱子上時，開鎖時可以走動和轉身以靠近它。此時遊戲不會暫停。
 $VRLP_ActivateContainerAfterUnlock	開鎖後打開容器
 $VRLP_ActivateContainerAfterUnlock_Help	鎖被撬開後自動打開容器。
+$VRLP_ShowPickCount	显示剩余开锁器
+$VRLP_ShowPickCount_Help	锁旁显示一个小开锁器和数字：你还剩多少开锁器。
 $VRLP_HeaderDifficulty	難度
 $VRLP_SweetSpotMult	最佳點大小
 $VRLP_SweetSpotMult_Help	鎖能完全轉開的範圍有多寬 (依你的技能與天賦，為原版大小的倍數)。越小越難找到。

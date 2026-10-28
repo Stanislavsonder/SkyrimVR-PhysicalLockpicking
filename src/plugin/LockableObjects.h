@@ -2,6 +2,8 @@
 
 #include "PCH.h"
 
+#include "VecMath.h"
+
 namespace vrlp
 {
 	// Which doors and containers are ever locked in this game: the base objects of every placed
@@ -17,5 +19,7 @@ namespace vrlp
 		bool IsLockable(RE::FormID a_base);
 		// how many references lock it (0 = never)
 		int  LockedReferences(RE::FormID a_base);
+		// how the game stands it: the angles (radians) of its first locked reference; none = 0
+		Vec3 GameAngles(RE::FormID a_base);
 	}
 }

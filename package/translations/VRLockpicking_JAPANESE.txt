@@ -16,6 +16,8 @@ $VRLP_MoveWhilePicking	開錠中に歩く (錠をオブジェクトに付ける�
 $VRLP_MoveWhilePicking_Help	錠が扉やチェストに付いているとき、開錠中に歩いたり向きを変えたりして近づけます。その場合ゲームは一時停止しません。
 $VRLP_ActivateContainerAfterUnlock	開錠後に容器を開く
 $VRLP_ActivateContainerAfterUnlock_Help	錠を開けると、容器を自動で開きます。
+$VRLP_ShowPickCount	残りのロックピックを表示
+$VRLP_ShowPickCount_Help	錠の横に小さなロックピックと数字：残りのロックピックの数。
 $VRLP_HeaderDifficulty	難易度
 $VRLP_SweetSpotMult	スイートスポット幅
 $VRLP_SweetSpotMult_Help	錠が最後まで回る範囲の広さです (スキルとパークに応じたバニラの幅の倍率)。小さいほど見つけにくくなります。

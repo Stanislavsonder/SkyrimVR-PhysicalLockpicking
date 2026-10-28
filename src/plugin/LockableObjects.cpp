@@ -9,6 +9,7 @@ namespace vrlp::LockableObjects
 	{
 		std::atomic<bool>                      g_ready{ false };
 		std::unordered_map<RE::FormID, int>    g_counts;  // written before g_ready, read after
+		std::unordered_map<RE::FormID, Vec3>   g_angles;  // the same
 
 		// The list for lining up the lock outside the game (tools/lockplacer), next to the log:
 		// one line per model, the most locked first.
@@ -53,7 +54,8 @@ namespace vrlp::LockableObjects
 		{
 			auto* data = RE::TESDataHandler::GetSingleton();
 			const auto start = std::chrono::steady_clock::now();
-			std::unordered_map<RE::FormID, int> counts;
+			std::unordered_map<RE::FormID, int>  counts;
+			std::unordered_map<RE::FormID, Vec3> angles;
 			int  refs = 0, compressed = 0, unresolved = 0;
 			auto buffer = std::make_unique<char[]>(1 << 20);
 			for (const auto& name : a_files) {
@@ -80,6 +82,9 @@ namespace vrlp::LockableObjects
 					}
 					counts[id] += n;
 					locked += n;
+					if (const auto a = scan.angles.find(raw); a != scan.angles.end()) {
+						angles.emplace(id, Vec3{ a->second[0], a->second[1], a->second[2] });  // the first plugin's
+					}
 				}
 				refs += scan.references;
 				compressed += scan.compressedSkipped;
@@ -90,6 +95,7 @@ namespace vrlp::LockableObjects
 			}
 			WriteList(counts);
 			g_counts = std::move(counts);
+			g_angles = std::move(angles);
 			g_ready.store(true, std::memory_order_release);
 			logger::info("Lockable objects: {} doors / containers are locked somewhere, from {} references in {} plugins ({:.1f} s; {} compressed, {} not doors / containers)",
 				g_counts.size(), refs, a_files.size(), std::chrono::duration<float>(std::chrono::steady_clock::now() - start).count(), compressed,
@@ -129,5 +135,14 @@ namespace vrlp::LockableObjects
 		}
 		const auto it = g_counts.find(a_base);
 		return it != g_counts.end() ? it->second : 0;
+	}
+
+	Vec3 GameAngles(RE::FormID a_base)
+	{
+		if (!Ready()) {
+			return {};
+		}
+		const auto it = g_angles.find(a_base);
+		return it != g_angles.end() ? it->second : Vec3{};
 	}
 }

@@ -323,6 +323,7 @@ namespace vrlp
 		f("Haptics.fPulseNearDegrees", pulseNearDegrees);
 
 		b("Visuals.bShowMeshes", showMeshes);
+		b("Visuals.bShowPickCount", showPickCount);
 		b("Visuals.bDebugView", debugView);
 		f("Visuals.fLockMeshRadius", lockMeshRadius);
 		f("Visuals.fToolMeshLength", toolMeshLength);

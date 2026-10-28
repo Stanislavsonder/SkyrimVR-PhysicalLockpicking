@@ -372,30 +372,26 @@ namespace vrlp
 		return a;
 	}
 
-	ObjectAnchor OtherSide(const ObjectAnchor& a_anchor, const Vec3& a_min, const Vec3& a_max)
+	ObjectAnchor OtherSide(const ObjectAnchor& a_anchor)
 	{
-		if (a_anchor.back) {
-			ObjectAnchor a = a_anchor;
-			a.keyhole = a_anchor.back->keyhole;
-			a.rot = a_anchor.back->rot;
-			a.shown = a_anchor.back->shown;
-			a.back = ObjectAnchor::Side{ a_anchor.keyhole, a_anchor.rot, a_anchor.shown };
-			return a;
+		if (!a_anchor.back) {
+			return a_anchor;
 		}
 		ObjectAnchor a = a_anchor;
-		const Vec3   into = a_anchor.rot.Column(1);
-		const int    i = std::fabs(into.x) >= std::fabs(into.y) ? (std::fabs(into.x) >= std::fabs(into.z) ? 0 : 2) :
-		                                                          (std::fabs(into.y) >= std::fabs(into.z) ? 1 : 2);
-		Axis(a.keyhole, i) = Axis(a_min, i) + Axis(a_max, i) - Axis(a_anchor.keyhole, i);
-		// turned about the up axis: right and into the lock reversed
-		a.rot = Mat3::FromColumns(-a_anchor.rot.Column(0), -into, a_anchor.rot.Column(2));
+		a.keyhole = a_anchor.back->keyhole;
+		a.rot = a_anchor.back->rot;
+		a.shown = a_anchor.back->shown;
+		a.back = ObjectAnchor::Side{ a_anchor.keyhole, a_anchor.rot, a_anchor.shown };
 		return a;
 	}
 
-	bool UseOtherSide(const ObjectAnchor& a_anchor, const Vec3& a_min, const Vec3& a_max, const Pose& a_object, float a_scale, const Vec3& a_head)
+	bool UseOtherSide(const ObjectAnchor& a_anchor, const Pose& a_object, float a_scale, const Vec3& a_head)
 	{
+		if (!a_anchor.back) {
+			return false;
+		}
 		const Pose front = PlaceOnObject(a_anchor, a_object, a_scale);
-		const Pose back = PlaceOnObject(OtherSide(a_anchor, a_min, a_max), a_object, a_scale);
+		const Pose back = PlaceOnObject(OtherSide(a_anchor), a_object, a_scale);
 		// you face into the lock: its "into the lock" points away from you
 		const bool atFront = Dot(front.pos - a_head, front.rot.Column(1)) > 0.0f;
 		const bool atBack = Dot(back.pos - a_head, back.rot.Column(1)) > 0.0f;
@@ -403,6 +399,89 @@ namespace vrlp
 			return atBack;
 		}
 		return Distance(back.pos, a_head) < Distance(front.pos, a_head);
+	}
+
+	Mat3 RefRotation(const Vec3& a_angles)
+	{
+		// the engine's NiMatrix3::SetEulerAnglesXYZ (CommonLib): +Y of a model turned by z alone
+		// points at (sin z, cos z), as an actor's heading
+		const float sx = std::sin(a_angles.x), cx = std::cos(a_angles.x);
+		const float sy = std::sin(a_angles.y), cy = std::cos(a_angles.y);
+		const float sz = std::sin(a_angles.z), cz = std::cos(a_angles.z);
+		Mat3        r;
+		r.m[0][0] = cy * cz;
+		r.m[0][1] = cy * sz;
+		r.m[0][2] = -sy;
+		r.m[1][0] = sx * sy * cz - cx * sz;
+		r.m[1][1] = sx * sy * sz + cx * cz;
+		r.m[1][2] = sx * cy;
+		r.m[2][0] = cx * sy * cz + sx * sz;
+		r.m[2][1] = cx * sy * sz - sx * cz;
+		r.m[2][2] = cx * cy;
+		return r;
+	}
+
+	Vec3 RefAngles(const Mat3& a_rot)
+	{
+		const float sy = std::clamp(-a_rot.m[0][2], -1.0f, 1.0f);
+		const float y = std::asin(sy);
+		if (std::fabs(sy) > 0.9999f) {
+			// straight up or down: x and z turn the same way, all of it in z
+			return { 0.0f, y, std::atan2(-a_rot.m[1][0], a_rot.m[1][1]) };
+		}
+		return { std::atan2(a_rot.m[1][2], a_rot.m[2][2]), y, std::atan2(a_rot.m[0][1], a_rot.m[0][0]) };
+	}
+
+	namespace
+	{
+		std::array<Vec3, 8> Corners(const Vec3& a_min, const Vec3& a_max)
+		{
+			std::array<Vec3, 8> out;
+			for (int i = 0; i < 8; ++i) {
+				out[i] = { (i & 1) ? a_max.x : a_min.x, (i & 2) ? a_max.y : a_min.y, (i & 4) ? a_max.z : a_min.z };
+			}
+			return out;
+		}
+	}
+
+	StandPose StandFacing(const ObjectAnchor& a_anchor, const Vec3& a_min, const Vec3& a_max, const Vec3& a_angles, const Vec3& a_away)
+	{
+		const Mat3 tilt = RefRotation(a_angles);
+		const Vec3 away = Normalize({ a_away.x, a_away.y, 0.0f });
+		auto       flat = [](const Vec3& a_v) { return Vec3{ a_v.x, a_v.y, 0.0f }; };
+		// the turn about the vertical that points the lock away from you: into the lock on a door
+		// or a chest, its up on a trapdoor (whose lock looks down into it)
+		Mat3  best = tilt;
+		float bestScore = -1e9f;
+		for (int deg = 0; deg < 360; ++deg) {
+			const Mat3  r = RefRotation({ 0.0f, 0.0f, static_cast<float>(deg) * kDegToRad }) * tilt;
+			const float score = Dot(flat(r * a_anchor.rot.Column(1)), away) + Dot(flat(r * a_anchor.rot.Column(2)), away);
+			if (score > bestScore) {
+				bestScore = score;
+				best = r;
+			}
+		}
+		StandPose out;
+		out.angles = RefAngles(best);
+		const Vec3 middle = best * ((a_min + a_max) * 0.5f);
+		float      bottom = 1e9f;
+		for (const Vec3& c : Corners(a_min, a_max)) {
+			bottom = std::min(bottom, (best * c).z);
+		}
+		out.offset = { -middle.x, -middle.y, -bottom };
+		return out;
+	}
+
+	float StandWidth(const Vec3& a_min, const Vec3& a_max, const Vec3& a_angles)
+	{
+		const Mat3 tilt = RefRotation(a_angles);
+		const Vec3 middle = tilt * ((a_min + a_max) * 0.5f);
+		float      reach = 0.0f;
+		for (const Vec3& c : Corners(a_min, a_max)) {
+			const Vec3 d = tilt * c - middle;
+			reach = std::max(reach, std::hypot(d.x, d.y));
+		}
+		return 2.0f * reach;
 	}
 
 	std::map<std::string, ObjectAnchor> ParseObjectAnchors(const std::string& a_text)

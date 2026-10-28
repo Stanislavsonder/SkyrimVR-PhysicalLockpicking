@@ -16,6 +16,8 @@ $VRLP_MoveWhilePicking	Ходить во время взлома (замок н�
 $VRLP_MoveWhilePicking_Help	Когда замок на двери или сундуке, во время взлома можно ходить и поворачиваться, чтобы подойти к нему. Игра тогда не ставится на паузу.
 $VRLP_ActivateContainerAfterUnlock	Автооткрытие контейнера
 $VRLP_ActivateContainerAfterUnlock_Help	Автоматически открывает контейнер, когда его замок взломан.
+$VRLP_ShowPickCount	Показывать оставшиеся отмычки
+$VRLP_ShowPickCount_Help	Маленькая отмычка и число у замка: сколько отмычек у вас осталось.
 $VRLP_HeaderDifficulty	Сложность
 $VRLP_SweetSpotMult	Размер верной точки
 $VRLP_SweetSpotMult_Help	Насколько широка зона, в которой замок поворачивается до конца (x стандартный размер для вашего навыка и способностей). Меньше = труднее найти.

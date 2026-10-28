@@ -25,8 +25,8 @@ namespace vrlp
 		float lockDistance{ 28.0f };       // forward from HMD (horizontal; not in the INI)
 		float lockHeightOffset{ -25.0f };  // vertical offset from HMD (not in the INI)
 		float lockSideOffset{ 0.0f };      // + = to the right
-		float cancelDistance{ 90.0f };     // walk/lean this far from the lock to give up
-		bool  lockOnObject{ false };       // the lock sits on the door / chest itself, not in front of you
+		float cancelDistance{ 300.0f };    // walk/lean this far from the lock to give up (well past the game's reach for activating)
+		bool  lockOnObject{ true };        // the lock sits on the door / chest itself, not in front of you
 		bool  moveWhilePicking{ true };    // ...and you may walk and turn while picking (the game is then not paused)
 
 		// [Controls]
@@ -97,6 +97,7 @@ namespace vrlp
 
 		// [Visuals]
 		bool        showMeshes{ true };
+		bool        showPickCount{ false };   // how many lockpicks are left, by the lock
 		// set by the plugin (Lock Variations, the Skeleton Key), not the INI:
 		std::string lockMesh{ "Interface\\Lockpicking\\LockPickShiv01.nif" };  // the lock (and its screwdriver)
 		std::string pickMesh;                 // the pick; empty = the lockpick item's model

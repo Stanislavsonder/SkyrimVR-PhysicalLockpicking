@@ -2,6 +2,7 @@
 
 #include "AddressCheck.h"
 #include "LockableObjects.h"
+#include "LockProfile.h"
 #include "LockpickManager.h"
 #include "Text.h"
 
@@ -37,7 +38,8 @@ namespace vrlp::TestLocks
 			RE::TESBoundObject* form;
 			std::string         model;
 			bool                door;
-			RE::NiPoint3        min, max;  // its bounds (OBND), model space
+			Vec3                min, max;  // its bounds (OBND), model space
+			Vec3                angles;    // how the game's own reference of it stands
 		};
 
 		// Every door and chest model of the loaded game and mods that is locked somewhere in it
@@ -60,7 +62,8 @@ namespace vrlp::TestLocks
 				}
 				const auto& b = form->boundData;
 				found.push_back({ form, path, a_door, { static_cast<float>(b.boundMin.x), static_cast<float>(b.boundMin.y), static_cast<float>(b.boundMin.z) },
-					{ static_cast<float>(b.boundMax.x), static_cast<float>(b.boundMax.y), static_cast<float>(b.boundMax.z) } });
+					{ static_cast<float>(b.boundMax.x), static_cast<float>(b.boundMax.y), static_cast<float>(b.boundMax.z) },
+					LockableObjects::GameAngles(form->GetFormID()) });
 			}
 			std::ranges::sort(found, [](const Pick& a_l, const Pick& a_r) { return Lower(a_l.model) < Lower(a_r.model); });
 			a_out.insert(a_out.end(), found.begin(), found.end());
@@ -79,7 +82,38 @@ namespace vrlp::TestLocks
 		// how wide it stands on the arc
 		float Width(const Pick& a_p)
 		{
-			return std::max({ a_p.max.x - a_p.min.x, a_p.max.y - a_p.min.y, 20.0f });
+			return std::max(StandWidth(a_p.min, a_p.max, a_p.angles), 20.0f);
+		}
+
+		// The turn the game gave the copies placed last time, against the one they were placed
+		// for (RefRotation): logged when they differ, so a wrong guess of the game's turn shows.
+		void CheckTurns()
+		{
+			int checked = 0, off = 0;
+			for (auto& handle : g_spawned) {
+				auto  ref = std::as_const(handle).get();
+				auto* obj = ref ? ref->Get3D() : nullptr;
+				if (!obj) {
+					continue;
+				}
+				const auto& a = ref->data.angle;
+				const Mat3  want = RefRotation({ a.x, a.y, a.z });
+				const auto& m = obj->world.rotate;
+				float       worst = 1.0f;
+				for (int c = 0; c < 3; ++c) {
+					worst = std::min(worst, Dot(want.Column(c), Normalize({ m.entry[0][c], m.entry[1][c], m.entry[2][c] })));
+				}
+				++checked;
+				if (worst < 0.99f) {
+					++off;
+					const char* path = ref->GetBaseObject() && ref->GetBaseObject()->As<RE::TESModel>() ? ref->GetBaseObject()->As<RE::TESModel>()->GetModel() : "";
+					logger::warn("Test locks: {} stands turned otherwise than placed (angles {:.2f} {:.2f} {:.2f}; columns {:.2f} {:.2f} {:.2f} / {:.2f} {:.2f} {:.2f} / {:.2f} {:.2f} {:.2f})",
+						path, a.x, a.y, a.z, m.entry[0][0], m.entry[1][0], m.entry[2][0], m.entry[0][1], m.entry[1][1], m.entry[2][1], m.entry[0][2], m.entry[1][2], m.entry[2][2]);
+				}
+			}
+			if (checked > 0) {
+				logger::info("Test locks: {} of the {} placed last time stand as placed", checked - off, checked);
+			}
 		}
 
 		// A key the player doesn't carry, for a lock that has one (to try the Wax Key perk).
@@ -189,6 +223,7 @@ namespace vrlp::TestLocks
 
 	void Spawn()
 	{
+		CheckTurns();
 		Remove();
 		auto* player = RE::PlayerCharacter::GetSingleton();
 		auto* cell = player ? player->GetParentCell() : nullptr;
@@ -248,8 +283,10 @@ namespace vrlp::TestLocks
 		RE::TESKey*        key = SpareKey();
 		bool               keyGiven = false;
 
-		// Along the arc, centred in front of you. Each object's front faces you: -Y (the usual
-		// front of a model), or -X for a door that is thinner that way.
+		// Along the arc, centred in front of you. Each stands as the game stands it (some models
+		// lie on their side in their own file), turned so the side its lock is on faces you, its
+		// middle on the arc and its bottom on the floor.
+		auto&       manager = LockpickManager::Get();
 		float       along = -arc / 2.0f;
 		std::size_t chests = 0, doors = 0;
 		for (std::size_t k = 0; k < batch.size(); ++k) {
@@ -257,14 +294,14 @@ namespace vrlp::TestLocks
 			const float w = Width(p) + kGap;
 			const float a = heading + (along + w / 2.0f) / kRadius;
 			along += w;
-			const bool  sideways = p.door && (p.max.x - p.min.x) < (p.max.y - p.min.y);
-			const float r = sideways ? a - RE::NI_PI / 2.0f : a;
-			// the model's middle on the arc (its origin may be at an edge, as a door's hinge)
-			const float  cx = (p.min.x + p.max.x) * 0.5f, cy = (p.min.y + p.max.y) * 0.5f;
-			const float  offX = cx * std::cos(r) + cy * std::sin(r);
-			const float  offY = -cx * std::sin(r) + cy * std::cos(r);
-			RE::NiPoint3 pos{ origin.x + std::sin(a) * kRadius - offX, origin.y + std::cos(a) * kRadius - offY, origin.z };
-			const RE::NiPoint3 rot{ 0.0f, 0.0f, r };
+			ObjectAnchor anchor = manager.AnchorFor(p.model, p.min, p.max, p.door);
+			if (anchor.shown == LockShown::kNone) {
+				anchor = GuessObjectAnchor(p.min, p.max, p.door);  // no lock on it: its likely front
+			}
+			const Vec3         away{ std::sin(a), std::cos(a), 0.0f };
+			const StandPose    stand = StandFacing(anchor, p.min, p.max, p.angles, away);
+			const RE::NiPoint3 pos{ origin.x + away.x * kRadius + stand.offset.x, origin.y + away.y * kRadius + stand.offset.y, origin.z + stand.offset.z };
+			const RE::NiPoint3 rot{ stand.angles.x, stand.angles.y, stand.angles.z };
 			auto               handle = RE::TESDataHandler::GetSingleton()->CreateReferenceAtLocation(p.form, pos, rot, cell,
                 player->GetWorldspace(), nullptr, nullptr, RE::ObjectRefHandle(), false, true);
 			auto ref = std::as_const(handle).get();
@@ -279,8 +316,9 @@ namespace vrlp::TestLocks
 			SetLock(ref.get(), kLevels[level], withKey);
 			g_spawned.push_back(handle);
 			(p.door ? doors : chests)++;
-			logger::info("Test locks: {} {:08X} '{}' {} ({}; locked {} times in the game){}", p.door ? "door" : "chest", p.form->GetFormID(),
-				p.form->GetName(), p.model, kLevelNames[level], LockableObjects::LockedReferences(p.form->GetFormID()),
+			logger::info("Test locks: {} {:08X} '{}' {} ({}; locked {} times in the game; the game stands it at {:.0f} {:.0f} {:.0f} deg, placed at {:.0f} {:.0f} {:.0f}){}",
+				p.door ? "door" : "chest", p.form->GetFormID(), p.form->GetName(), p.model, kLevelNames[level], LockableObjects::LockedReferences(p.form->GetFormID()),
+				p.angles.x * kRadToDeg, p.angles.y * kRadToDeg, p.angles.z * kRadToDeg, stand.angles.x * kRadToDeg, stand.angles.y * kRadToDeg, stand.angles.z * kRadToDeg,
 				withKey ? std::format(", has a key: '{}'", withKey->GetName()) : std::string());
 		}
 		g_next += batch.size();

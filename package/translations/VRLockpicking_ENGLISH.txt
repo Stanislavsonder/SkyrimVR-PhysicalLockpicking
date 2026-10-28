@@ -16,6 +16,8 @@ $VRLP_MoveWhilePicking	Walk while picking (lock on the object)
 $VRLP_MoveWhilePicking_Help	With the lock on the door or chest, you can walk and turn while you pick, to get to it. The game is then not paused.
 $VRLP_ActivateContainerAfterUnlock	Open container after unlocking
 $VRLP_ActivateContainerAfterUnlock_Help	Opens a container automatically once its lock is picked.
+$VRLP_ShowPickCount	Show lockpicks left
+$VRLP_ShowPickCount_Help	A small lockpick and a number by the lock: how many lockpicks you have left.
 $VRLP_HeaderDifficulty	Difficulty
 $VRLP_SweetSpotMult	Sweet spot size
 $VRLP_SweetSpotMult_Help	How wide the spot is where the lock turns all the way (x the vanilla size for your skill and perks). Smaller = harder to find.

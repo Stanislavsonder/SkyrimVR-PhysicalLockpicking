@@ -32,4 +32,14 @@ cmake --build build-lockplacer
    ```
    (With Mod Organizer 2 the INI the game reads is in its `overwrite` folder.) The mod uses the new places at the next lockpicking.
 
-A door needs only one side marked: the other side is then its mirror through the door. Where the mirror misses (the door's frame is part of the model, or the two sides differ), mark the other side too: copy the `VRLP_Lock` node (right click → Block → Copy Branch, then on the root node Paste Branch) and move the copy to the other side. The first marker in the file is the side marked, the second the other side (`vObjectKeyhole2`, `vObjectInto2`, `vObjectUp2`, `sObjectLock2`). NifSkope renames a pasted copy when it saves (`<root>:53`, `:54` ...); `read` finds it by its shapes, gives it its names back and saves them into the copy. In the game you get the lock of the side you stand on. Delete the copy and run `read` again to go back to the mirror. Coordinates are the model's own, as NifSkope shows them.
+A door with one side marked has its lock only there, whichever side you stand. To have it on the other side too, mark that side: copy the `VRLP_Lock` node (right click → Block → Copy Branch, then on the root node Paste Branch) and move the copy to the other side. The first marker in the file is the side marked, the second the other side (`vObjectKeyhole2`, `vObjectInto2`, `vObjectUp2`, `sObjectLock2`). NifSkope renames a pasted copy when it saves (`<root>:53`, `:54` ...); `read` finds it by its shapes, gives it its names back and saves them into the copy. In the game you get the lock of the side you stand on. Delete the copy and run `read` again to go back to one side. Coordinates are the model's own, as NifSkope shows them.
+
+## Starting a model over
+
+Deleted a part of the lock you wanted after all, or spoilt a copy and saved it? Make just that copy again from the game's data:
+
+```
+lockplacer reset VRLockpicking_LockableModels.txt C:\VRLP\preview <Data> impwooddoorsingle01
+```
+
+Its markers stay where they are, each with the whole lock on it again (a copy with its marker deleted gets it back at the built-in place). Add `built-in` at the end to put the markers back at the built-in place too. Name a model by its file name or its path; several go separated by `;`. Only those copies are made again. Run `read` afterwards for the mod to use them.

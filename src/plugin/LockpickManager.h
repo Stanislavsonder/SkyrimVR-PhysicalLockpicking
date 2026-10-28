@@ -31,6 +31,9 @@ namespace vrlp
 		// built-in alignments and the automatic fit are used again. Main thread.
 		void ResetMarkup();
 		const Config& GetConfig() const { return _cfg; }
+		// Where the lock sits on a door or chest model: the player's own placement, else a
+		// built-in one, else a guess from its bounds. a_source says which, for the log.
+		ObjectAnchor AnchorFor(const std::string& a_model, const Vec3& a_min, const Vec3& a_max, bool a_door, const char** a_source = nullptr) const;
 
 		// Called (from any thread) once per controller poll; schedules the main-thread update.
 		static void OnFrame();

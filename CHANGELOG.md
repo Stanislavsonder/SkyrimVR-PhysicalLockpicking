@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0
 
 - **Lock on the door or chest** (General page, on by default): the lock sits on the door or chest you pick instead of in front of you. Doors and chests that the game's plugins never lock keep it in front of you. With it, **Walk while picking** (on by default) lets you walk and turn while you pick; the game is then not paused. On the 88 door and chest models that the base game and its DLCs lock it comes lined up as a keyhole on the model, on each side of a door and on every face of a Dwemer chest that looks the same all round; you pick the one on the side you stand. On the few with nothing to pick (a ceiling trapdoor, a Nordic ruin's trapdoor, Apocrypha's urns) it stays in front of you. Per model it can also show the whole lock, or the keyhole and the ring round it (markup tool, lockplacer).
 - Markup tool: a new first step places the lock on the door or chest (carried with the left hand), saved per model (on a door or chest marked on more than one side, the side you stand). The number pad fine-tunes every step: moves, turns, and the tools' size.

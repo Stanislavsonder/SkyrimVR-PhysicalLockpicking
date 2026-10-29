@@ -46,6 +46,8 @@ cmake --build build --target VRLockpicking vrlp_tests
 python tools/package.py build/VRLockpicking.dll out/VRLockpicking.zip
 ```
 
+`tools/build.ps1` does all of this from any PowerShell (it enters the MSVC environment itself), runs the tests and writes `out/VRLockpicking.zip`; `-Lockplacer` also builds `out-lockplacer/lockplacer.exe`. It needs VS 2022 Build Tools with the C++ workload, CMake, Ninja, Python and vcpkg at `VCPKG_ROOT` (CI's vcpkg commit: `ee12231b`).
+
 **Plugin on Linux:** cross-compile with clang-cl (LLVM 20) and an `xwin` sysroot. Pass `-DCMAKE_TOOLCHAIN_FILE=extern/CommonLibVR/cmake/toolchain-linux-clangcl.cmake -DXWIN_SYSROOT=<xwin output> -DVRLP_BUILD_PLUGIN=ON`, then `ninja`. This is the way to check that plugin code compiles without Windows. CommonLib takes a long time the first time.
 
 **Address IDs:** after a plugin build, run

@@ -1,5 +1,6 @@
 build*/
 out/
+out-lockplacer/
 .vs/
 vcpkg_installed/
 *.user
@@ -8,6 +9,7 @@ __pycache__/
 # extracted or previewed meshes) stays local
 /tools/*
 !/tools/audit_address_ids.py
+!/tools/build.ps1
 !/tools/lockplacer/
 !/tools/make_mcm.py
 !/tools/nifgen/

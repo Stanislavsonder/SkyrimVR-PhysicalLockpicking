@@ -892,11 +892,11 @@ vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
 sObjectLock = keyhole
 [dlc01\dungeons\castle\lghalls\casexfreesmdoor01.nif]
-vObjectKeyhole = 34.500, -4.500, 65.000
+vObjectKeyhole = 46.500, -4.300, 64.000
 vObjectInto = 0.000, 1.000, 0.000
-vObjectUp = 0.000, 0.000, 1.000
+vObjectUp = -0.000, -0.000, 1.000
 sObjectLock = keyhole
-vObjectKeyhole2 = 58.500, 4.300, 65.000
+vObjectKeyhole2 = 46.500, 4.300, 64.000
 vObjectInto2 = 0.000, -1.000, 0.000
 vObjectUp2 = -0.000, 0.000, 1.000
 sObjectLock2 = keyhole

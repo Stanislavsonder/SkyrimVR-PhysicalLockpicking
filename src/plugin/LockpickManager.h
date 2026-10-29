@@ -70,7 +70,7 @@ namespace vrlp
 		void NudgeKeyhole(const Numpad::Input& a_pad, float a_dt);
 		bool LockOnObject(RE::TESObjectREFR* a_target, const Vec3& a_head);
 		Pose ObjectLockWorld() const;
-		ObjectAnchor ObjectSideShown() const;  // the door's side you stand on, as a lock on the object
+		ObjectAnchor ObjectSideShown() const;  // the side you stand on, as a lock on the object
 		void SaveObjectPlacement();
 		void EndGrab(bool a_save);
 		void SaveAlignment();
@@ -93,12 +93,12 @@ namespace vrlp
 		struct OnObject
 		{
 			std::string  model;
-			ObjectAnchor anchor;  // as saved (a door: the side it was marked on)
+			ObjectAnchor anchor;  // as saved (the first side marked first)
 			Vec3         boundMin, boundMax;
 			Pose         object;  // its world pose (it doesn't move while you pick)
 			float        scale{ 1.0f };
 			bool         door{ false };
-			bool         otherSide{ false };  // you stand on the door's other side
+			std::size_t  side{ 0 };  // the marked side you stand on
 		};
 		std::optional<OnObject>    _onObject;
 		struct LockGrab

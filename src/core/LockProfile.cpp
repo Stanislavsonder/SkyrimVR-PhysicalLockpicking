@@ -267,25 +267,26 @@ namespace vrlp
 
 		std::string AnchorVecText(const Vec3& a_v) { return std::format("{:.3f}, {:.3f}, {:.3f}", a_v.x, a_v.y, a_v.z); }
 
-		constexpr const char* kAnchorKeys[] = { "vObjectKeyhole", "vObjectInto", "vObjectUp", "sObjectLock", "vObjectKeyhole2", "vObjectInto2", "vObjectUp2", "sObjectLock2" };
+		constexpr const char* kAnchorKeys[] = { "vObjectKeyhole", "vObjectInto", "vObjectUp", "sObjectLock" };
+
+		// a side's key: the first side's as it is, the others' ending in 2, 3 ...
+		std::string SideKey(const char* a_key, std::size_t a_side)
+		{
+			return a_side == 0 ? std::string(a_key) : std::format("{}{}", a_key, a_side + 1);
+		}
 
 		std::vector<IniValue> AnchorValues(const std::string& a_section, const ObjectAnchor& a_a)
 		{
 			if (a_a.shown == LockShown::kNone) {
 				return { { a_section, "sObjectLock", LockShownName(a_a.shown) } };
 			}
-			std::vector<IniValue> out = {
-				{ a_section, "vObjectKeyhole", AnchorVecText(a_a.keyhole) },
-				{ a_section, "vObjectInto", AnchorVecText(a_a.rot.Column(1)) },
-				{ a_section, "vObjectUp", AnchorVecText(a_a.rot.Column(2)) },
-				{ a_section, "sObjectLock", LockShownName(a_a.shown) },
-			};
-			if (a_a.back) {
-				const auto& b = *a_a.back;
-				out.push_back({ a_section, "vObjectKeyhole2", AnchorVecText(b.keyhole) });
-				out.push_back({ a_section, "vObjectInto2", AnchorVecText(b.rot.Column(1)) });
-				out.push_back({ a_section, "vObjectUp2", AnchorVecText(b.rot.Column(2)) });
-				out.push_back({ a_section, "sObjectLock2", LockShownName(b.shown) });
+			std::vector<IniValue> out;
+			for (std::size_t i = 0; i < a_a.Sides() && i < kMaxObjectSides; ++i) {
+				const ObjectAnchor::Side s = i == 0 ? ObjectAnchor::Side{ a_a.keyhole, a_a.rot, a_a.shown } : a_a.others[i - 1];
+				out.push_back({ a_section, SideKey("vObjectKeyhole", i), AnchorVecText(s.keyhole) });
+				out.push_back({ a_section, SideKey("vObjectInto", i), AnchorVecText(s.rot.Column(1)) });
+				out.push_back({ a_section, SideKey("vObjectUp", i), AnchorVecText(s.rot.Column(2)) });
+				out.push_back({ a_section, SideKey("sObjectLock", i), LockShownName(s.shown) });
 			}
 			return out;
 		}
@@ -372,33 +373,37 @@ namespace vrlp
 		return a;
 	}
 
-	ObjectAnchor OtherSide(const ObjectAnchor& a_anchor)
+	ObjectAnchor AnchorSide(const ObjectAnchor& a_anchor, std::size_t a_side)
 	{
-		if (!a_anchor.back) {
+		if (a_side == 0 || a_side > a_anchor.others.size()) {
 			return a_anchor;
 		}
-		ObjectAnchor a = a_anchor;
-		a.keyhole = a_anchor.back->keyhole;
-		a.rot = a_anchor.back->rot;
-		a.shown = a_anchor.back->shown;
-		a.back = ObjectAnchor::Side{ a_anchor.keyhole, a_anchor.rot, a_anchor.shown };
+		const ObjectAnchor::Side& s = a_anchor.others[a_side - 1];
+		ObjectAnchor              a = a_anchor;
+		a.keyhole = s.keyhole;
+		a.rot = s.rot;
+		a.shown = s.shown;
+		a.others[a_side - 1] = ObjectAnchor::Side{ a_anchor.keyhole, a_anchor.rot, a_anchor.shown };
 		return a;
 	}
 
-	bool UseOtherSide(const ObjectAnchor& a_anchor, const Pose& a_object, float a_scale, const Vec3& a_head)
+	std::size_t ChooseSide(const ObjectAnchor& a_anchor, const Pose& a_object, float a_scale, const Vec3& a_head)
 	{
-		if (!a_anchor.back) {
-			return false;
+		std::size_t best = 0;
+		bool        bestInFront = false;
+		float       bestDist = 0.0f;
+		for (std::size_t i = 0; i < a_anchor.Sides(); ++i) {
+			const Pose lock = PlaceOnObject(AnchorSide(a_anchor, i), a_object, a_scale);
+			// you face into the lock: its "into the lock" points away from you
+			const bool  inFront = Dot(lock.pos - a_head, lock.rot.Column(1)) > 0.0f;
+			const float dist = Distance(lock.pos, a_head);
+			if (i == 0 || (inFront && !bestInFront) || (inFront == bestInFront && dist < bestDist)) {
+				best = i;
+				bestInFront = inFront;
+				bestDist = dist;
+			}
 		}
-		const Pose front = PlaceOnObject(a_anchor, a_object, a_scale);
-		const Pose back = PlaceOnObject(OtherSide(a_anchor), a_object, a_scale);
-		// you face into the lock: its "into the lock" points away from you
-		const bool atFront = Dot(front.pos - a_head, front.rot.Column(1)) > 0.0f;
-		const bool atBack = Dot(back.pos - a_head, back.rot.Column(1)) > 0.0f;
-		if (atFront != atBack) {
-			return atBack;
-		}
-		return Distance(back.pos, a_head) < Distance(front.pos, a_head);
+		return best;
 	}
 
 	Mat3 RefRotation(const Vec3& a_angles)
@@ -493,17 +498,21 @@ namespace vrlp
 			bool      hasShown{ false };
 			LockShown shown{ LockShown::kWhole };
 		};
-		// [0] the marked side, [1] a door's other side (the keys ending in 2)
-		std::map<std::string, std::array<Raw, 2>> raw;
+		// [0] the first side, [1] ... the others (the keys ending in 2, 3 ...)
+		std::map<std::string, std::array<Raw, kMaxObjectSides>> raw;
 		for (const auto& [key, value] : ParseIni(a_text)) {
 			const auto dot = key.rfind('.');
 			if (dot == std::string::npos) {
 				continue;
 			}
 			std::string name = key.substr(dot + 1);
-			const int   side = !name.empty() && name.back() == '2' ? 1 : 0;
-			if (side == 1) {
+			std::size_t side = 0;
+			if (!name.empty() && name.back() >= '2' && name.back() <= '9') {
+				side = static_cast<std::size_t>(name.back() - '1');
 				name.pop_back();
+			}
+			if (side >= kMaxObjectSides) {
+				continue;
 			}
 			if (name != "vobjectkeyhole" && name != "vobjectinto" && name != "vobjectup" && name != "sobjectlock") {
 				continue;
@@ -528,8 +537,10 @@ namespace vrlp
 				continue;
 			}
 			ObjectAnchor a{ r.keyhole, LockAxes(r.into, r.up), true, r.shown };
-			if (const Raw& b = sides[1]; b.valid && !none) {
-				a.back = ObjectAnchor::Side{ b.keyhole, LockAxes(b.into, b.up), b.shown == LockShown::kNone ? LockShown::kWhole : b.shown };
+			for (std::size_t i = 1; i < sides.size() && !none; ++i) {
+				if (const Raw& b = sides[i]; b.valid) {
+					a.others.push_back({ b.keyhole, LockAxes(b.into, b.up), b.shown == LockShown::kNone ? LockShown::kWhole : b.shown });
+				}
 			}
 			out[model] = a;
 		}
@@ -540,20 +551,23 @@ namespace vrlp
 	{
 		const std::string     key = NormalizeModelPath(a_modelPath);
 		std::vector<IniValue> values = AnchorValues(key, a_anchor);
-		// keys saved before that this place no longer has (a back side gone, or no lock on it now)
-		// are emptied, so an old place isn't left behind
+		// keys saved before that this place no longer has (a side gone, or no lock on it now) are
+		// emptied, so an old place isn't left behind
 		std::set<std::string> saved;
 		for (const auto& [name, value] : ParseIni(a_text)) {
 			if (const auto dot = name.rfind('.'); dot != std::string::npos && NormalizeModelPath(name.substr(0, dot)) == key) {
 				saved.insert(name.substr(dot + 1));
 			}
 		}
-		for (const char* k : kAnchorKeys) {
-			std::string lower = k;
-			std::transform(lower.begin(), lower.end(), lower.begin(), [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
-			const bool written = std::any_of(values.begin(), values.end(), [&](const IniValue& v) { return v.key == k; });
-			if (!written && saved.contains(lower)) {
-				values.push_back({ key, k, "" });
+		for (std::size_t side = 0; side < kMaxObjectSides; ++side) {
+			for (const char* name : kAnchorKeys) {
+				const std::string k = SideKey(name, side);
+				std::string       lower = k;
+				std::transform(lower.begin(), lower.end(), lower.begin(), [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
+				const bool written = std::any_of(values.begin(), values.end(), [&](const IniValue& v) { return v.key == k; });
+				if (!written && saved.contains(lower)) {
+					values.push_back({ key, k, "" });
+				}
 			}
 		}
 		return SetIniValues(a_text, values);

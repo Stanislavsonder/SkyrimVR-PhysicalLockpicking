@@ -62,7 +62,7 @@ On by default: the game is paused while you pick a lock, the way menus pause it.
 
 ### Lock on the door or chest
 
-On by default: the lock sits on the door or chest itself, on its locked side (on a door marked on both sides, the side you stand). Turn **Lock on the door or chest** off to have it appear in front of you instead. You may have to step up to it. Doors and chests that your game never locks (the mod reads which ones from your plugins when the game starts) keep the lock in front of you. With **Walk while picking** (on by default) you can walk and turn while you pick, to get to the lock; the game is then not paused. The base game's and its DLCs' doors and chests come lined up; on other models it is a guess from the model's size until it is lined up with the markup tool.
+On by default: the lock sits on the door or chest itself, on its locked side (on a door or chest marked on more than one side, the side you stand). Turn **Lock on the door or chest** off to have it appear in front of you instead. You may have to step up to it. Doors and chests that your game never locks (the mod reads which ones from your plugins when the game starts) keep the lock in front of you. With **Walk while picking** (on by default) you can walk and turn while you pick, to get to the lock; the game is then not paused. The base game's and its DLCs' doors and chests come lined up; on other models it is a guess from the model's size until it is lined up with the markup tool.
 
 ### Lining up models (markup tool)
 

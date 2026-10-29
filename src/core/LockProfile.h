@@ -70,8 +70,9 @@ namespace vrlp
 	// Where the lock sits on a door or chest (bLockOnObject), in the object's own model space
 	// (before the reference's scale): the keyhole, and the lock frame's axes (right, into the
 	// lock, up). Set with the markup tool's first step and saved under the object's model in the
-	// same file: vObjectKeyhole, vObjectInto, vObjectUp. A door can have its other side marked too
-	// (the same keys ending in 2); without it, the lock is only on the side marked.
+	// same file: vObjectKeyhole, vObjectInto, vObjectUp. A door can have its other side marked too,
+	// a chest each of its faces (the same keys ending in 2, 3 ... up to kMaxObjectSides); the lock
+	// is on the side you stand, and with one side marked only there.
 	// sObjectLock says how much of the lock is drawn (LockShown).
 	enum class LockShown
 	{
@@ -99,19 +100,22 @@ namespace vrlp
 		Mat3                rot;  // columns: right, into the lock, up
 		bool                valid{ false };
 		LockShown           shown{ LockShown::kWhole };
-		std::optional<Side> back;  // the door's other side, when it was marked
+		std::vector<Side>   others;  // the other sides marked: a door's back, a chest's other faces
+
+		std::size_t Sides() const { return 1 + others.size(); }
 	};
+	inline constexpr std::size_t kMaxObjectSides = 8;
 
 	// A first guess from the model's bounds (OBND, model space). Chest: on its front (-Y) face,
 	// in the middle, a little below the lid. Door: on the face of its thin side, at handle height,
 	// near the edge furthest from the model's origin (doors swing about their origin).
 	ObjectAnchor GuessObjectAnchor(const Vec3& a_boundMin, const Vec3& a_boundMax, bool a_door);
-	// The lock on the other side of a door: the one marked there (front and back swapped; twice
-	// gives the anchor back). A door with one side marked has no other: the same anchor.
-	ObjectAnchor OtherSide(const ObjectAnchor& a_anchor);
-	// Which of a door's two marked locks a player with the head at a_head picks: the one they
-	// stand in front of, else the nearer one. True for the other side; false with one side marked.
-	bool UseOtherSide(const ObjectAnchor& a_anchor, const Pose& a_object, float a_scale, const Vec3& a_head);
+	// The lock on one of the sides marked (0: the first): that side swapped with the first (twice
+	// gives the anchor back). A side not marked: the same anchor.
+	ObjectAnchor AnchorSide(const ObjectAnchor& a_anchor, std::size_t a_side);
+	// Which of the marked locks a player with the head at a_head picks: the nearest of those they
+	// stand in front of, else the nearest. 0 with one side marked.
+	std::size_t ChooseSide(const ObjectAnchor& a_anchor, const Pose& a_object, float a_scale, const Vec3& a_head);
 
 	// How the game turns a placed reference by its angles (radians, as its record stores them),
 	// and the angles of a turn.

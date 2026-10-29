@@ -1306,10 +1306,10 @@ TEST(ObjectAnchorGuessAndOtherSide)
 	CHECK(side.keyhole.y < -80.0f);
 	CHECK(side.keyhole.x < -3.0f);
 	// one side marked: no lock on the other, whichever side you stand
-	const ObjectAnchor same = OtherSide(door);
+	const ObjectAnchor same = AnchorSide(door, 1);
 	CHECK_NEAR(Distance(same.keyhole, door.keyhole), 0.0, 1e-4);
-	CHECK(!UseOtherSide(door, Pose{}, 1.0f, { 80, 400, 120 }));
-	CHECK(!UseOtherSide(door, Pose{}, 1.0f, { 80, -400, 120 }));
+	CHECK(ChooseSide(door, Pose{}, 1.0f, { 80, 400, 120 }) == 0);
+	CHECK(ChooseSide(door, Pose{}, 1.0f, { 80, -400, 120 }) == 0);
 	// a trapdoor hinged at its origin, lying flat: on top, near the free edge, facing down
 	const ObjectAnchor trap = GuessObjectAnchor({ -50, 0, -4 }, { 50, 120, 4 }, true);
 	CHECK(trap.keyhole.y > 100.0f && trap.keyhole.y < 120.0f);
@@ -1374,43 +1374,97 @@ TEST(ObjectAnchorBothSidesMarked)
 	std::string text = WriteObjectAnchor("", "architecture\\orclonghouse\\orcdoor01.nif", door);
 	text = text + "vObjectKeyhole2 = 40, 214, 61\nvObjectInto2 = 0, -1, 0\nvObjectUp2 = 0, 0, 1\nsObjectLock2 = Ring\n";
 	const ObjectAnchor both = ParseObjectAnchors(text).at("architecture\\orclonghouse\\orcdoor01.nif");
-	CHECK(both.back.has_value());
-	CHECK(both.shown == LockShown::kWhole && both.back->shown == LockShown::kRing);
+	CHECK(both.Sides() == 2);
+	CHECK(both.shown == LockShown::kWhole && both.others[0].shown == LockShown::kRing);
 	// the other side is the one marked there, and back again
-	const ObjectAnchor other = OtherSide(both);
+	const ObjectAnchor other = AnchorSide(both, 1);
 	CHECK_NEAR(Distance(other.keyhole, { 40, 214, 61 }), 0.0, 1e-4);
 	CHECK_NEAR(Dot(other.rot.Column(1), Vec3{ 0, -1, 0 }), 1.0, 1e-4);
 	CHECK(other.shown == LockShown::kRing);
-	const ObjectAnchor again = OtherSide(other);
+	const ObjectAnchor again = AnchorSide(other, 1);
 	CHECK_NEAR(Distance(again.keyhole, both.keyhole), 0.0, 1e-4);
 	CHECK(again.shown == LockShown::kWhole);
 
 	// the lock you stand in front of: the marked one is read from smaller Y, the other from larger
 	Pose object;
-	CHECK(!UseOtherSide(both, object, 1.0f, { 42, 150, 120 }));
-	CHECK(UseOtherSide(both, object, 1.0f, { 40, 260, 120 }));
+	CHECK(ChooseSide(both, object, 1.0f, { 42, 150, 120 }) == 0);
+	CHECK(ChooseSide(both, object, 1.0f, { 40, 260, 120 }) == 1);
 	// turned and moved in the world: the same
 	object.rot = AxisAngle({ 0, 0, 1 }, 1.2f);
 	object.pos = { 500, -300, 20 };
-	CHECK(UseOtherSide(both, object, 1.0f, object.pos + object.rot * Vec3{ 40, 260, 120 }));
+	CHECK(ChooseSide(both, object, 1.0f, object.pos + object.rot * Vec3{ 40, 260, 120 }) == 1);
 	// in front of both (or neither): the nearer one
 	ObjectAnchor odd = both;
-	odd.back->rot = door.rot;
-	odd.back->keyhole = { 40, 240, 61 };
-	CHECK(UseOtherSide(odd, Pose{}, 1.0f, { 40, 300, 120 }));
-	CHECK(!UseOtherSide(odd, Pose{}, 1.0f, { 40, 150, 120 }));
+	odd.others[0].rot = door.rot;
+	odd.others[0].keyhole = { 40, 240, 61 };
+	CHECK(ChooseSide(odd, Pose{}, 1.0f, { 40, 300, 120 }) == 1);
+	CHECK(ChooseSide(odd, Pose{}, 1.0f, { 40, 150, 120 }) == 0);
 	// only one side marked: that side, from behind too
-	CHECK(!UseOtherSide(door, Pose{}, 1.0f, { 42, 400, 120 }));
-	CHECK(!UseOtherSide(door, Pose{}, 1.0f, { 42, 100, 120 }));
+	CHECK(ChooseSide(door, Pose{}, 1.0f, { 42, 400, 120 }) == 0);
+	CHECK(ChooseSide(door, Pose{}, 1.0f, { 42, 100, 120 }) == 0);
 
 	// saved with both sides; the other side's marker deleted -> its keys emptied, read as one side
 	const std::string saved = WriteObjectAnchor("", "architecture\\orclonghouse\\orcdoor01.nif", both);
 	CHECK(saved.find("vObjectKeyhole2=40.000, 214.000, 61.000") != std::string::npos);
-	CHECK(ParseObjectAnchors(saved).at("architecture\\orclonghouse\\orcdoor01.nif").back.has_value());
+	CHECK(ParseObjectAnchors(saved).at("architecture\\orclonghouse\\orcdoor01.nif").Sides() == 2);
 	const std::string cleared = WriteObjectAnchor(saved, "architecture\\orclonghouse\\orcdoor01.nif", door);
-	CHECK(!ParseObjectAnchors(cleared).at("architecture\\orclonghouse\\orcdoor01.nif").back.has_value());
+	CHECK(ParseObjectAnchors(cleared).at("architecture\\orclonghouse\\orcdoor01.nif").Sides() == 1);
 	CHECK(WriteObjectAnchor("", "a.nif", door).find("Keyhole2") == std::string::npos);
 	CHECK(ObjectAnchorText(both).find("vObjectKeyhole2 = 40.000") != std::string::npos);
+}
+
+TEST(ObjectAnchorFourSidesMarked)
+{
+	// a chest the same on every side (Dwemer), a lock marked on each face, each facing into it
+	auto facing = [](const Vec3& a_into) { return Mat3::FromColumns(Cross(a_into, { 0, 0, 1 }), a_into, { 0, 0, 1 }); };
+	const std::string model = "clutter\\dwemer\\dwecontainter02.nif";
+	ObjectAnchor      chest;
+	chest.keyhole = { 0, -22, 31 };
+	chest.rot = facing({ 0, 1, 0 });
+	chest.valid = true;
+	chest.others = {
+		{ { 0, 22, 31 }, facing({ 0, -1, 0 }), LockShown::kKeyhole },
+		{ { 20, 0, 36 }, facing({ -1, 0, 0 }), LockShown::kKeyhole },
+		{ { -20, 0, 36 }, facing({ 1, 0, 0 }), LockShown::kRing },
+	};
+	const std::string text = WriteObjectAnchor("", model, chest);
+	CHECK(text.find("vObjectKeyhole4=-20.000, 0.000, 36.000") != std::string::npos);
+	CHECK(text.find("sObjectLock4=ring") != std::string::npos);
+	const ObjectAnchor read = ParseObjectAnchors(text).at(model);
+	CHECK(read.Sides() == 4);
+	CHECK(read.others.size() == 3 && read.others[2].shown == LockShown::kRing);
+	CHECK(read.others.size() == 3 && Dot(read.others[1].rot.Column(1), Vec3{ -1, 0, 0 }) > 0.999f);
+
+	// from each side, the lock on that side; turned, moved and scaled in the world the same
+	Pose object;
+	object.rot = AxisAngle({ 0, 0, 1 }, -0.7f);
+	object.pos = { -800, 300, 0 };
+	const Vec3 heads[] = { { 0, -60, 90 }, { 5, 70, 90 }, { 60, -5, 90 }, { -60, 5, 90 } };
+	for (std::size_t i = 0; i < 4; ++i) {
+		CHECK(ChooseSide(read, Pose{}, 1.0f, heads[i]) == i);
+		CHECK(ChooseSide(read, object, 1.3f, object.pos + object.rot * (heads[i] * 1.3f)) == i);
+	}
+	// at a corner, in front of two: the nearer of those two
+	CHECK(ChooseSide(read, Pose{}, 1.0f, { 50, -40, 60 }) == 2);
+	CHECK(ChooseSide(read, Pose{}, 1.0f, { 40, -50, 60 }) == 0);
+
+	// each side swapped with the first and back again
+	for (std::size_t i = 1; i < 4; ++i) {
+		const ObjectAnchor s = AnchorSide(read, i);
+		CHECK_NEAR(Distance(s.keyhole, read.others[i - 1].keyhole), 0.0, 1e-4);
+		CHECK(s.Sides() == 4);
+		CHECK_NEAR(Distance(AnchorSide(s, i).keyhole, read.keyhole), 0.0, 1e-4);
+	}
+	CHECK_NEAR(Distance(AnchorSide(read, 9).keyhole, read.keyhole), 0.0, 1e-4);
+
+	// one face's marker deleted: its keys emptied, the others renumbered
+	ObjectAnchor three = read;
+	three.others.erase(three.others.begin() + 1);
+	const std::string fewer = WriteObjectAnchor(text, model, three);
+	CHECK(ParseIni(fewer).at(model + ".vobjectkeyhole4").empty());
+	const ObjectAnchor readThree = ParseObjectAnchors(fewer).at(model);
+	CHECK(readThree.Sides() == 3);
+	CHECK(readThree.others.size() == 2 && readThree.others[1].shown == LockShown::kRing);
 }
 
 TEST(ObjectAnchorPlacementRoundTrip)
@@ -1446,7 +1500,7 @@ TEST(ObjectAnchorPlacementRoundTrip)
 	small.shown = LockShown::kKeyhole;
 	const auto smallBack = ParseObjectAnchors(WriteObjectAnchor(text, "clutter\\containers\\chest01.nif", small));
 	CHECK(smallBack.size() == 1 && smallBack.begin()->second.shown == LockShown::kKeyhole);
-	CHECK(OtherSide(small).shown == LockShown::kKeyhole);
+	CHECK(AnchorSide(small, 1).shown == LockShown::kKeyhole);
 	CHECK(ParseObjectAnchors("[a.nif]\nvObjectKeyhole = 1, 2, 3\nsObjectLock = KEYHOLE\n").at("a.nif").shown == LockShown::kKeyhole);
 	// anything else: the whole lock
 	CHECK(ParseObjectAnchors("[a.nif]\nvObjectKeyhole = 1, 2, 3\nsObjectLock = half\n").at("a.nif").shown == LockShown::kWhole);
@@ -1479,8 +1533,8 @@ TEST(ObjectAnchorPlacementRoundTrip)
 	CHECK(farm.shown == LockShown::kKeyhole);
 	CHECK_NEAR(farm.keyhole.z, 83.0, 1e-3);
 	// both sides of this door marked, each facing into it
-	CHECK(farm.back && farm.back->shown == LockShown::kKeyhole);
-	CHECK(farm.back && Dot(farm.rot.Column(1), farm.back->rot.Column(1)) < -0.99f);
+	CHECK(farm.Sides() == 2 && farm.others[0].shown == LockShown::kKeyhole);
+	CHECK(farm.Sides() == 2 && Dot(farm.rot.Column(1), farm.others[0].rot.Column(1)) < -0.99f);
 	// nothing to pick, or out of reach: in front of you
 	for (const char* model : { "clutter\\nightmother\\nmcoffin01.nif", "dungeons\\imperial\\door\\trapdoorladder01.nif", "traps\\hingetrap\\traphingetrigger01.nif" }) {
 		CHECK(DefaultObjectAnchors().at(model).shown == LockShown::kNone);

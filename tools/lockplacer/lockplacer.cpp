@@ -18,8 +18,9 @@
 //
 // The marker is a node named VRLP_Lock under the model's root: its origin is the keyhole, +Y
 // points into the door or chest, +Z is up. Move and turn it with NifSkope's Transform > Edit.
-// A second VRLP_Lock (a copy of the first) marks a door's other side (vObjectKeyhole2 ...). NifSkope
-// renames a pasted copy when it saves; read finds it by its shapes and names it back.
+// More VRLP_Locks (copies of the first) mark more sides: a door's other side, a chest's other faces
+// (vObjectKeyhole2, 3 ...). NifSkope renames a pasted copy when it saves; read finds it by its
+// shapes and names it back.
 // What is left of the lock on a marker is what the game draws (sObjectLock): the body node
 // VRLP_LockBody deleted -> the keyhole and its ring; VRLP_LockRing* deleted too -> the keyhole
 // alone. A copy with its marker deleted gets no lock on the model (the lock stays in front of you).
@@ -274,7 +275,7 @@ namespace
 		return a;
 	}
 
-	// The VRLP_Lock nodes, in the file's order: the marked side, then a door's other side.
+	// The VRLP_Lock nodes, in the file's order: the first side marked, then the others.
 	std::vector<nifly::NiNode*> Markers(nifly::NifFile& a_nif)
 	{
 		std::vector<nifly::NiNode*> out;
@@ -357,8 +358,8 @@ namespace
 		return renamed;
 	}
 
-	// Where the markers are: the first one, and the second as the door's other side. No marker
-	// left: no lock on this model.
+	// Where the markers are: the first one, then the other sides. No marker left: no lock on this
+	// model.
 	vrlp::ObjectAnchor MarkersAnchor(nifly::NifFile& a_nif, const std::string& a_key)
 	{
 		const auto markers = Markers(a_nif);
@@ -373,13 +374,13 @@ namespace
 				std::printf("note     %s: a marker is no longer right under the root; its place is read as if it were\n", a_key.c_str());
 			}
 		}
-		if (markers.size() > 2) {
-			std::printf("note     %s: %zu markers; the first two are used (one for each side of a door)\n", a_key.c_str(), markers.size());
+		if (markers.size() > vrlp::kMaxObjectSides) {
+			std::printf("note     %s: %zu markers; the first %zu are used\n", a_key.c_str(), markers.size(), vrlp::kMaxObjectSides);
 		}
 		vrlp::ObjectAnchor a = MarkerAnchor(a_nif, markers[0]);
-		if (markers.size() >= 2) {
-			const vrlp::ObjectAnchor b = MarkerAnchor(a_nif, markers[1]);
-			a.back = vrlp::ObjectAnchor::Side{ b.keyhole, b.rot, b.shown };
+		for (std::size_t i = 1; i < markers.size() && i < vrlp::kMaxObjectSides; ++i) {
+			const vrlp::ObjectAnchor b = MarkerAnchor(a_nif, markers[i]);
+			a.others.push_back({ b.keyhole, b.rot, b.shown });
 		}
 		return a;
 	}
@@ -589,26 +590,18 @@ namespace
 
 	bool AddMarker(nifly::NifFile& a_nif, const vrlp::ObjectAnchor& a_anchor, LockModel* a_lock = nullptr);
 
-	// The marked side, and a door's other side when it was marked too; none for no lock on it.
+	// Every side marked, the first one first; none for no lock on it.
 	bool AddMarkers(nifly::NifFile& a_nif, const vrlp::ObjectAnchor& a_anchor, LockModel* a_lock)
 	{
 		if (a_anchor.shown == vrlp::LockShown::kNone) {
 			return true;
 		}
-		vrlp::ObjectAnchor front = a_anchor;
-		front.back.reset();
-		if (!AddMarker(a_nif, front, a_lock)) {
-			return false;
+		for (std::size_t i = 0; i < a_anchor.Sides(); ++i) {
+			if (!AddMarker(a_nif, vrlp::AnchorSide(a_anchor, i), a_lock)) {
+				return false;
+			}
 		}
-		if (!a_anchor.back) {
-			return true;
-		}
-		vrlp::ObjectAnchor back;
-		back.keyhole = a_anchor.back->keyhole;
-		back.rot = a_anchor.back->rot;
-		back.shown = a_anchor.back->shown;
-		back.valid = true;
-		return AddMarker(a_nif, back, a_lock);
+		return true;
 	}
 
 	bool AddMarker(nifly::NifFile& a_nif, const vrlp::ObjectAnchor& a_anchor, LockModel* a_lock)
@@ -662,8 +655,8 @@ namespace
 	vrlp::ObjectAnchor WholeLock(vrlp::ObjectAnchor a_anchor)
 	{
 		a_anchor.shown = vrlp::LockShown::kWhole;
-		if (a_anchor.back) {
-			a_anchor.back->shown = vrlp::LockShown::kWhole;
+		for (auto& side : a_anchor.others) {
+			side.shown = vrlp::LockShown::kWhole;
 		}
 		return a_anchor;
 	}
@@ -737,7 +730,7 @@ namespace
 				continue;
 			}
 			std::printf("placed   %s (%s, %s, %s%s, locked %d times, from %s)\n", key.c_str(), m.door ? "door" : "container", from,
-				vrlp::LockShownName(anchor.shown), anchor.back ? ", both sides" : "", m.locked, source.c_str());
+				vrlp::LockShownName(anchor.shown), anchor.Sides() > 1 ? std::format(", {} sides", anchor.Sides()).c_str() : "", m.locked, source.c_str());
 			++placed;
 		}
 		// the marker alone, to copy into other models

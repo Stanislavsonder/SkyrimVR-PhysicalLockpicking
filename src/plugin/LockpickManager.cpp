@@ -1295,8 +1295,9 @@ namespace vrlp
 
 	// bLockOnObject: where the lock goes on the door or chest being picked. Its placement for the
 	// model: the player's own (markup tool), else a built-in one, else a guess from the model's
-	// bounds. A door with both sides marked has its lock on the side you stand; with one, on that
-	// side. Doors and containers the game's plugins never lock keep the lock in front of you.
+	// bounds. A door or chest with more than one side marked has its lock on the side you stand;
+	// with one, on that side. Doors and containers the game's plugins never lock keep the lock in
+	// front of you.
 	bool LockpickManager::LockOnObject(RE::TESObjectREFR* a_target, const Vec3& a_head)
 	{
 		auto*       base = a_target ? a_target->GetBaseObject() : nullptr;
@@ -1335,14 +1336,13 @@ namespace vrlp
 			logger::info("Lock on the object: [{}] has no lock on it ({}); in front of you instead", key, source);
 			return false;
 		}
-		if (o.door) {
-			o.otherSide = UseOtherSide(o.anchor, o.object, o.scale, a_head);
-		}
+		o.side = ChooseSide(o.anchor, o.object, o.scale, a_head);
 		_onObject = o;
 		const Pose  lock = ObjectLockWorld();
 		const float dist = Distance(lock.pos, a_head);
-		logger::info("Lock on the {} [{}] ({}{}{}, {}), {:.0f} from your head; bounds ({:.0f}, {:.0f}, {:.0f}) - ({:.0f}, {:.0f}, {:.0f}), scale {:.2f}",
-			o.door ? "door" : "container", key, source, o.anchor.back ? ", both sides marked" : "", o.otherSide ? ", the other side" : "",
+		logger::info("Lock on the {} [{}] ({}{}, {}), {:.0f} from your head; bounds ({:.0f}, {:.0f}, {:.0f}) - ({:.0f}, {:.0f}, {:.0f}), scale {:.2f}",
+			o.door ? "door" : "container", key, source,
+			o.anchor.Sides() > 1 ? std::format(", side {} of {} marked", o.side + 1, o.anchor.Sides()) : std::string(),
 			LockShownName(ObjectSideShown().shown), dist, o.boundMin.x, o.boundMin.y, o.boundMin.z, o.boundMax.x, o.boundMax.y, o.boundMax.z, o.scale);
 		return true;
 	}
@@ -1358,7 +1358,7 @@ namespace vrlp
 	ObjectAnchor LockpickManager::ObjectSideShown() const
 	{
 		const auto& o = *_onObject;
-		return o.otherSide ? OtherSide(o.anchor) : o.anchor;
+		return AnchorSide(o.anchor, o.side);
 	}
 
 	ObjectAnchor LockpickManager::AnchorFor(const std::string& a_model, const Vec3& a_min, const Vec3& a_max, bool a_door, const char** a_source) const
@@ -1392,15 +1392,15 @@ namespace vrlp
 			return;
 		}
 		auto& o = *_onObject;
-		// a lock pose in the world -> the anchor as saved; on a door's other side, that side's.
+		// a lock pose in the world -> the anchor as saved; on another side than the first, that side's.
 		auto store = [this, &o](const Pose& a_world) {
 			ObjectAnchor shown = ObjectAnchorFromPose(a_world, o.object, o.scale);
-			if (o.otherSide) {
-				o.anchor.back = ObjectAnchor::Side{ shown.keyhole, shown.rot, ObjectSideShown().shown };
+			if (o.side > 0 && o.side <= o.anchor.others.size()) {
+				o.anchor.others[o.side - 1] = ObjectAnchor::Side{ shown.keyhole, shown.rot, ObjectSideShown().shown };
 				return;
 			}
 			shown.shown = o.anchor.shown;
-			shown.back = o.anchor.back;
+			shown.others = o.anchor.others;
 			o.anchor = shown;
 		};
 		if (a_reset) {

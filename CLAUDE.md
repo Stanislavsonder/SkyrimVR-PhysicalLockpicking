@@ -13,7 +13,7 @@ Vanilla rules are kept:
 
 Lock Variations `_LID.ini` files are read so that each lock gets its own models and sounds.
 
-The version is 1.0.1. `CHANGELOG.md` holds the release notes.
+The version is 1.1.0. `CHANGELOG.md` holds the release notes.
 
 ## Layout
 
@@ -56,7 +56,7 @@ python tools/package.py build/VRLockpicking.dll out/VRLockpicking.zip
 python3 tools/audit_address_ids.py VRLockpicking.dll VRLockpicking.pdb <path to version-1-4-15-0.csv>
 ```
 
-It needs the cross build's PDB and `llvm-pdbutil` / `llvm-objdump`. It fails if the DLL resolves an ID that `src/plugin/AddressCheck.h` doesn't list. With the CSV, it reports which IDs the public VR library lacks. The CSV is in CommonLibVR's `tests/REL/`. The known and accepted gaps are:
+It needs the build's PDB (the cross build's or the MSVC one) and `llvm-pdbutil` / `llvm-objdump`. It fails if the DLL resolves an ID that `src/plugin/AddressCheck.h` doesn't list. With the CSV, it reports which IDs the public VR library lacks. The CSV is in CommonLibVR's `tests/REL/`. The known and accepted gaps are:
 - 19110, used through a verified fixed offset;
 - 51115;
 - 97538, linked but never reached.

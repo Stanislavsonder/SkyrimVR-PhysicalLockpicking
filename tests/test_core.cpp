@@ -1536,13 +1536,19 @@ TEST(ObjectAnchorPlacementRoundTrip)
 	CHECK(farm.Sides() == 2 && farm.others[0].shown == LockShown::kKeyhole);
 	CHECK(farm.Sides() == 2 && Dot(farm.rot.Column(1), farm.others[0].rot.Column(1)) < -0.99f);
 	// nothing to pick, or out of reach: in front of you
-	for (const char* model : { "clutter\\nightmother\\nmcoffin01.nif", "dungeons\\imperial\\door\\trapdoorladder01.nif", "traps\\hingetrap\\traphingetrigger01.nif" }) {
+	for (const char* model : { "dlc02\\dungeons\\apocrypha\\animated\\apourn\\apourn01.nif", "dungeons\\imperial\\door\\trapdoorladder01.nif",
+			 "dungeons\\nordic\\doors\\animated\\trapdoor\\ruins_trapdoor01.nif" }) {
 		CHECK(DefaultObjectAnchors().at(model).shown == LockShown::kNone);
 	}
+	// the Night Mother's coffin and a trap's trigger have a lock to pick
+	CHECK(DefaultObjectAnchors().at("clutter\\nightmother\\nmcoffin01.nif").shown == LockShown::kKeyhole);
+	CHECK(DefaultObjectAnchors().at("traps\\hingetrap\\traphingetrigger01.nif").shown == LockShown::kKeyhole);
 	// a trapdoor's lock looks down into it
 	const auto& trap = DefaultObjectAnchors().at(NormalizeModelPath("architecture\\farmhouse\\interior\\basement\\farmbtrapdoor02.nif"));
-	CHECK(trap.shown == LockShown::kRing);
+	CHECK(trap.shown == LockShown::kKeyhole);
 	CHECK_NEAR(trap.rot.Column(1).z, -1.0, 1e-4);
+	// a Dwemer chest the same all round: a keyhole on each face
+	CHECK(DefaultObjectAnchors().at("clutter\\dwemer\\dwecontainter02.nif").Sides() == 4);
 }
 
 TEST(KeyholeAmongTheTurningPart)

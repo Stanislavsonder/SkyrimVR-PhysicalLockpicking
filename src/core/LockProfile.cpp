@@ -586,9 +586,8 @@ namespace vrlp
 	{
 		// Lined up in NifSkope with tools/lockplacer (or in game with the markup tool, the "Lock on"
 		// lines of the log). "none": locked in the game's plugins, but there is nothing to pick there
-		// (the Night Mother's coffin, Apocrypha's urns, a trap's trigger) or no reaching it (a trapdoor
-		// in the ceiling): the lock stays in front of you. In pieces: MSVC takes no string literal
-		// longer than 16 KB.
+		// (Apocrypha's urns, a Nordic ruin's trapdoor) or no reaching it (a trapdoor in the ceiling):
+		// the lock stays in front of you. In pieces: MSVC takes no string literal longer than 16 KB.
 		static const std::string                         kText = R"([architecture\farmhouse\farmhousedoor01.nif]
 vObjectKeyhole = -40.000, -4.400, 83.000
 vObjectInto = 0.000, 1.000, 0.000
@@ -603,11 +602,15 @@ vObjectKeyhole = -40.000, -4.400, 83.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
 sObjectLock = keyhole
+vObjectKeyhole2 = -40.000, 4.400, 83.000
+vObjectInto2 = 0.000, -1.000, -0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
 [architecture\farmhouse\interior\basement\farmbtrapdoor02.nif]
 vObjectKeyhole = 0.000, 23.000, 14.400
 vObjectInto = 0.000, 0.000, -1.000
 vObjectUp = -1.000, 0.000, 0.000
-sObjectLock = ring
+sObjectLock = keyhole
 [architecture\farmhouse\interior\basement\farmhousejaildoor01.nif]
 vObjectKeyhole = -38.700, -1.400, 86.000
 vObjectInto = 0.000, 1.000, 0.000
@@ -618,19 +621,19 @@ vObjectInto2 = 0.000, -1.000, 0.000
 vObjectUp2 = -0.000, 0.000, 1.000
 sObjectLock2 = keyhole
 [architecture\orclonghouse\orcdoor01.nif]
-vObjectKeyhole = 42.000, 203.000, 62.000
+vObjectKeyhole = 54.000, 204.480, 47.000
 vObjectInto = 0.000, -1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = 42.000, 198.000, 62.000
-vObjectInto2 = 0.000, 1.000, -0.000
-vObjectUp2 = -0.000, 0.000, 1.000
-sObjectLock2 = whole
+sObjectLock = keyhole
+vObjectKeyhole2 = 54.000, 197.000, 47.000
+vObjectInto2 = 0.000, 1.000, 0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
 [architecture\orclonghouse\orcdoorload01.nif]
-vObjectKeyhole = -41.920, -2.000, 62.000
+vObjectKeyhole = -54.000, -3.750, 46.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [architecture\riften\riftendoor01.nif]
 vObjectKeyhole = 9.500, 4.300, 77.850
 vObjectInto = 0.000, -1.000, 0.000
@@ -644,11 +647,11 @@ sObjectLock2 = keyhole
 vObjectKeyhole = -2.500, -4.500, 88.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = ring
-vObjectKeyhole2 = -2.500, 4.500, 88.000
+sObjectLock = keyhole
+vObjectKeyhole2 = 3.000, 4.500, 88.000
 vObjectInto2 = 0.000, -1.000, 0.000
 vObjectUp2 = -0.000, 0.000, 1.000
-sObjectLock2 = ring
+sObjectLock2 = keyhole
 [architecture\riften\rtirongate01.nif]
 vObjectKeyhole = -52.300, -6.300, 82.500
 vObjectInto = 0.000, 1.000, 0.000
@@ -682,10 +685,10 @@ vObjectInto2 = 0.000, -0.000, 1.000
 vObjectUp2 = -0.000, 1.000, 0.000
 sObjectLock2 = keyhole
 [architecture\solitude\doors\shousedoor01.nif]
-vObjectKeyhole = 1.700, 9.560, -63.000
+vObjectKeyhole = -0.800, 7.000, -85.000
 vObjectInto = 1.000, 0.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [architecture\solitude\doors\shousedoor02.nif]
 vObjectKeyhole = -10.600, -2.300, -4.850
 vObjectInto = 0.000, 1.000, 0.000
@@ -714,15 +717,15 @@ vObjectInto2 = -1.000, 0.000, -0.000
 vObjectUp2 = -0.000, 0.000, 1.000
 sObjectLock2 = keyhole
 [architecture\whiterun\wrdoormaingate01.nif]
-vObjectKeyhole = -15.300, -9.000, 36.000
+vObjectKeyhole = -15.300, -13.000, 26.000
 vObjectInto = -1.000, 0.000, -0.000
 vObjectUp = -0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [architecture\whiterun\wrdragondoor01.nif]
-vObjectKeyhole = -6.800, 15.000, 19.000
+vObjectKeyhole = -7.000, 10.000, 28.000
 vObjectInto = 1.000, 0.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [architecture\whiterun\wrinteriors\wrdungeon\wrprisoncellfloorgrate01door.nif]
 vObjectKeyhole = -3.000, 44.280, 3.500
 vObjectInto = 0.000, -0.000, -1.000
@@ -738,30 +741,34 @@ vObjectInto2 = 0.000, -1.000, 0.000
 vObjectUp2 = -0.000, 0.000, 1.000
 sObjectLock2 = keyhole
 [architecture\whiterun\wrshackdoor01.nif]
-vObjectKeyhole = -5.500, -50.000, 13.000
+vObjectKeyhole = -7.300, -64.500, -18.000
 vObjectInto = 1.000, 0.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [architecture\windhelm\doors\whdoor01.nif]
-vObjectKeyhole = -43.500, 20.000, 71.000
+vObjectKeyhole = -43.500, 7.300, 53.000
 vObjectInto = 1.000, 0.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [architecture\windhelm\doors\whgrayquarterdoor01.nif]
-vObjectKeyhole = 0.000, 77.000, -9.000
+vObjectKeyhole = 0.200, 77.000, -9.000
 vObjectInto = 0.970, 0.242, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [clutter\common\metalcagedoor01.nif]
 vObjectKeyhole = -74.000, 11.300, -17.500
 vObjectInto = 0.000, -0.999, -0.052
 vObjectUp = 0.000, -0.052, 0.999
 sObjectLock = keyhole
 [clutter\common\metalcagelonggate01.nif]
-vObjectKeyhole = 91.000, 130.500, 95.000
+vObjectKeyhole = 99.300, 127.500, 95.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
+vObjectKeyhole2 = 99.300, 138.800, 95.000
+vObjectInto2 = 0.000, -1.000, -0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
 [clutter\common\strongbox01.nif]
 vObjectKeyhole = -0.100, 8.600, 9.500
 vObjectInto = 0.000, -0.985, -0.174
@@ -771,7 +778,7 @@ sObjectLock = keyhole
 vObjectKeyhole = 0.000, 24.500, 33.800
 vObjectInto = 0.000, -1.000, 0.000
 vObjectUp = -0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [clutter\containers\safeandlock01.nif]
 vObjectKeyhole = 23.210, -11.200, 31.800
 vObjectInto = -1.000, -0.000, 0.000
@@ -798,53 +805,87 @@ vObjectInto = -0.000, -0.000, -1.000
 vObjectUp = 0.000, 1.000, -0.000
 sObjectLock = keyhole
 [clutter\dwemer\dwecontainer01.nif]
-vObjectKeyhole = 0.000, 0.000, 53.600
-vObjectInto = -0.000, -0.000, -1.000
-vObjectUp = 0.000, 1.000, -0.000
+vObjectKeyhole = 0.000, -24.000, 49.600
+vObjectInto = 0.000, 0.342, -0.940
+vObjectUp = 0.000, 0.940, 0.342
 sObjectLock = keyhole
+vObjectKeyhole2 = 0.000, 24.500, 49.400
+vObjectInto2 = 0.000, -0.342, -0.940
+vObjectUp2 = 0.000, -0.940, 0.342
+sObjectLock2 = keyhole
 [clutter\dwemer\dwecontainter02.nif]
-vObjectKeyhole = 0.000, 0.000, 40.300
-vObjectInto = -0.000, -0.000, -1.000
-vObjectUp = 0.000, 1.000, -0.000
+vObjectKeyhole = 0.000, -22.000, 31.210
+vObjectInto = 0.000, 0.707, -0.707
+vObjectUp = 0.000, 0.707, 0.707
 sObjectLock = keyhole
+vObjectKeyhole2 = 0.000, 22.000, 31.700
+vObjectInto2 = 0.000, -0.707, -0.707
+vObjectUp2 = 0.000, -0.707, 0.707
+sObjectLock2 = keyhole
+vObjectKeyhole3 = 20.200, 0.200, 36.680
+vObjectInto3 = -0.423, -0.000, -0.906
+vObjectUp3 = -0.906, 0.000, 0.423
+sObjectLock3 = keyhole
+vObjectKeyhole4 = -20.000, 0.150, 36.680
+vObjectInto4 = 0.423, -0.000, -0.906
+vObjectUp4 = 0.906, 0.000, 0.423
+sObjectLock4 = keyhole
 [clutter\falmer\falmerbigfencegate01.nif]
-vObjectKeyhole = 0.000, -1.000, 60.000
+vObjectKeyhole = 0.000, -1.200, 60.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = ring
+sObjectLock = keyhole
+vObjectKeyhole2 = 0.000, 1.000, 60.000
+vObjectInto2 = 0.000, -1.000, 0.000
+vObjectUp2 = -0.000, 0.000, 1.000
+sObjectLock2 = keyhole
 [clutter\falmer\falmercontainer.nif]
-vObjectKeyhole = 32.000, 0.000, 31.800
+vObjectKeyhole = 31.800, 0.000, 34.800
 vObjectInto = -1.000, -0.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = ring
+sObjectLock = keyhole
+vObjectKeyhole2 = -31.800, 0.000, 34.800
+vObjectInto2 = 1.000, 0.000, 0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
 [clutter\falmer\falmercontainer02.nif]
-vObjectKeyhole = 0.000, -34.500, 33.800
+vObjectKeyhole = 0.000, -34.100, 37.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = ring
-)"
-			R"([clutter\nightmother\nmcoffin01.nif]
-sObjectLock = none
+sObjectLock = keyhole
+vObjectKeyhole2 = 0.000, 34.200, 37.000
+vObjectInto2 = 0.000, -1.000, -0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
+[clutter\nightmother\nmcoffin01.nif]
+vObjectKeyhole = -0.040, 35.500, 57.000
+vObjectInto = 0.000, -1.000, -0.000
+vObjectUp = -0.000, -0.000, 1.000
+sObjectLock = keyhole
 [clutter\ruins\ruins_largechest.nif]
-vObjectKeyhole = 1.000, -34.500, 58.000
+vObjectKeyhole = 0.000, -34.650, 58.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [clutter\ruins\ruins_smallchest.nif]
-vObjectKeyhole = 0.000, -26.200, 38.800
+vObjectKeyhole = 0.300, -25.400, 45.900
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = ring
+sObjectLock = keyhole
 [clutter\stockade\stockadegate01.nif]
-vObjectKeyhole = -5.000, -66.500, 68.000
+vObjectKeyhole = 2.500, -65.800, 61.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = ring
+sObjectLock = keyhole
+vObjectKeyhole2 = 2.400, -50.800, 61.000
+vObjectInto2 = 0.000, -1.000, -0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
 [clutter\upperclass\upperchest01.nif]
-vObjectKeyhole = 0.000, 27.500, 34.400
+vObjectKeyhole = 0.000, 27.500, 35.400
 vObjectInto = 0.000, -1.000, 0.000
 vObjectUp = -0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [dlc01\clutter\dlc01snowelfchest.nif]
 vObjectKeyhole = 0.100, -26.500, 29.400
 vObjectInto = 0.000, 1.000, 0.000
@@ -873,25 +914,34 @@ vObjectKeyhole = 0.000, 244.000, 16.500
 vObjectInto = 0.000, -0.000, -1.000
 vObjectUp = 1.000, 0.000, 0.000
 sObjectLock = keyhole
+vObjectKeyhole2 = 0.000, 245.000, 11.300
+vObjectInto2 = -0.000, -0.000, 1.000
+vObjectUp2 = 1.000, -0.000, 0.000
+sObjectLock2 = keyhole
 [dlc02\architecture\ravenrock\dlc2rrdoorload01.nif]
 vObjectKeyhole = -40.520, -6.500, 66.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
 sObjectLock = keyhole
 [dlc02\architecture\ravenrock\redoran\redoranadoor01.nif]
-vObjectKeyhole = -20.000, -5.000, 74.000
+vObjectKeyhole = -0.100, 4.500, 74.000
+vObjectInto = 0.000, -1.000, 0.000
+vObjectUp = -0.000, 0.000, 1.000
+sObjectLock = keyhole
+vObjectKeyhole2 = -0.100, -4.400, 74.000
+vObjectInto2 = 0.000, 1.000, 0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
+)"
+			R"([dlc02\architecture\ravenrock\redoran\redoranldoor01.nif]
+vObjectKeyhole = 0.000, -4.400, 74.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = 20.000, 5.000, 74.000
-vObjectInto2 = 0.000, -1.000, 0.000
-vObjectUp2 = -0.000, 0.000, 1.000
-sObjectLock2 = whole
-[dlc02\architecture\ravenrock\redoran\redoranldoor01.nif]
-vObjectKeyhole = -20.000, -4.400, 74.000
-vObjectInto = 0.000, 1.000, 0.000
-vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
+vObjectKeyhole2 = 0.000, 4.400, 74.000
+vObjectInto2 = 0.000, -1.000, -0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
 [dlc02\architecture\telvannitower\dlc2telmithryndoor01.nif]
 vObjectKeyhole = -8.000, -8.000, 63.000
 vObjectInto = 0.000, 1.000, 0.000
@@ -909,6 +959,10 @@ vObjectKeyhole = 11.000, 42.000, 115.000
 vObjectInto = 0.000, -1.000, 0.000
 vObjectUp = -0.000, 0.000, 1.000
 sObjectLock = keyhole
+vObjectKeyhole2 = -4.000, 29.000, 115.000
+vObjectInto2 = 0.000, 1.000, 0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
 [dlc02\dungeons\icecastle\dlc02icedoorloadext.nif]
 vObjectKeyhole = 12.000, 42.000, 115.000
 vObjectInto = 0.000, -1.000, 0.000
@@ -929,19 +983,19 @@ vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
 sObjectLock = keyhole
 [dungeons\dwemer\door\dwemersmalldoor01.nif]
-vObjectKeyhole = -66.000, -1.000, 80.000
+vObjectKeyhole = -0.500, -5.700, 80.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = -66.000, 1.000, 80.000
-vObjectInto2 = 0.000, -1.000, 0.000
-vObjectUp2 = -0.000, 0.000, 1.000
-sObjectLock2 = whole
+sObjectLock = keyhole
+vObjectKeyhole2 = -0.500, 5.800, 80.000
+vObjectInto2 = 0.000, -1.000, -0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
 [dungeons\dwemer\door\dwemersmalldoorload01.nif]
-vObjectKeyhole = -65.000, 1.500, 91.000
+vObjectKeyhole = 0.000, -2.500, 91.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [dungeons\dwemer\partitions\dweptndoor01.nif]
 vObjectKeyhole = 0.000, -5.200, 95.000
 vObjectInto = 0.000, 1.000, 0.000
@@ -952,43 +1006,43 @@ vObjectInto2 = 0.000, -1.000, 0.000
 vObjectUp2 = -0.000, 0.000, 1.000
 sObjectLock2 = keyhole
 [dungeons\imperial\door\impwallcage01.nif]
-vObjectKeyhole = 40.000, -37.500, -0.600
+vObjectKeyhole = 0.000, -36.200, -0.600
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [dungeons\imperial\door\impwooddoordouble01.nif]
 vObjectKeyhole = 2.000, 260.500, 77.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = ring
+sObjectLock = keyhole
 vObjectKeyhole2 = 2.000, 275.500, 77.000
 vObjectInto2 = 0.000, -1.000, 0.000
 vObjectUp2 = -0.000, 0.000, 1.000
-sObjectLock2 = ring
+sObjectLock2 = keyhole
 [dungeons\imperial\door\impwooddoordoubleload01.nif]
 vObjectKeyhole = 0.000, 248.500, 72.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = ring
+sObjectLock = keyhole
 [dungeons\imperial\door\impwooddoorholedoorload.nif]
-vObjectKeyhole = -44.000, -53.500, 61.000
+vObjectKeyhole = -52.000, -54.100, 46.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [dungeons\imperial\door\impwooddoorsingle01.nif]
-vObjectKeyhole = -52.000, -3.500, 76.000
+vObjectKeyhole = -60.800, -6.000, 60.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = -52.000, 5.500, 76.000
-vObjectInto2 = 0.000, -1.000, 0.000
-vObjectUp2 = -0.000, 0.000, 1.000
-sObjectLock2 = whole
+sObjectLock = keyhole
+vObjectKeyhole2 = -60.800, 7.700, 60.000
+vObjectInto2 = 0.000, -1.000, -0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
 [dungeons\imperial\door\impwooddoorsingleload01.nif]
-vObjectKeyhole = -52.000, -3.500, 77.000
+vObjectKeyhole = -60.800, -5.900, 61.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [dungeons\imperial\door\trapdoorladder01.nif]
 sObjectLock = none
 [dungeons\imperial\jail\impjaildoor01.nif]
@@ -1028,43 +1082,39 @@ vObjectInto2 = -1.000, 0.000, -0.000
 vObjectUp2 = -0.000, 0.000, 1.000
 sObjectLock2 = keyhole
 [dungeons\nordic\doors\animated\smdoor01\nordoorsm01.nif]
-vObjectKeyhole = -1.500, 0.000, 63.000
+vObjectKeyhole = -5.500, 0.000, 41.000
 vObjectInto = 1.000, 0.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = 4.000, 0.000, 63.000
+sObjectLock = keyhole
+vObjectKeyhole2 = 8.000, 0.000, 40.000
 vObjectInto2 = -1.000, 0.000, -0.000
 vObjectUp2 = -0.000, -0.000, 1.000
-sObjectLock2 = whole
+sObjectLock2 = keyhole
 [dungeons\nordic\doors\animated\smdoor01\nordoorsmload01.nif]
-vObjectKeyhole = -1.500, 0.000, 62.000
+vObjectKeyhole = -5.500, 0.000, 41.000
 vObjectInto = 1.000, 0.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [dungeons\nordic\doors\animated\smdoor02\nordoorsm02.nif]
-vObjectKeyhole = -4.500, 0.000, 53.000
+vObjectKeyhole = 6.500, 0.000, 40.500
+vObjectInto = -1.000, 0.000, -0.000
+vObjectUp = -0.000, -0.000, 1.000
+sObjectLock = keyhole
+vObjectKeyhole2 = -7.000, 0.000, 40.500
+vObjectInto2 = 1.000, 0.000, 0.000
+vObjectUp2 = -0.000, -0.000, 1.000
+sObjectLock2 = keyhole
+[dungeons\nordic\doors\animated\smdoor02\nordoorsm02flipped.nif]
+vObjectKeyhole = -7.000, 0.000, 41.000
 vObjectInto = 1.000, 0.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = 3.000, 0.000, 53.000
+sObjectLock = keyhole
+vObjectKeyhole2 = 6.400, 0.000, 41.000
 vObjectInto2 = -1.000, 0.000, -0.000
 vObjectUp2 = -0.000, -0.000, 1.000
-sObjectLock2 = whole
-)"
-			R"([dungeons\nordic\doors\animated\smdoor02\nordoorsm02flipped.nif]
-vObjectKeyhole = -4.500, 0.000, 54.000
-vObjectInto = 1.000, 0.000, 0.000
-vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = 3.000, 0.000, 54.000
-vObjectInto2 = -1.000, 0.000, -0.000
-vObjectUp2 = -0.000, -0.000, 1.000
-sObjectLock2 = whole
+sObjectLock2 = keyhole
 [dungeons\nordic\doors\animated\trapdoor\ruins_trapdoor01.nif]
-vObjectKeyhole = -4.000, 193.000, 8.500
-vObjectInto = 0.000, -0.000, -1.000
-vObjectUp = -1.000, -0.000, 0.000
-sObjectLock = ring
+sObjectLock = none
 [dungeons\nordic\doors\animated\wooddoor\ruinswooddoor01.nif]
 vObjectKeyhole = -7.700, -22.500, 77.500
 vObjectInto = 1.000, 0.000, 0.000
@@ -1080,14 +1130,14 @@ vObjectInto = 1.000, 0.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
 sObjectLock = keyhole
 [dungeons\riften\ratwayhall\riftenrwdoor01.nif]
-vObjectKeyhole = -29.000, -0.500, 77.000
-vObjectInto = 0.000, 1.000, 0.000
-vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = -31.500, 6.200, 77.000
-vObjectInto2 = 0.000, -1.000, -0.000
+vObjectKeyhole = -41.000, 6.200, 66.000
+vObjectInto = 0.000, -1.000, -0.000
+vObjectUp = -0.000, -0.000, 1.000
+sObjectLock = keyhole
+vObjectKeyhole2 = -41.000, -0.500, 66.000
+vObjectInto2 = 0.000, 1.000, 0.000
 vObjectUp2 = -0.000, -0.000, 1.000
-sObjectLock2 = whole
+sObjectLock2 = keyhole
 [dungeons\riften\ratwayhall\riftenrwdoorjail01.nif]
 vObjectKeyhole = 42.000, -3.000, 72.500
 vObjectInto = 0.000, 1.000, 0.000
@@ -1098,71 +1148,74 @@ vObjectInto2 = 0.000, -1.000, -0.000
 vObjectUp2 = -0.000, -0.000, 1.000
 sObjectLock2 = keyhole
 [dungeons\riften\ratwayhall\riftenrwdoorload01.nif]
-vObjectKeyhole = -28.000, -0.500, 76.000
-vObjectInto = 0.000, 1.000, 0.000
-vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = -31.000, 6.200, 77.000
-vObjectInto2 = 0.000, -1.000, -0.000
+vObjectKeyhole = -41.000, 6.200, 67.000
+vObjectInto = 0.000, -1.000, -0.000
+vObjectUp = -0.000, -0.000, 1.000
+sObjectLock = keyhole
+vObjectKeyhole2 = -41.000, -0.500, 67.000
+vObjectInto2 = 0.000, 1.000, 0.000
 vObjectUp2 = -0.000, -0.000, 1.000
-sObjectLock2 = whole
+sObjectLock2 = keyhole
 [dungeons\ship\katariah\shipkatariahdoor01.nif]
-vObjectKeyhole = -33.000, -0.500, 91.000
+vObjectKeyhole = -35.000, -0.500, 91.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = -37.000, 6.500, 91.000
+sObjectLock = keyhole
+vObjectKeyhole2 = -35.000, 6.500, 91.000
 vObjectInto2 = 0.000, -1.000, -0.000
 vObjectUp2 = -0.000, -0.000, 1.000
-sObjectLock2 = whole
+sObjectLock2 = keyhole
 [dungeons\ship\katariah\shipkatariahdoor02.nif]
 vObjectKeyhole = -34.000, -0.500, 90.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = -37.000, 6.500, 90.500
+sObjectLock = keyhole
+vObjectKeyhole2 = -35.000, 6.500, 90.500
 vObjectInto2 = 0.000, -1.000, -0.000
 vObjectUp2 = -0.000, -0.000, 1.000
-sObjectLock2 = whole
+sObjectLock2 = keyhole
 [dungeons\ship\katariah\shipkatariahdoorload01.nif]
 vObjectKeyhole = -34.000, -0.500, 91.000
 vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = -37.000, 6.500, 91.000
+sObjectLock = keyhole
+vObjectKeyhole2 = -35.000, 6.500, 91.000
 vObjectInto2 = 0.000, -1.000, -0.000
 vObjectUp2 = -0.000, -0.000, 1.000
-sObjectLock2 = whole
+sObjectLock2 = keyhole
 [dungeons\ship\shipdoor01.nif]
-vObjectKeyhole = -33.000, -0.500, 77.000
-vObjectInto = 0.000, 1.000, 0.000
-vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = -32.000, 6.500, 77.000
-vObjectInto2 = 0.000, -1.000, -0.000
+vObjectKeyhole = -41.000, 6.500, 66.000
+vObjectInto = 0.000, -1.000, -0.000
+vObjectUp = -0.000, -0.000, 1.000
+sObjectLock = keyhole
+vObjectKeyhole2 = -41.000, -0.500, 66.000
+vObjectInto2 = 0.000, 1.000, 0.000
 vObjectUp2 = -0.000, -0.000, 1.000
-sObjectLock2 = whole
+sObjectLock2 = keyhole
 [dungeons\ship\shipdoor02.nif]
-vObjectKeyhole = -32.000, -0.500, 77.000
-vObjectInto = 0.000, 1.000, 0.000
-vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
-vObjectKeyhole2 = -32.000, 6.500, 77.000
-vObjectInto2 = 0.000, -1.000, -0.000
+vObjectKeyhole = -41.000, 6.500, 67.000
+vObjectInto = 0.000, -1.000, -0.000
+vObjectUp = -0.000, -0.000, 1.000
+sObjectLock = keyhole
+vObjectKeyhole2 = -41.000, -0.500, 67.000
+vObjectInto2 = -0.000, 1.000, 0.000
 vObjectUp2 = -0.000, -0.000, 1.000
-sObjectLock2 = whole
+sObjectLock2 = keyhole
 [dungeons\ship\shiptrapdoor01.nif]
-vObjectKeyhole = -31.680, 6.500, 4.800
+vObjectKeyhole = -41.000, 6.500, -7.200
 vObjectInto = -0.000, -1.000, -0.000
 vObjectUp = 0.000, 0.000, 1.000
-sObjectLock = whole
+sObjectLock = keyhole
 [furniture\noble\noblechest01.nif]
-vObjectKeyhole = 0.000, -21.000, 18.200
+vObjectKeyhole = 0.400, -21.500, 17.200
 vObjectInto = 0.000, 0.985, -0.174
 vObjectUp = 0.000, 0.174, 0.985
-sObjectLock = ring
+sObjectLock = keyhole
 [traps\hingetrap\traphingetrigger01.nif]
-sObjectLock = none
+vObjectKeyhole = 0.000, -3.000, 31.800
+vObjectInto = 0.000, 1.000, 0.000
+vObjectUp = 0.000, 0.000, 1.000
+sObjectLock = keyhole
 )";
 		static const std::map<std::string, ObjectAnchor> kAnchors = ParseObjectAnchors(kText);
 		return kAnchors;

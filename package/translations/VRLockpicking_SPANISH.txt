@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Intercambia las herramientas de mano: la ganzúa en la
 $VRLP_FullPause	Pausa al forzar cerraduras
 $VRLP_FullPause_Help	Pausa el juego mientras fuerzas una cerradura.
 $VRLP_LockOnObject	Cerradura en la puerta o el cofre
-$VRLP_LockOnObject_Help	La cerradura está en la propia puerta o cofre en vez de aparecer delante de ti. Puede que tengas que acercarte. Las puertas y cofres que tu juego nunca cierra la mantienen delante de ti. Su sitio en cada modelo se ajusta con la herramienta de ajuste de modelos.
+$VRLP_LockOnObject_Help	La cerradura está en la propia puerta o cofre en vez de aparecer delante de ti. Puede que tengas que acercarte. Las puertas y cofres que tu juego nunca cierra la mantienen delante de ti. Su sitio en cada modelo se ajusta con la herramienta de ajuste de modelos. Si no llegas a la cerradura (un cofre contra una pared), pulsa A / X mientras fuerzas: la cerradura aparece delante de ti.
 $VRLP_MoveWhilePicking	Andar al forzar (cerradura en el objeto)
 $VRLP_MoveWhilePicking_Help	Con la cerradura en la puerta o el cofre, puedes andar y girar mientras fuerzas, para llegar a ella. El juego entonces no se pausa.
 $VRLP_ActivateContainerAfterUnlock	Abrir contenedor al forzarlo
@@ -108,6 +108,7 @@ $VRLP_DebugSkill100_Help	Pone tu habilidad Forzar cerraduras a 100.
 $VRLP_Msg_UpdateAddressLibrary	VR Lockpicking: actualiza VR Address Library for SKSEVR. Se usa el forzado de cerraduras original.
 $VRLP_Msg_HandsDontFollow	Tus manos no te siguen mientras el juego está en pausa - desactiva Pausa al forzar cerraduras en los ajustes.
 $VRLP_Msg_FinishLockpickingFirst	Termina primero de forzar la cerradura.
+$VRLP_Msg_FloatingLockHint	¿No llegas a la cerradura? Pulsa A / X: la cerradura aparece delante de ti. Púlsalo otra vez para devolverla a su sitio.
 $VRLP_Msg_MarkupLock1	Ajuste de cerradura 1/3: pon la punta de la ganzúa (su cubo) en el CENTRO de la cerradura y pulsa el gatillo izquierdo. A: pasar a la ganzúa.
 $VRLP_Msg_MarkupLock2	Ajuste de cerradura 2/3: pon la punta de la ganzúa en la parte de ARRIBA de la cerradura (hacia dónde es arriba), gatillo izquierdo. Clic en stick: atrás.
 $VRLP_Msg_MarkupLock3	Ajuste de cerradura 3/3: gatillo izquierdo = guardar para este modelo de cerradura, clic en stick = atrás. A: pasar a la ganzúa.

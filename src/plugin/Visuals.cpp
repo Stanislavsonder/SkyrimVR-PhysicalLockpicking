@@ -418,6 +418,7 @@ namespace vrlp
 				}
 			} else if (a_obj->AsGeometry() && !a_obj->GetAppCulled()) {
 				a_obj->SetAppCulled(true);
+				_hiddenParts.emplace_back(a_obj);
 				++hidden;
 			}
 		};
@@ -445,6 +446,7 @@ namespace vrlp
 			for (std::size_t i = 0; i < shapes.size(); ++i) {
 				if (!keyhole[i]) {
 					shapes[i]->SetAppCulled(true);
+					_hiddenParts.emplace_back(shapes[i]);
 					++hidden;
 				}
 			}
@@ -452,6 +454,16 @@ namespace vrlp
 		logger::info("Lock '{}': only the {} is shown ({} part(s) hidden)", _lock.path, a_shown == LockShown::kKeyhole ? "keyhole" : "keyhole and its ring",
 			hidden);
 		return true;
+	}
+
+	void Visuals::ShowAll()
+	{
+		for (auto& part : _hiddenParts) {
+			if (part) {
+				part->SetAppCulled(false);
+			}
+		}
+		_hiddenParts.clear();
 	}
 
 	void Visuals::ApplyFit(Model& a_model, bool a_log)
@@ -716,6 +728,7 @@ namespace vrlp
 			_parent->DetachChild(_root.get());
 		}
 		_cylinder.reset();
+		_hiddenParts.clear();
 		_lock = {};
 		_pick = {};
 		_pickGlide = {};

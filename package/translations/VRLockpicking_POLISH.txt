@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Zamienia narzędzia w dłoniach: wytrych w lewej, napi
 $VRLP_FullPause	Pauza podczas otwierania
 $VRLP_FullPause_Help	Wstrzymuje grę, gdy otwierasz zamek.
 $VRLP_LockOnObject	Zamek na drzwiach lub skrzyni
-$VRLP_LockOnObject_Help	Zamek jest na samych drzwiach lub skrzyni, zamiast pojawiać się przed tobą. Być może trzeba będzie podejść. Drzwi i skrzynie, których gra nigdy nie zamyka, mają go przed tobą. Jego miejsce na każdym modelu można ustawić narzędziem oznaczania modeli.
+$VRLP_LockOnObject_Help	Zamek jest na samych drzwiach lub skrzyni, zamiast pojawiać się przed tobą. Być może trzeba będzie podejść. Drzwi i skrzynie, których gra nigdy nie zamyka, mają go przed tobą. Jego miejsce na każdym modelu można ustawić narzędziem oznaczania modeli. Jeśli nie sięgasz do dziurki (skrzynia pod ścianą), naciśnij A / X podczas otwierania: zamek pojawi się przed tobą.
 $VRLP_MoveWhilePicking	Chodzenie podczas otwierania (zamek na obiekcie)
 $VRLP_MoveWhilePicking_Help	Gdy zamek jest na drzwiach lub skrzyni, podczas otwierania możesz chodzić i się obracać, by do niego dojść. Gra nie jest wtedy wstrzymywana.
 $VRLP_ActivateContainerAfterUnlock	Auto-otwieranie pojemnika
@@ -108,6 +108,7 @@ $VRLP_DebugSkill100_Help	Ustawia umiejętność Otwieranie zamków na 100.
 $VRLP_Msg_UpdateAddressLibrary	VR Lockpicking: zaktualizuj VR Address Library for SKSEVR. Używane jest zwykłe otwieranie zamków.
 $VRLP_Msg_HandsDontFollow	Twoje dłonie się nie ruszają, gdy gra jest wstrzymana - wyłącz „Pauza podczas otwierania” w ustawieniach.
 $VRLP_Msg_FinishLockpickingFirst	Najpierw skończ otwierać zamek.
+$VRLP_Msg_FloatingLockHint	Nie sięgasz do dziurki od klucza? Naciśnij A / X: zamek pojawi się przed tobą. Naciśnij ponownie, aby go odłożyć.
 $VRLP_Msg_MarkupLock1	Oznaczanie zamka 1/3: przyłóż końcówkę wytrycha (jej sześcian) do ŚRODKA dziurki, naciśnij lewy spust. A: przejdź do wytrycha.
 $VRLP_Msg_MarkupLock2	Oznaczanie zamka 2/3: przyłóż końcówkę wytrycha do GÓRY dziurki (gdzie jest góra), lewy spust. Kliknięcie gałki: wstecz.
 $VRLP_Msg_MarkupLock3	Oznaczanie zamka 3/3: lewy spust = zapisz dla tego modelu zamka, kliknięcie gałki = wstecz. A: przejdź do wytrycha.

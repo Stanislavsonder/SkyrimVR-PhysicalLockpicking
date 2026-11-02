@@ -383,6 +383,9 @@ namespace vrlp
 		const Pose head = ToPose(hmdNode->world);
 		LockFrame  frame = MakeLockFrame(ToRoom(_anchor, head), _cfg);
 		_onObject.reset();
+		_floating = false;
+		_floatHeld = true;  // A / X may still be held from activating
+		_partsHidden = false;
 		_cancelDistance = _cfg.cancelDistance;
 		if (_cfg.lockOnObject && LockOnObject(ref.get(), head.pos)) {
 			const Pose lock = ObjectLockWorld();
@@ -455,7 +458,7 @@ namespace vrlp
 			if (!_visuals.Create(models, ref.get(), profile)) {
 				logger::info("Running without 3D meshes (haptics + sound only)");
 			} else if (_onObject) {
-				_visuals.ShowOnly(ObjectSideShown().shown);
+				_partsHidden = _visuals.ShowOnly(ObjectSideShown().shown) && ObjectSideShown().shown != LockShown::kWhole;
 			}
 			if (_cfg.showTargets || _cfg.markupMode) {
 				_debug.Create(_cfg, ref.get(), true);
@@ -504,6 +507,10 @@ namespace vrlp
 		_gripSamples = 0;
 		_gripTriggerHeld = true;
 		_debug.SetQuiet(quiet);
+		if (_onObject && !quiet && !_floatHintShown) {
+			_floatHintShown = true;
+			Text::Show("$VRLP_Msg_FloatingLockHint");
+		}
 		if (_debug.Active() && !quiet) {
 			RE::SendHUDMessage::ShowHUDMessage("Debug: press a trigger to record how you hold your hands (1 neutral, 2 turned in, 3 the other way).");
 		}
@@ -660,8 +667,17 @@ namespace vrlp
 		}
 		in.pickHand = ReadHand(pickNode, pickSide, _anchor);
 		in.tensionHand = ReadHand(tensionNode, tensionSide, _anchor);
+		// A / X: the lock off its door or chest, in front of you, and back (not during markup, where
+		// A goes to the next step)
+		if (!_markup.Active()) {
+			const bool a = VRInput::Get().Snapshot(Hand::kLeft).buttonA || VRInput::Get().Snapshot(Hand::kRight).buttonA;
+			if (a && !_floatHeld) {
+				ToggleFloating(in.hmd);
+			}
+			_floatHeld = a;
+		}
 		// on its door or chest: kept there in the room (the markup tool may move it)
-		if (_onObject) {
+		if (_onObject && !_floating) {
 			_session->SetFrame(FrameOfPose(ToRoom(_anchor, ObjectLockWorld())));
 			_keyholeWorld = ObjectLockWorld().pos;
 		}
@@ -1355,6 +1371,49 @@ namespace vrlp
 		return PlaceOnObject(ObjectSideShown(), _onObject->object, _onObject->scale);
 	}
 
+	// A / X with the lock on its door or chest: it moves in front of you, as without bLockOnObject,
+	// for a keyhole you can't reach (a chest against a wall, a door in a corner). You then stay
+	// where you are (and the game pauses with fullPause), since the lock no longer stands in the
+	// world. Pressed again, it goes back onto the object. Tools in the keyhole come out: their
+	// tips are no longer where the keyhole is.
+	void LockpickManager::ToggleFloating(const Pose& a_hmd)
+	{
+		if (!_onObject || !_session) {
+			return;  // already in front of you
+		}
+		_floating = !_floating;
+		if (_floating) {
+			_session->SetFrame(MakeLockFrame(a_hmd, _cfg));
+			if (_partsHidden) {
+				_visuals.ShowAll();
+			}
+			logger::info("Lock taken off the object (A / X): in front of you now");
+		} else {
+			_session->SetFrame(FrameOfPose(ToRoom(_anchor, ObjectLockWorld())));
+			if (_partsHidden) {
+				_visuals.ShowOnly(ObjectSideShown().shown);
+			}
+			logger::info("Lock back on the object (A / X)");
+		}
+		_keyholeWorld = _anchor.rot * _session->Frame().keyhole + _anchor.pos;
+		RE::PlaySound(_sounds.pickMovement.c_str());
+		SetMoving(!_floating && _cfg.moveWhilePicking);
+	}
+
+	// Walking while picking (bMoveWhilePicking, lock on the object) on or off mid-session.
+	void LockpickManager::SetMoving(bool a_moving)
+	{
+		if (a_moving == _moving) {
+			return;
+		}
+		LockControls(false);
+		_moving = a_moving;
+		LockControls(true);
+		VRInput::Get().SetBlocking(true, _moving);
+		PauseWorld(!_moving);
+		logger::info("{}", _moving ? "You can walk and turn while picking again" : "You stay where you are while picking");
+	}
+
 	ObjectAnchor LockpickManager::ObjectSideShown() const
 	{
 		const auto& o = *_onObject;
@@ -1540,6 +1599,8 @@ namespace vrlp
 			NudgeKeyhole({}, 0.0f);
 		}
 		_onObject.reset();
+		_floating = false;
+		_partsHidden = false;
 		_visuals.Destroy();
 		_debug.Destroy();
 		_assist.Destroy();

@@ -43,6 +43,8 @@ namespace vrlp
 		// safe) or only its keyhole (kKeyhole: a lock built into the model). False when the model has
 		// no turning part: the whole lock stays.
 		bool ShowOnly(LockShown a_shown);
+		// The whole lock again (the lock taken off its door or chest, in front of you).
+		void ShowAll();
 
 		// Tool profiles (markup tool), keyed by normalized model path; set before Create.
 		void SetToolProfiles(std::map<std::string, ToolProfile> a_picks, std::map<std::string, ToolProfile> a_shivs);
@@ -107,6 +109,7 @@ namespace vrlp
 
 		// Part of the lock that turns (the tumbler), instead of the whole lock.
 		RE::NiPointer<RE::NiAVObject> _cylinder;
+		std::vector<RE::NiPointer<RE::NiAVObject>> _hiddenParts;  // hidden by ShowOnly
 		RE::NiTransform               _cylinderWorld0;   // in mesh space, unturned
 		RE::NiTransform               _cylinderParent0;  // parent's transform in mesh space
 		Vec3                          _cylinderPivot;    // keyhole centre in mesh space

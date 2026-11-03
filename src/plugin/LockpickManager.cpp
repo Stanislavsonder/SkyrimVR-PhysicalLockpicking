@@ -180,6 +180,17 @@ namespace vrlp
 
 	void LockpickManager::LoadConfig()
 	{
+		try {
+			ReadConfig();
+		} catch (const std::exception& e) {
+			logger::error("Reading the settings failed: {}", e.what());
+		} catch (...) {
+			logger::error("Reading the settings failed");
+		}
+	}
+
+	void LockpickManager::ReadConfig()
+	{
 		// SKSE\Plugins\VRLockpicking.ini (everything), then what the player changed in the MCM
 		// (MCM Helper writes only changed keys to MCM\Settings\VRLockpicking.ini). Of the MCM file
 		// only the settings the menu still offers count: values saved for options that have since

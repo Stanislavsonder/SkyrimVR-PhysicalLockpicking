@@ -15,6 +15,17 @@ namespace vrlp::LockMods
 			return a_s;
 		}
 
+		// A file name for the log, whatever characters it has.
+		std::string Utf8(const std::filesystem::path& a_path)
+		{
+			try {
+				const auto u8 = a_path.u8string();
+				return { u8.begin(), u8.end() };
+			} catch (const std::exception&) {
+				return "?";
+			}
+		}
+
 		// "0x1234~Plugin.esp" (an id in a plugin), "0x00012345" (a full FormID) or an EditorID.
 		RE::TESForm* Resolve(const std::string& a_id)
 		{
@@ -41,20 +52,30 @@ namespace vrlp::LockMods
 	void Load()
 	{
 		g_variations = {};
+		// Data holds every mod's files, some with names outside the system code page (Cyrillic,
+		// CJK...). path::string() throws on those, so names are matched as wide strings and
+		// logged as UTF-8, and the listing never throws: a throw here at load made SKSE disable
+		// the plugin.
 		std::vector<std::filesystem::path> files;
 		std::error_code                    ec;
-		for (const auto& entry : std::filesystem::directory_iterator("Data", ec)) {
-			const std::string name = Lower(entry.path().filename().string());
-			if (entry.is_regular_file(ec) && name.size() > 8 && name.ends_with("_lid.ini")) {
-				files.push_back(entry.path());
+		std::filesystem::directory_iterator it("Data", ec);
+		for (; !ec && it != std::filesystem::directory_iterator(); it.increment(ec)) {
+			std::wstring name = it->path().filename().wstring();
+			std::ranges::transform(name, name.begin(), [](wchar_t c) { return static_cast<wchar_t>(std::towlower(c)); });
+			std::error_code typeEc;
+			if (name.size() > 8 && name.ends_with(L"_lid.ini") && it->is_regular_file(typeEc)) {
+				files.push_back(it->path());
 			}
+		}
+		if (ec) {
+			logger::warn("Lock Variations: could not list Data ({})", ec.message());
 		}
 		std::ranges::sort(files);
 		for (const auto& path : files) {
 			std::ifstream     in(path);
 			std::stringstream ss;
 			ss << in.rdbuf();
-			g_variations.AddFile(ss.str(), path.filename().string());
+			g_variations.AddFile(ss.str(), Utf8(path.filename()));
 		}
 		if (!files.empty()) {
 			logger::info("Lock Variations: {} file(s), {} lock type(s)", files.size(), g_variations.SectionCount());

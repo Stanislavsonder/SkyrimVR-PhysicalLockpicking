@@ -25,6 +25,8 @@ namespace vrlp
 			return instance;
 		}
 
+		// Never throws: a throw at plugin load makes SKSE disable the plugin, and one at a journal
+		// close would end the game. On a failure the settings read so far stay.
 		void LoadConfig();
 		void RegisterEvents();
 		// Forgets every model markup (the lock keyholes and tool grips the player saved): the
@@ -46,6 +48,7 @@ namespace vrlp
 		RE::BSEventNotifyControl ProcessEvent(const RE::MenuOpenCloseEvent* a_event, RE::BSTEventSource<RE::MenuOpenCloseEvent>*) override;
 
 	private:
+		void ReadConfig();
 		void Start(RE::TESObjectREFRPtr a_target);
 		void Update();
 		void End();

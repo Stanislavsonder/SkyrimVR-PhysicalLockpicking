@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2
+
+- Fixed: with Lock on the door or chest, the lock on the small Nordic ruins chest (Bleak Falls Barrow, Kjenstag Ruins and other Nordic ruins) was on the back of the chest. It is now on the front.
+
 ## 1.1.1
 
 - **A / X** while picking a lock on its door or chest brings the lock in front of you, for a keyhole you can't reach (a chest against a wall, a door in a corner). Press it again to put it back. While it is in front of you, you stay where you are and the game pauses (with Pause on lockpicking), as without Lock on the door or chest. The first lock after starting the game tells you about it.

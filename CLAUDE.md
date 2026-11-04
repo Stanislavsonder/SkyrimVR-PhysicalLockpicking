@@ -13,7 +13,7 @@ Vanilla rules are kept:
 
 Lock Variations `_LID.ini` files are read so that each lock gets its own models and sounds.
 
-The version is 1.1.1. `CHANGELOG.md` holds the release notes.
+The version is 1.1.2. `CHANGELOG.md` holds the release notes.
 
 ## Layout
 

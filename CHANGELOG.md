@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1
+
+- **A / X** while picking a lock on its door or chest brings the lock in front of you, for a keyhole you can't reach (a chest against a wall, a door in a corner). Press it again to put it back. While it is in front of you, you stay where you are and the game pauses (with Pause on lockpicking), as without Lock on the door or chest. The first lock after starting the game tells you about it.
+- Fixed: SKSE could disable the mod at game start ("fatal error occurred while loading plugin") when a file in `Data` has a name with letters outside your Windows language, such as Cyrillic or Chinese.
+
 ## 1.1.0
 
 - **Lock on the door or chest** (General page, on by default): the lock sits on the door or chest you pick instead of in front of you. Doors and chests that the game's plugins never lock keep it in front of you. With it, **Walk while picking** (on by default) lets you walk and turn while you pick; the game is then not paused. On the 88 door and chest models that the base game and its DLCs lock it comes lined up as a keyhole on the model, on each side of a door and on every face of a Dwemer chest that looks the same all round; you pick the one on the side you stand. On the few with nothing to pick (a ceiling trapdoor, a Nordic ruin's trapdoor, Apocrypha's urns) it stays in front of you. Per model it can also show the whole lock, or the keyhole and the ring round it (markup tool, lockplacer).

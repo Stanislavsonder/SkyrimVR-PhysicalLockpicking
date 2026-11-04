@@ -35,6 +35,7 @@ The mod adds `VRLockpicking.esp`, which only holds the settings menu's quest. Ke
 7. If you keep turning a lock that has stopped, the pick strains (a fast rattle, the lock shakes) and then breaks. Take the broken pick out and put it in again for a new one, and turn the tension wrench back to its start.
 8. With **Show lockpicks left** (General page, off by default) you see by the lock how many lockpicks you have left. It is hidden while your picks can't break.
 9. **B / Y** gives up, and so does walking away from the lock.
+10. With the lock on the door or chest, **A / X** brings it in front of you, for a keyhole you can't reach (a chest against a wall, a door in a corner). You then stay where you are, and the game pauses if Pause on lockpicking is on. Press it again to put the lock back on the door or chest. Tools in the keyhole come out when the lock moves.
 
 **Alternative mode** (settings, General) is on by default. Turn it off to play like the vanilla minigame: put the pick in with its handle pointing up and search by sweeping the handle clockwise down the right side of the keyhole, from straight up to straight down; put the tension wrench in with the back of your hand to the left and turn it until the back of your hand points up.
 

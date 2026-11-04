@@ -25,6 +25,8 @@ namespace vrlp
 			return instance;
 		}
 
+		// Never throws: a throw at plugin load makes SKSE disable the plugin, and one at a journal
+		// close would end the game. On a failure the settings read so far stay.
 		void LoadConfig();
 		void RegisterEvents();
 		// Forgets every model markup (the lock keyholes and tool grips the player saved): the
@@ -46,6 +48,7 @@ namespace vrlp
 		RE::BSEventNotifyControl ProcessEvent(const RE::MenuOpenCloseEvent* a_event, RE::BSTEventSource<RE::MenuOpenCloseEvent>*) override;
 
 	private:
+		void ReadConfig();
 		void Start(RE::TESObjectREFRPtr a_target);
 		void Update();
 		void End();
@@ -71,6 +74,8 @@ namespace vrlp
 		bool LockOnObject(RE::TESObjectREFR* a_target, const Vec3& a_head);
 		Pose ObjectLockWorld() const;
 		ObjectAnchor ObjectSideShown() const;  // the side you stand on, as a lock on the object
+		void ToggleFloating(const Pose& a_hmd);
+		void SetMoving(bool a_moving);
 		void SaveObjectPlacement();
 		void EndGrab(bool a_save);
 		void SaveAlignment();
@@ -101,6 +106,12 @@ namespace vrlp
 			std::size_t  side{ 0 };  // the marked side you stand on
 		};
 		std::optional<OnObject>    _onObject;
+		// A / X: the lock taken off its door or chest and put in front of you (a keyhole you can't
+		// reach, e.g. a chest against a wall); pressed again, it goes back.
+		bool                       _floating{ false };
+		bool                       _floatHeld{ true };
+		bool                       _partsHidden{ false };  // ShowOnly hid part of the lock on the object
+		bool                       _floatHintShown{ false };  // once per game start
 		struct LockGrab
 		{
 			Pose hand;  // room space, when the trigger went down

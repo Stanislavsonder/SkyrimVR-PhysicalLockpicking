@@ -47,7 +47,7 @@ namespace vrlp::LockableObjects
 			const auto    path = *dir / "VRLockpicking_LockableModels.txt";
 			std::ofstream out(path, std::ios::trunc);
 			out << WriteLockableModels(list);
-			logger::info("Lockable objects: {} models listed in {}", list.size(), path.string());
+			logger::info("Lockable objects: {} models listed in {}", list.size(), "VRLockpicking_LockableModels.txt");
 		}
 
 		void Run(std::vector<std::string> a_files)

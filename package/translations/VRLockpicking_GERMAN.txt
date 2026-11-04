@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Spiegelt die Werkzeuge in deinen Händen: den Dietrich
 $VRLP_FullPause	Pause beim Schlossknacken
 $VRLP_FullPause_Help	Pausiert das Spiel, während du ein Schloss knackst.
 $VRLP_LockOnObject	Schloss an Tür oder Truhe
-$VRLP_LockOnObject_Help	Das Schloss sitzt an der Tür oder Truhe selbst, statt vor dir zu erscheinen. Eventuell musst du hingehen. Türen und Truhen, die dein Spiel nie verschließt, behalten es vor dir. Wo es an jedem Modell sitzt, lässt sich mit dem Modell-Markierungswerkzeug ausrichten.
+$VRLP_LockOnObject_Help	Das Schloss sitzt an der Tür oder Truhe selbst, statt vor dir zu erscheinen. Eventuell musst du hingehen. Türen und Truhen, die dein Spiel nie verschließt, behalten es vor dir. Wo es an jedem Modell sitzt, lässt sich mit dem Modell-Markierungswerkzeug ausrichten. Kommst du nicht ans Schlüsselloch (eine Truhe an der Wand), drücke beim Knacken A / X: Das Schloss erscheint vor dir.
 $VRLP_MoveWhilePicking	Gehen beim Knacken (Schloss am Objekt)
 $VRLP_MoveWhilePicking_Help	Mit dem Schloss an Tür oder Truhe kannst du beim Knacken gehen und dich drehen, um hinzukommen. Das Spiel wird dann nicht pausiert.
 $VRLP_ActivateContainerAfterUnlock	Behälter danach öffnen
@@ -108,6 +108,7 @@ $VRLP_DebugSkill100_Help	Setzt deine Fertigkeit Schlossknacken auf 100.
 $VRLP_Msg_UpdateAddressLibrary	VR Lockpicking: Bitte aktualisiere die VR Address Library für SKSEVR. Das Vanilla-Schlossknacken wird verwendet.
 $VRLP_Msg_HandsDontFollow	Deine Hände folgen nicht, solange das Spiel pausiert ist - schalte 'Pause beim Schlossknacken' in den Einstellungen aus.
 $VRLP_Msg_FinishLockpickingFirst	Beende zuerst das Schlossknacken.
+$VRLP_Msg_FloatingLockHint	Kommst du nicht ans Schlüsselloch? Drücke A / X: Das Schloss erscheint vor dir. Erneut drücken setzt es zurück.
 $VRLP_Msg_MarkupLock1	Markierung Schloss 1/3: Setze die Spitze des Dietrichs (ihren Würfel) auf die MITTE des Schlüssellochs, drücke den linken Trigger. A: weiter zum Dietrich.
 $VRLP_Msg_MarkupLock2	Markierung Schloss 2/3: Setze die Spitze des Dietrichs auf die OBERKANTE des Schlüssellochs (wo oben ist), linker Trigger. Stick-Klick: zurück.
 $VRLP_Msg_MarkupLock3	Markierung Schloss 3/3: linker Trigger = für dieses Schlossmodell speichern, Stick-Klick = zurück. A: weiter zum Dietrich.

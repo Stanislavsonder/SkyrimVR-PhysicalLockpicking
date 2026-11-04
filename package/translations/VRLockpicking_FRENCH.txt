@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Inverse les outils dans vos mains : le crochet à gauc
 $VRLP_FullPause	Pause pendant le crochetage
 $VRLP_FullPause_Help	Met le jeu en pause pendant que vous crochetez une serrure.
 $VRLP_LockOnObject	Serrure sur la porte ou le coffre
-$VRLP_LockOnObject_Help	La serrure se trouve sur la porte ou le coffre lui-même au lieu d'apparaître devant vous. Vous devrez peut-être vous en approcher. Les portes et coffres que votre jeu ne verrouille jamais la gardent devant vous. Sa place sur chaque modèle s'aligne avec l'outil de marquage des modèles.
+$VRLP_LockOnObject_Help	La serrure se trouve sur la porte ou le coffre lui-même au lieu d'apparaître devant vous. Vous devrez peut-être vous en approcher. Les portes et coffres que votre jeu ne verrouille jamais la gardent devant vous. Sa place sur chaque modèle s'aligne avec l'outil de marquage des modèles. Si vous n'atteignez pas la serrure (un coffre contre un mur), appuyez sur A / X pendant le crochetage : la serrure vient devant vous.
 $VRLP_MoveWhilePicking	Marcher pendant le crochetage (serrure sur l'objet)
 $VRLP_MoveWhilePicking_Help	Avec la serrure sur la porte ou le coffre, vous pouvez marcher et tourner pendant le crochetage, pour l'atteindre. Le jeu n'est alors pas en pause.
 $VRLP_ActivateContainerAfterUnlock	Ouvrir le contenant ensuite
@@ -108,6 +108,7 @@ $VRLP_DebugSkill100_Help	Règle votre compétence Crochetage sur 100.
 $VRLP_Msg_UpdateAddressLibrary	VR Lockpicking : veuillez mettre à jour VR Address Library pour SKSEVR. Le crochetage d'origine est utilisé.
 $VRLP_Msg_HandsDontFollow	Vos mains ne suivent pas tant que le jeu est en pause - désactivez 'Pause pendant le crochetage' dans les réglages.
 $VRLP_Msg_FinishLockpickingFirst	Terminez d'abord le crochetage.
+$VRLP_Msg_FloatingLockHint	Serrure hors de portée ? Appuyez sur A / X : la serrure vient devant vous. Appuyez de nouveau pour la remettre en place.
 $VRLP_Msg_MarkupLock1	Marquage serrure 1/3 : placez la pointe du crochet (son cube) au CENTRE du trou de serrure, appuyez sur la gâchette gauche. A : passer au crochet.
 $VRLP_Msg_MarkupLock2	Marquage serrure 2/3 : placez la pointe du crochet en HAUT du trou de serrure (où se trouve le haut), gâchette gauche. Clic du stick : retour.
 $VRLP_Msg_MarkupLock3	Marquage serrure 3/3 : gâchette gauche = enregistrer pour ce modèle de serrure, clic du stick = retour. A : passer au crochet.

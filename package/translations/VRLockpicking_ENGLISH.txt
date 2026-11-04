@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Mirrors the tools in your hands: the lockpick in the l
 $VRLP_FullPause	Pause on lockpicking
 $VRLP_FullPause_Help	Pauses the game while you pick a lock.
 $VRLP_LockOnObject	Lock on the door or chest
-$VRLP_LockOnObject_Help	The lock sits on the door or chest itself instead of appearing in front of you. You may have to step up to it. Doors and chests your game never locks keep it in front of you. Where it sits on each model can be lined up with the model markup tool.
+$VRLP_LockOnObject_Help	The lock sits on the door or chest itself instead of appearing in front of you. You may have to step up to it. Doors and chests your game never locks keep it in front of you. Where it sits on each model can be lined up with the model markup tool. If you can't reach the keyhole (a chest against a wall), press A / X while picking: the lock comes in front of you.
 $VRLP_MoveWhilePicking	Walk while picking (lock on the object)
 $VRLP_MoveWhilePicking_Help	With the lock on the door or chest, you can walk and turn while you pick, to get to it. The game is then not paused.
 $VRLP_ActivateContainerAfterUnlock	Open container after unlocking
@@ -108,6 +108,7 @@ $VRLP_DebugSkill100_Help	Sets your Lockpicking skill to 100.
 $VRLP_Msg_UpdateAddressLibrary	VR Lockpicking: please update VR Address Library for SKSEVR. Using vanilla lockpicking.
 $VRLP_Msg_HandsDontFollow	Your hands don't follow while the game is paused - turn Pause on lockpicking off in the settings.
 $VRLP_Msg_FinishLockpickingFirst	Finish lockpicking first.
+$VRLP_Msg_FloatingLockHint	Can't reach the keyhole? Press A / X: the lock comes in front of you. Press it again to put it back.
 $VRLP_Msg_MarkupLock1	Markup lock 1/3: put the pick's tip (its cube) on the CENTRE of the keyhole, press the left trigger. A: go to the pick.
 $VRLP_Msg_MarkupLock2	Markup lock 2/3: put the pick's tip on the TOP of the keyhole (which way is up), left trigger. Stick click: back.
 $VRLP_Msg_MarkupLock3	Markup lock 3/3: left trigger = save for this lock model, stick click = back. A: go to the pick.

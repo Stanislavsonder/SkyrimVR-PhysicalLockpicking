@@ -11,7 +11,7 @@ $VRLP_LeftHandedPick_Help	Scambia gli attrezzi tra le mani: il grimaldello nella
 $VRLP_FullPause	Pausa durante lo scasso
 $VRLP_FullPause_Help	Mette in pausa il gioco mentre scassini una serratura.
 $VRLP_LockOnObject	Serratura sulla porta o sul forziere
-$VRLP_LockOnObject_Help	La serratura sta sulla porta o sul forziere stesso invece di apparire davanti a te. Potresti doverti avvicinare. Porte e forzieri che il gioco non chiude mai la tengono davanti a te. La sua posizione su ogni modello si allinea con lo strumento di calibrazione dei modelli.
+$VRLP_LockOnObject_Help	La serratura sta sulla porta o sul forziere stesso invece di apparire davanti a te. Potresti doverti avvicinare. Porte e forzieri che il gioco non chiude mai la tengono davanti a te. La sua posizione su ogni modello si allinea con lo strumento di calibrazione dei modelli. Se non arrivi alla serratura (un forziere contro un muro), premi A / X mentre scassini: la serratura appare davanti a te.
 $VRLP_MoveWhilePicking	Camminare durante lo scasso (serratura sull'oggetto)
 $VRLP_MoveWhilePicking_Help	Con la serratura sulla porta o sul forziere puoi camminare e girarti durante lo scasso, per raggiungerla. Il gioco allora non va in pausa.
 $VRLP_ActivateContainerAfterUnlock	Apri contenitore dopo scasso
@@ -108,6 +108,7 @@ $VRLP_DebugSkill100_Help	Imposta la tua abilità Scasso a 100.
 $VRLP_Msg_UpdateAddressLibrary	VR Lockpicking: aggiorna VR Address Library for SKSEVR. Viene usato lo scasso originale.
 $VRLP_Msg_HandsDontFollow	Le tue mani non si muovono mentre il gioco è in pausa - disattiva Pausa durante lo scasso nelle impostazioni.
 $VRLP_Msg_FinishLockpickingFirst	Prima finisci lo scasso.
+$VRLP_Msg_FloatingLockHint	Non arrivi alla serratura? Premi A / X: la serratura appare davanti a te. Premi di nuovo per rimetterla al suo posto.
 $VRLP_Msg_MarkupLock1	Calibrazione serratura 1/3: metti la punta del grimaldello (il suo cubo) al CENTRO della serratura, premi il grilletto sinistro. A: passa al grimaldello.
 $VRLP_Msg_MarkupLock2	Calibrazione serratura 2/3: metti la punta del grimaldello in CIMA alla serratura (dove sta l'alto), grilletto sinistro. Clic levetta: indietro.
 $VRLP_Msg_MarkupLock3	Calibrazione serratura 3/3: grilletto sinistro = salva per questo modello di serratura, clic levetta = indietro. A: passa al grimaldello.

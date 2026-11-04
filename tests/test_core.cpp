@@ -1549,6 +1549,21 @@ TEST(ObjectAnchorPlacementRoundTrip)
 	CHECK_NEAR(trap.rot.Column(1).z, -1.0, 1e-4);
 	// a Dwemer chest the same all round: a keyhole on each face
 	CHECK(DefaultObjectAnchors().at("clutter\\dwemer\\dwecontainter02.nif").Sides() == 4);
+	// a chest's lock is on the side away from its lid's hinge: the y of the lid node, the pivot of
+	// its "Open" animation, in the vanilla model. In NifSkope the front and the back of the Nordic
+	// small chest look alike; its lock had been marked on the back.
+	const std::pair<const char*, float> hinges[] = { { "clutter\\ruins\\ruins_smallchest.nif", -25.5f },
+		{ "clutter\\ruins\\ruins_largechest.nif", 33.5f }, { "clutter\\containers\\chest01\\chest01.nif", -24.6f },
+		{ "clutter\\upperclass\\upperchest01.nif", -25.1f }, { "furniture\\noble\\noblechest01.nif", 18.7f },
+		{ "clutter\\common\\strongbox01.nif", -8.3f }, { "dlc01\\clutter\\dlc01snowelfchest.nif", 21.6f },
+		{ "clutter\\displaycases\\displaycaselgangled01.nif", 29.3f },
+		{ "clutter\\displaycases\\displaycasesmangled01.nif", 12.5f }, { "clutter\\displaycases\\displaycasesmflat01.nif", 12.5f } };
+	for (const auto& [model, hingeY] : hinges) {
+		const auto& chest = DefaultObjectAnchors().at(model);
+		CHECK(chest.Sides() == 1);
+		CHECK(chest.keyhole.y * hingeY < 0.0f);         // on the other side from the hinge
+		CHECK(chest.rot.Column(1).y * hingeY > 0.0f);   // looking into the chest, towards the hinge
+	}
 }
 
 TEST(KeyholeAmongTheTurningPart)

@@ -868,8 +868,8 @@ vObjectInto = 0.000, 1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
 sObjectLock = keyhole
 [clutter\ruins\ruins_smallchest.nif]
-vObjectKeyhole = 0.300, -25.400, 45.900
-vObjectInto = 0.000, 1.000, 0.000
+vObjectKeyhole = -0.300, 25.400, 45.900
+vObjectInto = 0.000, -1.000, 0.000
 vObjectUp = 0.000, 0.000, 1.000
 sObjectLock = keyhole
 [clutter\stockade\stockadegate01.nif]
